@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E9D7D0A1-F900-44B1-A649-98D88846610C}</ProjectGuid>
+    <ProjectGuid>{23BDA9BE-07C5-4B72-8F15-A50C0FB9E1A8}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Xdr</RootNamespace>
-    <AssemblyName>Xdr</AssemblyName>
+    <RootNamespace>Xdr.Test</RootNamespace>
+    <AssemblyName>Xdr.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -31,16 +31,25 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="nunit.framework, Version=2.5.10.11092, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MyClass.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Attributes\XdrFieldAttribute.cs" />
-    <Compile Include="Attributes\XdrUnionAttribute.cs" />
-    <Compile Include="Attributes\XdrCaseAttribute.cs" />
+    <Compile Include="Example\CompleteFile.cs" />
+    <Compile Include="Example\FileKind.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="Attributes\" />
+    <Folder Include="Example\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xdr\Xdr.csproj">
+      <Project>{E9D7D0A1-F900-44B1-A649-98D88846610C}</Project>
+      <Name>Xdr</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
