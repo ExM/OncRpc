@@ -1,0 +1,12 @@
+.Net implementation of ONC RPC protocol (RFC 5531) and XDR (RFC 4506)
+Sources
+ git://github.com/ExM/OncRpc.git
+
+List of documents used in developing:
+
+* External Data Representation (XDR)
+ http://tools.ietf.org/html/rfc4506 - XDR: External Data Representation Standard (May 2006)
+
+* Open Network Computing Remote Procedure Call (ONC RPC)
+ http://tools.ietf.org/html/rfc5531 - RPC: Remote Procedure Call Protocol Specification Version 2 (May 2009)
+ http://tools.ietf.org/html/rfc1833 - Binding Protocols for ONC RPC Version 2 (August 1995)
