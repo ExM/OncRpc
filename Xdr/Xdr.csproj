@@ -33,11 +33,11 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Attributes\XdrFieldAttribute.cs" />
     <Compile Include="Attributes\XdrUnionAttribute.cs" />
     <Compile Include="Attributes\XdrCaseAttribute.cs" />
+    <Compile Include="XdrStreamExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

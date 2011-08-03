@@ -37,10 +37,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Example\CompleteFile.cs" />
     <Compile Include="Example\FileKind.cs" />
+    <Compile Include="CompleteFileTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
