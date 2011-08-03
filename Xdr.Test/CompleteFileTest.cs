@@ -12,7 +12,9 @@ namespace Xdr.Test
 		public void Read()
 		{
 			MemoryStream s = new MemoryStream();
-			s.XdrRead<CompleteFile>((val) =>
+			SyncStream ss = new SyncStream(s);
+			
+			XdrReader<CompleteFile>.Read(ss, (val) =>
 			{
 				
 			}, (ex) =>
