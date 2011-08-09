@@ -9,7 +9,7 @@ namespace EmitTest
 	{
 		public int Field1;
 
-		public TreeNode2 Field2;
+		public int Field2;
 
 		public int Field3;
 	}

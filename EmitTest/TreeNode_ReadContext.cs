@@ -25,12 +25,12 @@ namespace EmitTest
 		private void Field1_Readed(byte[] val)
 		{
 			_target.Field1 = XdrEncoding.DecodeInt32(val);
-			XdrReader<TreeNode2>.Read(_reader, Field2_Readed, _excepted);
+			_reader.Read(4, Field2_Readed, _excepted);
 		}
 
-		private void Field2_Readed(TreeNode2 val)
+		private void Field2_Readed(byte[] val)
 		{
-			_target.Field2 = val;
+			_target.Field2 = XdrEncoding.DecodeInt32(val);
 			_reader.Read(4, Field3_Readed, _excepted);
 		}
 
