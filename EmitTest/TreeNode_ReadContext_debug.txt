@@ -1,0 +1,340 @@
+﻿.class public auto ansi beforefieldinit TreeNode_ReadContext
+    extends [mscorlib]System.Object
+{
+    .method public hidebysig specialname rtspecialname instance void .ctor(class EmitTest.IByteReader reader, class [mscorlib]System.Action`1<class EmitTest.TreeNode> completed, class [mscorlib]System.Action`1<class [mscorlib]System.Exception> excepted) cil managed
+    {
+        .maxstack 5
+        L_0000: ldarg.0 
+        L_0001: call instance void [mscorlib]System.Object::.ctor()
+        L_0006: nop 
+        L_0007: nop 
+        L_0008: ldarg.0 
+        L_0009: newobj instance void EmitTest.TreeNode::.ctor()
+        L_000e: stfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0013: ldarg.0 
+        L_0014: ldarg.1 
+        L_0015: stfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_001a: ldarg.0 
+        L_001b: ldarg.2 
+        L_001c: stfld class [mscorlib]System.Action`1<class EmitTest.TreeNode> EmitTest.TreeNode_ReadContext::_completed
+        L_0021: ldarg.0 
+        L_0022: ldarg.3 
+        L_0023: stfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_0028: ldarg.0 
+        L_0029: ldfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_002e: ldc.i4.4 
+        L_002f: ldarg.0 
+        L_0030: ldftn instance void EmitTest.TreeNode_ReadContext::Field1_Readed(uint8[])
+        L_0036: newobj instance void [mscorlib]System.Action`1<uint8[]>::.ctor(object, native int)
+        L_003b: ldarg.0 
+        L_003c: ldfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_0041: callvirt instance void EmitTest.IByteReader::Read(int32, class [mscorlib]System.Action`1<uint8[]>, class [mscorlib]System.Action`1<class [mscorlib]System.Exception>)
+        L_0046: nop 
+        L_0047: nop 
+        L_0048: ret 
+    }
+
+    .method private hidebysig instance void Field1_Readed(uint8[] val) cil managed
+    {
+        .maxstack 8
+        L_0000: nop 
+        L_0001: ldarg.0 
+        L_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0007: ldarg.1 
+        L_0008: call int32 EmitTest.XdrEncoding::DecodeInt32(uint8[])
+        L_000d: stfld int32 EmitTest.TreeNode::Field1
+        L_0012: ldarg.0 
+        L_0013: ldfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_0018: ldarg.0 
+        L_0019: ldftn instance void EmitTest.TreeNode_ReadContext::Field2_Readed(class EmitTest.TreeNode2)
+        L_001f: newobj instance void [mscorlib]System.Action`1<class EmitTest.TreeNode2>::.ctor(object, native int)
+        L_0024: ldarg.0 
+        L_0025: ldfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_002a: call void EmitTest.XdrReader`1<class EmitTest.TreeNode2>::Read(class EmitTest.IByteReader, class [mscorlib]System.Action`1<!0>, class [mscorlib]System.Action`1<class [mscorlib]System.Exception>)
+        L_002f: nop 
+        L_0030: ret 
+    }
+
+    .method private hidebysig instance void Field2_Readed(class EmitTest.TreeNode2 val) cil managed
+    {
+        .maxstack 8
+        L_0000: nop 
+        L_0001: ldarg.0 
+        L_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0007: ldarg.1 
+        L_0008: stfld class EmitTest.TreeNode2 EmitTest.TreeNode::Field2
+        L_000d: ldarg.0 
+        L_000e: ldfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_0013: ldc.i4.4 
+        L_0014: ldarg.0 
+        L_0015: ldftn instance void EmitTest.TreeNode_ReadContext::Field3_Readed(uint8[])
+        L_001b: newobj instance void [mscorlib]System.Action`1<uint8[]>::.ctor(object, native int)
+        L_0020: ldarg.0 
+        L_0021: ldfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_0026: callvirt instance void EmitTest.IByteReader::Read(int32, class [mscorlib]System.Action`1<uint8[]>, class [mscorlib]System.Action`1<class [mscorlib]System.Exception>)
+        L_002b: nop 
+        L_002c: ret 
+    }
+
+    .method private hidebysig instance void Field3_Readed(uint8[] val) cil managed
+    {
+        .maxstack 8
+        L_0000: nop 
+        L_0001: ldarg.0 
+        L_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0007: ldarg.1 
+        L_0008: call int32 EmitTest.XdrEncoding::DecodeInt32(uint8[])
+        L_000d: stfld int32 EmitTest.TreeNode::Field3
+        L_0012: ldarg.0 
+        L_0013: ldfld class [mscorlib]System.Action`1<class EmitTest.TreeNode> EmitTest.TreeNode_ReadContext::_completed
+        L_0018: ldarg.0 
+        L_0019: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_001e: callvirt instance void [mscorlib]System.Action`1<class EmitTest.TreeNode>::Invoke(!0)
+        L_0023: nop 
+        L_0024: ret 
+    }
+
+
+    .field private class [mscorlib]System.Action`1<class EmitTest.TreeNode> _completed
+
+    .field private class [mscorlib]System.Action`1<class [mscorlib]System.Exception> _excepted
+
+    .field private class EmitTest.IByteReader _reader
+
+    .field private class EmitTest.TreeNode _target
+
+}
+
+
+
+
+###################
+
+
+
+.class public auto ansi beforefieldinit TreeNode_ReadContext
+    extends [mscorlib]System.Object
+{
+    .method public hidebysig specialname rtspecialname instance void .ctor(class EmitTest.IByteReader reader, class [mscorlib]System.Action`1<class EmitTest.TreeNode> completed, class [mscorlib]System.Action`1<class [mscorlib]System.Exception> excepted) cil managed
+    {
+        .maxstack 5
+        L_0000: ldarg.0 
+        L_0001: call instance void [mscorlib]System.Object::.ctor()
+        L_0006: nop 
+        L_0007: nop 
+        L_0008: ldarg.0 
+        L_0009: newobj instance void EmitTest.TreeNode::.ctor()
+        L_000e: stfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0013: ldarg.0 
+        L_0014: ldarg.1 
+        L_0015: stfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_001a: ldarg.0 
+        L_001b: ldarg.2 
+        L_001c: stfld class [mscorlib]System.Action`1<class EmitTest.TreeNode> EmitTest.TreeNode_ReadContext::_completed
+        L_0021: ldarg.0 
+        L_0022: ldarg.3 
+        L_0023: stfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_0028: ldarg.0 
+        L_0029: ldfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_002e: ldc.i4.4 
+        L_002f: ldarg.0 
+        L_0030: ldftn instance void EmitTest.TreeNode_ReadContext::Field1_Readed(uint8[])
+        L_0036: newobj instance void [mscorlib]System.Action`1<uint8[]>::.ctor(object, native int)
+        L_003b: ldarg.0 
+        L_003c: ldfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_0041: callvirt instance void EmitTest.IByteReader::Read(int32, class [mscorlib]System.Action`1<uint8[]>, class [mscorlib]System.Action`1<class [mscorlib]System.Exception>)
+        L_0046: nop 
+        L_0047: nop 
+        L_0048: ret 
+    }
+
+    .method private hidebysig instance void Field1_Readed(uint8[] val) cil managed
+    {
+        .maxstack 8
+        L_0000: nop 
+        L_0001: ldarg.0 
+        L_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0007: ldarg.1 
+        L_0008: call int32 EmitTest.XdrEncoding::DecodeInt32(uint8[])
+        L_000d: stfld int32 EmitTest.TreeNode::Field1
+        L_0012: ldarg.0 
+        L_0013: ldfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_0018: ldc.i4.4 
+        L_0019: ldarg.0 
+        L_001a: ldftn instance void EmitTest.TreeNode_ReadContext::Field2_Readed(uint8[])
+        L_0020: newobj instance void [mscorlib]System.Action`1<uint8[]>::.ctor(object, native int)
+        L_0025: ldarg.0 
+        L_0026: ldfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_002b: callvirt instance void EmitTest.IByteReader::Read(int32, class [mscorlib]System.Action`1<uint8[]>, class [mscorlib]System.Action`1<class [mscorlib]System.Exception>)
+        L_0030: nop 
+        L_0031: ret 
+    }
+
+    .method private hidebysig instance void Field2_Readed(uint8[] val) cil managed
+    {
+        .maxstack 8
+        L_0000: nop 
+        L_0001: ldarg.0 
+        L_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0007: ldarg.1 
+        L_0008: call int32 EmitTest.XdrEncoding::DecodeInt32(uint8[])
+        L_000d: stfld int32 EmitTest.TreeNode::Field2
+        L_0012: ldarg.0 
+        L_0013: ldfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_0018: ldc.i4.4 
+        L_0019: ldarg.0 
+        L_001a: ldftn instance void EmitTest.TreeNode_ReadContext::Field3_Readed(uint8[])
+        L_0020: newobj instance void [mscorlib]System.Action`1<uint8[]>::.ctor(object, native int)
+        L_0025: ldarg.0 
+        L_0026: ldfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_002b: callvirt instance void EmitTest.IByteReader::Read(int32, class [mscorlib]System.Action`1<uint8[]>, class [mscorlib]System.Action`1<class [mscorlib]System.Exception>)
+        L_0030: nop 
+        L_0031: ret 
+    }
+
+    .method private hidebysig instance void Field3_Readed(uint8[] val) cil managed
+    {
+        .maxstack 8
+        L_0000: nop 
+        L_0001: ldarg.0 
+        L_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0007: ldarg.1 
+        L_0008: call int32 EmitTest.XdrEncoding::DecodeInt32(uint8[])
+        L_000d: stfld int32 EmitTest.TreeNode::Field3
+        L_0012: ldarg.0 
+        L_0013: ldfld class [mscorlib]System.Action`1<class EmitTest.TreeNode> EmitTest.TreeNode_ReadContext::_completed
+        L_0018: ldarg.0 
+        L_0019: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_001e: callvirt instance void [mscorlib]System.Action`1<class EmitTest.TreeNode>::Invoke(!0)
+        L_0023: nop 
+        L_0024: ret 
+    }
+
+
+    .field private class [mscorlib]System.Action`1<class EmitTest.TreeNode> _completed
+
+    .field private class [mscorlib]System.Action`1<class [mscorlib]System.Exception> _excepted
+
+    .field private class EmitTest.IByteReader _reader
+
+    .field private class EmitTest.TreeNode _target
+
+}
+
+
+
+
+
+
+
+
+
+###################
+
+
+.class public auto ansi beforefieldinit TreeNode_ReadContext
+    extends [mscorlib]System.Object
+{
+    .method public hidebysig specialname rtspecialname instance void .ctor(class EmitTest.IByteReader reader, class [mscorlib]System.Action`1<class EmitTest.TreeNode> completed, class [mscorlib]System.Action`1<class [mscorlib]System.Exception> excepted) cil managed
+    {
+        .maxstack 5
+        L_0000: ldarg.0 
+        L_0001: call instance void [mscorlib]System.Object::.ctor()
+        L_0006: nop 
+        L_0007: nop 
+        L_0008: ldarg.0 
+        L_0009: newobj instance void EmitTest.TreeNode::.ctor()
+        L_000e: stfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0013: ldarg.0 
+        L_0014: ldarg.1 
+        L_0015: stfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_001a: ldarg.0 
+        L_001b: ldarg.2 
+        L_001c: stfld class [mscorlib]System.Action`1<class EmitTest.TreeNode> EmitTest.TreeNode_ReadContext::_completed
+        L_0021: ldarg.0 
+        L_0022: ldarg.3 
+        L_0023: stfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_0028: ldarg.0 
+        L_0029: ldfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_002e: ldc.i4.4 
+        L_002f: ldarg.0 
+        L_0030: ldftn instance void EmitTest.TreeNode_ReadContext::Field1_Readed(uint8[])
+        L_0036: newobj instance void [mscorlib]System.Action`1<uint8[]>::.ctor(object, native int)
+        L_003b: ldarg.0 
+        L_003c: ldfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_0041: callvirt instance void EmitTest.IByteReader::Read(int32, class [mscorlib]System.Action`1<uint8[]>, class [mscorlib]System.Action`1<class [mscorlib]System.Exception>)
+        L_0046: nop 
+        L_0047: nop 
+        L_0048: ret 
+    }
+
+    .method private hidebysig instance void Field1_Readed(uint8[] val) cil managed
+    {
+        .maxstack 8
+        L_0000: nop 
+        L_0001: ldarg.0 
+        L_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0007: ldarg.1 
+        L_0008: stfld uint8[] EmitTest.TreeNode::Field1
+        L_000d: ldarg.0 
+        L_000e: ldfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_0013: ldc.i4.4 
+        L_0014: ldarg.0 
+        L_0015: ldftn instance void EmitTest.TreeNode_ReadContext::Field2_Readed(uint8[])
+        L_001b: newobj instance void [mscorlib]System.Action`1<uint8[]>::.ctor(object, native int)
+        L_0020: ldarg.0 
+        L_0021: ldfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_0026: callvirt instance void EmitTest.IByteReader::Read(int32, class [mscorlib]System.Action`1<uint8[]>, class [mscorlib]System.Action`1<class [mscorlib]System.Exception>)
+        L_002b: nop 
+        L_002c: ret 
+    }
+
+    .method private hidebysig instance void Field2_Readed(uint8[] val) cil managed
+    {
+        .maxstack 8
+        L_0000: nop 
+        L_0001: ldarg.0 
+        L_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0007: ldarg.1 
+        L_0008: stfld uint8[] EmitTest.TreeNode::Field2
+        L_000d: ldarg.0 
+        L_000e: ldfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
+        L_0013: ldc.i4.4 
+        L_0014: ldarg.0 
+        L_0015: ldftn instance void EmitTest.TreeNode_ReadContext::Field3_Readed(uint8[])
+        L_001b: newobj instance void [mscorlib]System.Action`1<uint8[]>::.ctor(object, native int)
+        L_0020: ldarg.0 
+        L_0021: ldfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
+        L_0026: callvirt instance void EmitTest.IByteReader::Read(int32, class [mscorlib]System.Action`1<uint8[]>, class [mscorlib]System.Action`1<class [mscorlib]System.Exception>)
+        L_002b: nop 
+        L_002c: ret 
+    }
+
+    .method private hidebysig instance void Field3_Readed(uint8[] val) cil managed
+    {
+        .maxstack 8
+        L_0000: nop 
+        L_0001: ldarg.0 
+        L_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0007: ldarg.1 
+        L_0008: stfld uint8[] EmitTest.TreeNode::Field3
+        L_000d: ldarg.0 
+        L_000e: ldfld class [mscorlib]System.Action`1<class EmitTest.TreeNode> EmitTest.TreeNode_ReadContext::_completed
+        L_0013: ldarg.0 
+        L_0014: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
+        L_0019: callvirt instance void [mscorlib]System.Action`1<class EmitTest.TreeNode>::Invoke(!0)
+        L_001e: nop 
+        L_001f: ret 
+    }
+
+
+    .field private class [mscorlib]System.Action`1<class EmitTest.TreeNode> _completed
+
+    .field private class [mscorlib]System.Action`1<class [mscorlib]System.Exception> _excepted
+
+    .field private class EmitTest.IByteReader _reader
+
+    .field private class EmitTest.TreeNode _target
+
+}
+
