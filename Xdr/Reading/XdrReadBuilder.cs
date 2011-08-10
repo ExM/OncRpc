@@ -46,6 +46,10 @@ namespace Xdr
 		
 		internal static Type CreateContextType(Type targetType, List<Type> dependency)
 		{
+			if (targetType == typeof(Int32))
+				return typeof(Int32_ReadContext);
+
+
 			throw new NotImplementedException();
 			
 			//return null;

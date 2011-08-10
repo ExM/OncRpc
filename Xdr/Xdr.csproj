@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -37,6 +37,9 @@
     <Compile Include="Attributes\XdrFieldAttribute.cs" />
     <Compile Include="Attributes\XdrUnionAttribute.cs" />
     <Compile Include="Attributes\XdrCaseAttribute.cs" />
+    <Compile Include="Reading\UnsignedInteger_ReadContext.cs" />
+    <Compile Include="Reading\VarLOpaqueData_ReadContext.cs" />
+    <Compile Include="Reading\Integer_ReadContext.cs" />
     <Compile Include="XdrReader.cs" />
     <Compile Include="IByteReader.cs" />
     <Compile Include="IByteWriter.cs" />
@@ -47,7 +50,5 @@
     <Compile Include="Reading\TypeCache.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Reading\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

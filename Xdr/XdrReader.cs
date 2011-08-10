@@ -11,17 +11,20 @@ namespace Xdr
 			_reader = XdrReadBuilder.Build<T>();
 		}
 
-		public static void Read(IByteReader reader, Action<T> completed, Action<Exception> exceped)
+		public static void Read(IByteReader reader, Action<T> completed, Action<Exception> excepted)
 		{
-			_reader(reader, completed, exceped);
+			_reader(reader, completed, excepted);
+		}
+
+		public static void Read(IByteReader reader, uint length, bool allowLess, Action<T[]> completed, Action<Exception> excepted)
+		{
+			
+
+
+
 		}
 		
-		/*
-		public static void ReadInt32(IByteReader reader, Action<int> completed, Action<Exception> exceped)
-		{
-			reader.Read(4, (buff) => completed(XdrEncoding.DecodeInt32(buff)), exceped);
-		}
-		*/
+
 	}
 }
 
