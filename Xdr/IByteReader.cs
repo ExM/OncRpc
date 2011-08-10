@@ -4,7 +4,7 @@ namespace Xdr
 {
 	public interface IByteReader
 	{
-		void Read(int count, Action<byte[]> completed, Action<Exception> excepted);
+		void Read(uint count, Action<byte[]> completed, Action<Exception> excepted);
 	}
 }
 

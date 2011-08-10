@@ -29,13 +29,40 @@ namespace Xdr
 			{
 				if(TypeCache<T>.ReadContextType == null)
 				{
+					List<Type> dependency = new List<Type>();
 					try
 					{
-						TypeCache<T>.ReadContextType = CreateContextType(typeof(T));
+						TypeCache<T>.ReadContextType = CreateContextType(typeof(T), dependency);
 					}
 					catch(Exception ex)
 					{
 						TypeCache<T>.ReadContextExcepted = ex;
+						throw;
+					}
+					
+					try
+					{
+						while(dependency.Count != 0)
+						{
+							Type depType = dependency[0];
+							dependency.RemoveAt(0);
+							if(CacheTypeLoaded(depType))
+								continue;
+							try
+							{
+								Type depContType = CreateContextType(depType, dependency);
+								SetCacheType(depType, depContType);
+							}
+							catch(Exception ex)
+							{
+								ErrorCacheType(depType, ex);
+								throw;
+							}
+						}
+					}
+					catch(Exception ex)
+					{
+						TypeCache<T>.ReadContextExcepted = new NotImplementedException("dependency fail", ex);
 						throw;
 					}
 				}
@@ -47,12 +74,13 @@ namespace Xdr
 		internal static Type CreateContextType(Type targetType, List<Type> dependency)
 		{
 			if (targetType == typeof(Int32))
-				return typeof(Int32_ReadContext);
-
+				return typeof(ReadContexts.Integer);
+			if (targetType == typeof(UInt32))
+				return typeof(ReadContexts.UInteger);
+			
+			//TODO: structure read context generate
 
 			throw new NotImplementedException();
-			
-			//return null;
 		}
 		
 		public static bool CacheTypeLoaded(Type targetType)

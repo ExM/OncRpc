@@ -12,8 +12,12 @@ namespace Xdr
 			_stream = stream;
 		}
 
-		public void Read(int count, Action<byte[]> completed, Action<Exception> excepted)
+		public void Read(uint uicount, Action<byte[]> completed, Action<Exception> excepted)
 		{
+			if(uicount >= int.MaxValue)
+				throw new ArgumentOutOfRangeException("uicount");
+			int count = (int)uicount;
+			
 			byte[] result = null;
 			try
 			{

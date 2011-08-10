@@ -26,6 +26,15 @@ namespace Xdr
 			return b;
 		}
 		
+		/// <summary>
+		/// Decodes the uint32.
+		/// http://tools.ietf.org/html/rfc4506#section-4.2
+		/// </summary>
+		public static uint DecodeUInt32(byte[] buff)
+		{
+			return (uint)((buff[0] << 0x18) | (buff[1] << 0x10) | (buff[2] << 0x08) | buff[3]);
+		}
+		
 	}
 }
 

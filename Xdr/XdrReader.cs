@@ -24,6 +24,14 @@ namespace Xdr
 
 		}
 		
+		public static void Read(IByteReader reader, Action<uint> length, Action<T> item, Action<Exception> excepted)
+		{
+			
+
+
+
+		}
+		
 
 	}
 }
