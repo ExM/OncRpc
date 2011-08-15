@@ -39,5 +39,10 @@ namespace EmitTest
 			_target.Field3 = XdrEncoding.DecodeInt32(val);
 			_completed(_target);
 		}
+		
+		public static void Read(IByteReader reader, Action<TreeNode> completed, Action<Exception> excepted)
+		{
+			new TreeNode_ReadContext(reader, completed, excepted);
+		}
 	}
 }

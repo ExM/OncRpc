@@ -4,10 +4,10 @@ namespace Xdr.Example
 {
 	public class IntTree
 	{
-		[XdrField(Order = 0)]
+		[XdrField(0)]
 		public int Field1 {get; set;}
 
-		[XdrField(Order = 1)]
+		[XdrField(1)]
 		public int Field2 { get; set; }
 	}
 }

@@ -26,7 +26,7 @@ namespace Xdr.Example
 		/// <summary>
 		/// name of file
 		/// </summary>
-		[XdrField(Order = 0, MaxLength = MaxNameLen)]
+		[XdrField(0), VarLength(MaxNameLen)]
 		public string FileName {get; set;}
 		
 		/// <summary>
@@ -40,26 +40,26 @@ namespace Xdr.Example
 		/// data creator
 		/// </summary>
 		[XdrCase("Type", FileKind.Data)]
-		[XdrField(MaxLength = MaxNameLen)]
+		[VarLength(MaxNameLen)]
 		public string Creator {get; set;}
 		
 		/// <summary>
 		/// data creator
 		/// </summary>
 		[XdrCase("Type", FileKind.Exec)]
-		[XdrField(MaxLength = MaxNameLen)]
+		[VarLength(MaxNameLen)]
 		public string Interpretor {get; set;}
 		
 		/// <summary>
 		/// owner of file
 		/// </summary>
-		[XdrField(Order = 2, MaxLength = MaxUserName)]
+		[XdrField(2), VarLength(MaxUserName)]
 		public string Owner {get; set;}
 		
 		/// <summary>
 		/// file data
 		/// </summary>
-		[XdrField(Order = 3, MaxLength = MaxFileLen)]
+		[XdrField(3), VarLength(MaxFileLen)]
 		public byte[] Data {get; set;}
 	}
 }
