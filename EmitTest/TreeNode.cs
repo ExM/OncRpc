@@ -9,7 +9,7 @@ namespace EmitTest
 	{
 		public int Field1;
 
-		public int Field2;
+		public int Field2 {get; set;}
 
 		public int Field3;
 	}

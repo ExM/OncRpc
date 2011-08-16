@@ -26,6 +26,8 @@ namespace Xdr
 				while(true)
 				{
 					int read = _stream.Read(result, offset, count);
+					if (read == 0)
+						throw new InvalidOperationException("empty data");
 					if(read >= count)
 						break;
 					count -= read;

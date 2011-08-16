@@ -19,7 +19,8 @@ namespace Xdr.ReadContexts
 			_reader = reader;
 			_maxLen = maxLen;
 			_completed = completed;
-			_reader.Read(4, Length_Readed, excepted);
+			_excepted = excepted;
+			_reader.Read(4, Length_Readed, _excepted);
 		}
 
 		private void Length_Readed(byte[] val)
