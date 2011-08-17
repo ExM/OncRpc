@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseReaderTest.cs" />
+    <Compile Include="Example\FileType.cs" />
     <Compile Include="TestDtos\IntTreeTest.cs" />
     <Compile Include="Example\CompleteFile.cs" />
     <Compile Include="Example\FileKind.cs" />

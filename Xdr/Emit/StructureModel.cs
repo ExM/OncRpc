@@ -8,7 +8,7 @@ namespace Xdr.Emit
 	public class StructureModel
 	{
 		public Type TargetType {get; private set;}
-		private SortedList<uint, IXdrFieldDesc> _fields = new SortedList<uint, IXdrFieldDesc>();
+		private SortedList<uint, BaseFieldDesc> _fields = new SortedList<uint, BaseFieldDesc>();
 		
 		public StructureModel(Type t)
 		{
@@ -16,47 +16,42 @@ namespace Xdr.Emit
 			
 			foreach(var fi in TargetType.GetFields().Where((fi) => fi.IsPublic && !fi.IsStatic))
 			{
-				XdrFieldAttribute fAttr = GetAttr<XdrFieldAttribute>(fi);
+				FieldAttribute fAttr = GetAttr<FieldAttribute>(fi);
 				if(fAttr == null)
 					continue;
 				
 				if(_fields.ContainsKey(fAttr.Order))
 					throw new InvalidOperationException("duplicate order " + fAttr.Order);
 
-				_fields.Add(fAttr.Order, FieldTypeResolve(fi));
+				_fields.Add(fAttr.Order, FieldTypeResolve(fi.FieldType, fi));
 			}
 
 			foreach (var pi in TargetType.GetProperties().Where((pi) => pi.CanWrite && pi.CanRead))
 			{
-				XdrFieldAttribute fAttr = GetAttr<XdrFieldAttribute>(pi);
+				FieldAttribute fAttr = GetAttr<FieldAttribute>(pi);
 				if (fAttr == null)
 					continue;
 
 				if (_fields.ContainsKey(fAttr.Order))
 					throw new InvalidOperationException("duplicate order " + fAttr.Order);
 
-				_fields.Add(fAttr.Order, PropertyTypeResolve(pi));
+				_fields.Add(fAttr.Order, FieldTypeResolve(pi.PropertyType, pi));
 			}
 		}
 
-		public static IXdrFieldDesc FieldTypeResolve(FieldInfo fi)
+		public static BaseFieldDesc FieldTypeResolve(Type t, MemberInfo mi)
 		{
-			Type t = fi.FieldType;
 			if (t == typeof(Int32))
-				return new Int32FieldDesc(fi);
+				return new Int32FieldDesc(mi);
 			if (t == typeof(UInt32))
-				return new UInt32FieldDesc(fi);
+				return new UInt32FieldDesc(mi);
 
-
-			throw new NotSupportedException();
-		}
-
-		public static IXdrFieldDesc PropertyTypeResolve(PropertyInfo pi)
-		{
-			Type t = pi.PropertyType;
-			if (t == typeof(Int32))
-				return new Int32PropDesc(pi);
-
+			if (t == typeof(string))
+			{
+				VarAttribute vAttr = GetAttr<VarAttribute>(mi);
+				uint max = vAttr == null ? uint.MaxValue : vAttr.MaxLength;
+				return new StringFieldDesc(mi, max);
+			}
 
 			throw new NotSupportedException();
 		}
@@ -67,7 +62,7 @@ namespace Xdr.Emit
 				.FirstOrDefault() as T;
 		}
 
-		public IList<IXdrFieldDesc> Fields
+		public IList<BaseFieldDesc> Fields
 		{
 			get
 			{

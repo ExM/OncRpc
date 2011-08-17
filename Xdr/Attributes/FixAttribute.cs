@@ -3,15 +3,15 @@ using System;
 namespace Xdr
 {
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
-	public class VarLengthAttribute: Attribute
+	public class FixAttribute: Attribute
 	{
-		public uint MaxLength {get; private set;}
+		public uint Length {get; private set;}
 		
-		public VarLengthAttribute(uint maxLength)
+		public FixAttribute(uint length)
 		{
-			if(maxLength == 0)
+			if(length == 0)
 				throw new ArgumentException("length must be greater than zero");
-			MaxLength = maxLength;
+			Length = length;
 		}
 	}
 }

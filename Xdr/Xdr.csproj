@@ -35,12 +35,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Attributes\XdrFieldAttribute.cs" />
-    <Compile Include="Attributes\XdrUnionAttribute.cs" />
-    <Compile Include="Attributes\XdrCaseAttribute.cs" />
-    <Compile Include="Emit\FieldDescriptions\Int32PropDesc.cs" />
+    <Compile Include="Attributes\FieldAttribute.cs" />
+    <Compile Include="Attributes\SwitchAttribute.cs" />
+    <Compile Include="Attributes\CaseAttribute.cs" />
+    <Compile Include="Emit\FieldDescriptions\BaseFieldDesc.cs" />
+    <Compile Include="Emit\FieldDescriptions\StringFieldDesc.cs" />
     <Compile Include="Emit\FieldDescriptions\UInt32FieldDesc.cs" />
-    <Compile Include="Emit\IXdrFieldDesc.cs" />
     <Compile Include="Emit\CustomContextBuilder.cs" />
     <Compile Include="XdrReader.cs" />
     <Compile Include="IByteReader.cs" />
@@ -58,8 +58,8 @@
     <Compile Include="ReadContexts\StringData.cs" />
     <Compile Include="ReadContexts\CustomTypeCollection.cs" />
     <Compile Include="Emit\StructureModel.cs" />
-    <Compile Include="Attributes\VarLengthAttribute.cs" />
-    <Compile Include="Attributes\FixLengthAttribute.cs" />
+    <Compile Include="Attributes\VarAttribute.cs" />
+    <Compile Include="Attributes\FixAttribute.cs" />
     <Compile Include="Emit\FieldDescriptions\Int32FieldDesc.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

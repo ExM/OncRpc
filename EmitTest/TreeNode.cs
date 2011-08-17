@@ -9,8 +9,8 @@ namespace EmitTest
 	{
 		public int Field1;
 
-		public int Field2 {get; set;}
+		public string Field2 {get; set;}
 
-		public int Field3;
+		public string Field3;
 	}
 }

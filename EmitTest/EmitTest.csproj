@@ -41,7 +41,6 @@
     <Compile Include="ByteReader.cs" />
     <Compile Include="TreeNode2_ReadContext.cs" />
     <Compile Include="TreeNode2.cs" />
-    <Compile Include="IByteReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="TreeNode.cs" />
     <Compile Include="TreeNode_ReadContext.cs" />
@@ -53,6 +52,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xdr\Xdr.csproj">
+      <Project>{E9D7D0A1-F900-44B1-A649-98D88846610C}</Project>
+      <Name>Xdr</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

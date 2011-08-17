@@ -6,28 +6,29 @@ using System.Reflection.Emit;
 
 namespace Xdr.Emit
 {
-	public class Int32PropDesc: IXdrFieldDesc
+	public class StringFieldDesc : BaseFieldDesc
 	{
-		private PropertyInfo _pi;
+		private uint _maxLen;
 
-		public Int32PropDesc(PropertyInfo pi)
+		public StringFieldDesc(MemberInfo mi, uint maxLen)
+			:base(mi)
 		{
-			_pi = pi;
+			_maxLen = maxLen;
 		}
 
-		public MethodBuilder CreateRead(TypeBuilder typeBuilder, FieldBuilder targetField, out ILGenerator il)
+		public override MethodBuilder CreateRead(TypeBuilder typeBuilder, FieldBuilder targetField, out ILGenerator il)
 		{
-			MethodBuilder mb = typeBuilder.DefineMethod(_pi.Name + "_Readed", MethodAttributes.Private, null, new Type[] { typeof(byte[]) });
+			MethodBuilder mb = typeBuilder.DefineMethod(_mi.Name + "_Readed", MethodAttributes.Private, null, new Type[] { typeof(byte[]) });
 			il = mb.GetILGenerator();
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldfld, targetField);
 			il.Emit(OpCodes.Ldarg_1);
-			il.Emit(OpCodes.Call, typeof(XdrEncoding).GetMethod("DecodeInt32", new Type[] { typeof(byte[]) }));
-			il.Emit(OpCodes.Callvirt, _pi.GetSetMethod());
+			il.Emit(OpCodes.Call, typeof(XdrEncoding).GetMethod("DecodeUInt32", new Type[] { typeof(byte[]) }));
+			EmitSet(il);
 			return mb;
 		}
 
-		public void AppendCall(ILGenerator il, FieldBuilder readerField, MethodBuilder nextMethod, FieldBuilder exceptedField, Func<Type, Delegate> dependencyResolver)
+		public override void AppendCall(ILGenerator il, FieldBuilder readerField, MethodBuilder nextMethod, FieldBuilder exceptedField, Func<Type, Delegate> dependencyResolver)
 		{
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldfld, readerField);

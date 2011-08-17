@@ -26,40 +26,25 @@ namespace Xdr.Example
 		/// <summary>
 		/// name of file
 		/// </summary>
-		[XdrField(0), VarLength(MaxNameLen)]
+		[Field(0), Var(MaxNameLen)]
 		public string FileName {get; set;}
 		
 		/// <summary>
 		/// info about file
 		/// </summary>
-		[XdrUnion(Order = 1)]
-		[XdrCase(FileKind.Text)] // no extra information
-		public FileKind Type {get; set;}
-		
-		/// <summary>
-		/// data creator
-		/// </summary>
-		[XdrCase("Type", FileKind.Data)]
-		[VarLength(MaxNameLen)]
-		public string Creator {get; set;}
-		
-		/// <summary>
-		/// data creator
-		/// </summary>
-		[XdrCase("Type", FileKind.Exec)]
-		[VarLength(MaxNameLen)]
-		public string Interpretor {get; set;}
+		[Field(1)]
+		public FileType Type {get; set;}
 		
 		/// <summary>
 		/// owner of file
 		/// </summary>
-		[XdrField(2), VarLength(MaxUserName)]
+		[Field(2), Var(MaxUserName)]
 		public string Owner {get; set;}
 		
 		/// <summary>
 		/// file data
 		/// </summary>
-		[XdrField(3), VarLength(MaxFileLen)]
+		[Field(3), Var(MaxFileLen)]
 		public byte[] Data {get; set;}
 	}
 }
