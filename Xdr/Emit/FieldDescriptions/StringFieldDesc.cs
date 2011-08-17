@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Collections;
 using System.Reflection.Emit;
+using Xdr.ReadContexts;
 
 namespace Xdr.Emit
 {
@@ -18,12 +19,11 @@ namespace Xdr.Emit
 
 		public override MethodBuilder CreateRead(TypeBuilder typeBuilder, FieldBuilder targetField, out ILGenerator il)
 		{
-			MethodBuilder mb = typeBuilder.DefineMethod(_mi.Name + "_Readed", MethodAttributes.Private, null, new Type[] { typeof(byte[]) });
+			MethodBuilder mb = typeBuilder.DefineMethod(_mi.Name + "_Readed", MethodAttributes.Private, null, new Type[] { typeof(string) });
 			il = mb.GetILGenerator();
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldfld, targetField);
 			il.Emit(OpCodes.Ldarg_1);
-			il.Emit(OpCodes.Call, typeof(XdrEncoding).GetMethod("DecodeUInt32", new Type[] { typeof(byte[]) }));
 			EmitSet(il);
 			return mb;
 		}
@@ -32,13 +32,14 @@ namespace Xdr.Emit
 		{
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldfld, readerField);
-			il.Emit(OpCodes.Ldc_I4_4); // arg 0 = 4
+			il.Emit(OpCodes.Ldc_I4, (int)_maxLen);
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldftn, nextMethod);
-			il.Emit(OpCodes.Newobj, typeof(Action<byte[]>).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
+			il.Emit(OpCodes.Newobj, typeof(Action<string>).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldfld, exceptedField);
-			il.Emit(OpCodes.Callvirt, typeof(IByteReader).GetMethod("Read", new Type[] { typeof(uint), typeof(Action<byte[]>), typeof(Action<Exception>) }));
+			il.Emit(OpCodes.Newobj, typeof(StringData).GetConstructor(new Type[] { typeof(IByteReader), typeof(uint), typeof(Action<string>), typeof(Action<Exception>) }));
+			il.Emit(OpCodes.Pop);
 		}
 	}
 }

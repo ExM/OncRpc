@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.IO;
 
 namespace Xdr
@@ -14,6 +15,12 @@ namespace Xdr
 
 		public void Read(uint uicount, Action<byte[]> completed, Action<Exception> excepted)
 		{
+			if(uicount == 0)
+			{
+				ThreadPool.QueueUserWorkItem((arg) => completed(new byte[0]));
+				return;
+			}
+			
 			if(uicount >= int.MaxValue)
 				throw new ArgumentOutOfRangeException("uicount");
 			int count = (int)uicount;

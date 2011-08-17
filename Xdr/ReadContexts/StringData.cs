@@ -26,21 +26,22 @@ namespace Xdr.ReadContexts
 		private void Length_Readed(byte[] val)
 		{
 			_len = XdrEncoding.DecodeUInt32(val);
-		
-			if (_len > _maxLen)
-				_excepted(new InvalidOperationException("unexpected length"));
-			else
+			
+			if(_len == 0)
+				_completed(string.Empty);
+			else if (_len <= _maxLen)
 				_reader.Read(_len, Target_Readed, _excepted);
+			else
+				_excepted(new InvalidOperationException("unexpected length"));
 		}
 		
 		private void Target_Readed(byte[] val)
 		{
 			_target = Encoding.ASCII.GetString(val);
-			
 			if(_len % 4 == 0)
 				_completed(_target);
 			else
-				_reader.Read((uint)(_len % 4), Tail_Readed, _excepted);
+				_reader.Read((uint)(4 - _len % 4), Tail_Readed, _excepted);
 		}
 		
 		private void Tail_Readed(byte[] val)
