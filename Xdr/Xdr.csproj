@@ -38,10 +38,13 @@
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Attributes\SwitchAttribute.cs" />
     <Compile Include="Attributes\CaseAttribute.cs" />
+    <Compile Include="IWriter.cs" />
+    <Compile Include="IReader.cs" />
     <Compile Include="Emit\FieldDescriptions\BaseFieldDesc.cs" />
     <Compile Include="Emit\FieldDescriptions\StringFieldDesc.cs" />
     <Compile Include="Emit\FieldDescriptions\UInt32FieldDesc.cs" />
     <Compile Include="Emit\CustomContextBuilder.cs" />
+    <Compile Include="ITranslatorFactory.cs" />
     <Compile Include="XdrReader.cs" />
     <Compile Include="IByteReader.cs" />
     <Compile Include="IByteWriter.cs" />
