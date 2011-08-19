@@ -12,11 +12,18 @@ namespace EmitTest
 	{
 		static void Main(string[] args)
 		{
-			Type t = Create();
+			/*
+			Type t1 = Create();
 
-			object o = Activator.CreateInstance(t, new ByteReader(), (Action<TreeNode>)Completed, (Action<Exception>)Excepted);
+			object o1 = Activator.CreateInstance(t1, new ByteReader(), (Action<TreeNode>)Completed, (Action<Exception>)Excepted);
+
+			Type t2 = Create();
+
+			object o2 = Activator.CreateInstance(t2, new ByteReader(), (Action<TreeNode>)Completed, (Action<Exception>)Excepted);
+			 * */
 
 
+			Type t1 = CreateTypeCache();
 		}
 
 		public static void Completed(TreeNode val)
@@ -29,6 +36,79 @@ namespace EmitTest
 
 		}
 
+
+		public static Type CreateTypeCache()
+		{
+			AssemblyName asmName = new AssemblyName("DynamicAssembly");
+
+			// To generate a persistable assembly, specify AssemblyBuilderAccess.RunAndSave.
+			AssemblyBuilder asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.RunAndSave);
+
+			// Generate a persistable single-module assembly.
+			ModuleBuilder modBuilder = asmBuilder.DefineDynamicModule("TypeCache.dll", "TypeCache.dll");
+
+			TypeBuilder typeBuilder = modBuilder.DefineType("TypeCache", TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Abstract | TypeAttributes.Sealed);
+
+			GenericTypeParameterBuilder gType = typeBuilder.DefineGenericParameters("T")[0];
+
+			//public static Action<IByteReader, Action<T>, Action<Exception>> Read = null;
+			FieldBuilder fb_read = typeBuilder.DefineField("Read",
+				typeof(Action<,,>).MakeGenericType(
+					typeof(IByteReader),
+					typeof(Action<>).MakeGenericType(gType),
+					typeof(Action<Exception>)
+				),
+				FieldAttributes.Public | FieldAttributes.Static);
+
+			//public static Action<IByteReader, uint, bool, Action<T>, Action<Exception>> ReadArray = null;
+			FieldBuilder fb_readArray = typeBuilder.DefineField("ReadArray",
+				typeof(Action<,,,,>).MakeGenericType(
+					typeof(IByteReader),
+					typeof(uint),
+					typeof(bool),
+					typeof(Action<>).MakeGenericType(gType), // Action<T>
+					typeof(Action<Exception>)
+				),
+				FieldAttributes.Public | FieldAttributes.Static);
+
+
+			MethodBuilder mb_unknownType = typeBuilder.DefineMethod("UnknownType", MethodAttributes.Private | MethodAttributes.Static, typeof(Exception), new Type[0]);
+			ILGenerator il_unknownType = mb_unknownType.GetILGenerator();
+			LocalBuilder lb_msg = il_unknownType.DeclareLocal(typeof(string));
+			il_unknownType.Emit(OpCodes.Ldstr, "unknown type `{0}'");
+			il_unknownType.Emit(OpCodes.Ldtoken, gType);
+			il_unknownType.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"));
+			il_unknownType.Emit(OpCodes.Callvirt, typeof(Type).GetProperty("FullName").GetGetMethod());
+			il_unknownType.Emit(OpCodes.Call, typeof(String).GetMethod("Format", new Type[]{typeof(string), typeof(object)}));
+			il_unknownType.Emit(OpCodes.Stloc_0);
+			il_unknownType.Emit(OpCodes.Ldloc_0);
+			il_unknownType.Emit(OpCodes.Newobj, typeof(NotImplementedException).GetConstructor(new Type[]{typeof(string)}));
+			il_unknownType.Emit(OpCodes.Ret);
+
+
+
+		//private static void ReadStub(IByteReader reader, Action<T> completed, Action<Exception> excepted)
+		//{
+		//	excepted(UnknownType());
+		//}
+
+		/*
+	IL_0000: ldarg.2
+	IL_0001: call class [mscorlib]System.Exception class EmitTest.TypeCacheExample`1<!T>::UnknownType()
+	IL_0006: callvirt instance void class [mscorlib]System.Action`1<class [mscorlib]System.Exception>::Invoke(!0)
+	IL_000b: ret
+		*/
+
+
+
+			
+			Type type = typeBuilder.CreateType();
+
+			asmBuilder.Save("TypeCache.dll");
+			return type;
+		}
+
+
 		public static Type Create()
 		{
 			AssemblyName asmName = new AssemblyName("DynamicAssembly");
@@ -37,7 +117,7 @@ namespace EmitTest
 			AssemblyBuilder asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.RunAndSave);
 
 			// Generate a persistable single-module assembly.
-			ModuleBuilder modBuilder = asmBuilder.DefineDynamicModule(asmName.Name);
+			ModuleBuilder modBuilder = asmBuilder.DefineDynamicModule("myAsm.dll", "myAsm.dll");
 
 			TypeBuilder typeBuilder = modBuilder.DefineType("TreeNode_ReadContext", TypeAttributes.Public | TypeAttributes.Class);
 
@@ -50,7 +130,7 @@ namespace EmitTest
 			//private Action<Exception> _excepted;
 			FieldBuilder fb_excepted = typeBuilder.DefineField("_excepted", typeof(Action<Exception>), FieldAttributes.Private);
 
-			
+			/*
 
 			//private void Field3_Readed(byte[] val)
 			MethodBuilder mb3 = typeBuilder.DefineMethod("Field3_Readed", MethodAttributes.Private, null, new Type[] { typeof(byte[]) });
@@ -105,7 +185,7 @@ namespace EmitTest
 			ilGen1.Emit(OpCodes.Callvirt, typeof(IByteReader).GetMethod("Read", new Type[] { typeof(int), typeof(Action<byte[]>), typeof(Action<Exception>) }));
 			ilGen1.Emit(OpCodes.Ret);
 
-			
+			*/
 
 			ConstructorBuilder cb = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, new Type[] { typeof(IByteReader), typeof(Action<TreeNode>), typeof(Action<Exception>) });
 			ILGenerator ilGenCb = cb.GetILGenerator();
@@ -125,6 +205,7 @@ namespace EmitTest
 			ilGenCb.Emit(OpCodes.Ldarg_3);
 			ilGenCb.Emit(OpCodes.Stfld, fb_excepted); // stfld class [mscorlib]System.Action`1<class [mscorlib]System.Exception> EmitTest.TreeNode_ReadContext::_excepted
 			
+			/*
 			ilGenCb.Emit(OpCodes.Ldarg_0);
 			ilGenCb.Emit(OpCodes.Ldfld, fb_reader); //ldfld class EmitTest.IByteReader EmitTest.TreeNode_ReadContext::_reader
 			ilGenCb.Emit(OpCodes.Ldc_I4_4);
@@ -134,8 +215,11 @@ namespace EmitTest
 			ilGenCb.Emit(OpCodes.Ldarg_0);
 			ilGenCb.Emit(OpCodes.Ldfld, fb_excepted);
 			ilGenCb.Emit(OpCodes.Callvirt, typeof(IByteReader).GetMethod("Read", new Type[] { typeof(int), typeof(Action<byte[]>), typeof(Action<Exception>) }));
-			
+			*/
+
 			ilGenCb.Emit(OpCodes.Ret);
+			
+			
 			
 			Type type = typeBuilder.CreateType();
 			

@@ -27,35 +27,13 @@ namespace EmitTest
 		private void Field1_Readed(byte[] val)
 		{
 			_target.Field1 = XdrEncoding.DecodeInt32(val);
-
 			new StringData(_reader, 29, Field2_Readed, _excepted);
 		}
-		/*
-		IL_0000: ldarg.0
-		IL_0001: ldfld EmitTest.TreeNode EmitTest.TreeNode_ReadContext._target
-		IL_0006: ldarg.1
-		IL_0007: call System.Int32 EmitTest.XdrEncoding.DecodeInt32(System.Byte[])
-		IL_000C: stfld System.Int32 EmitTest.TreeNode.Field1
-		
-		IL_0011: ldarg.0
-		IL_0012: ldfld Xdr.IByteReader EmitTest.TreeNode_ReadContext._reader
-		IL_0017: ldc.i4.s 29
-		IL_0019: ldarg.0
-		IL_001A: ldftn System.Void EmitTest.TreeNode_ReadContext.Field2_Readed(System.String)
-		IL_0020: newobj System.Action`1System.String(System.Object,System.IntPtr)
-		IL_0025: ldarg.0
-		IL_0026: ldfld System.Action`1System.Exception EmitTest.TreeNode_ReadContext._excepted
-		IL_002B: newobj Xdr.ReadContexts.StringData(Xdr.IByteReader,System.UInt32,System.Action`1System.String,System.Action`1System.Exception)
-		IL_0030: pop
-		IL_0031: ret
-		*/
-		
-		
+
 		private void Field2_Readed(string val)
 		{
 			_target.Field2 = val;
-			
-			new StringData(_reader, uint.MaxValue - 20, Field3_Readed, _excepted);
+			new StringData(_reader, 31, Field3_Readed, _excepted);
 		}
 		/*
 		IL_0000: nop
@@ -63,7 +41,6 @@ namespace EmitTest
 		IL_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
 		IL_0007: ldarg.1
 		IL_0008: callvirt instance void EmitTest.TreeNode::set_Field2(string)
-		
 		IL_000d: nop
 		IL_000e: ldarg.0
 		IL_000f: ldfld class [Xdr]Xdr.IByteReader EmitTest.TreeNode_ReadContext::_reader
@@ -90,7 +67,6 @@ namespace EmitTest
 		IL_0002: ldfld class EmitTest.TreeNode EmitTest.TreeNode_ReadContext::_target
 		IL_0007: ldarg.1
 		IL_0008: stfld string EmitTest.TreeNode::Field3
-		
 		IL_000d: ldarg.0
 		IL_000e: ldfld class [mscorlib]System.Action`1<class EmitTest.TreeNode> EmitTest.TreeNode_ReadContext::_completed
 		IL_0013: ldarg.0

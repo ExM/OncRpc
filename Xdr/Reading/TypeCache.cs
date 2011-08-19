@@ -8,9 +8,13 @@ namespace Xdr
 	{
 		internal static Exception ReadContextExcepted = null;
 		internal static Type ReadContextType = null;
+
 		
 		internal static void Read(IByteReader reader, Action<T> completed, Action<Exception> excepted)
 		{
+			Type t = typeof(T);
+			Console.WriteLine(t);
+
 			//HACK: use emit
 			Activator.CreateInstance(ReadContextType, reader, completed, excepted);
 		}
