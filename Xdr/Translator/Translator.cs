@@ -5,9 +5,14 @@ using System.Text;
 
 namespace Xdr
 {
-	public interface ITranslatorFactory
+	public static class Translator
 	{
-		IReader Create(IByteReader reader);
-		IWriter Create(IByteWriter writer);
+
+		public static TranslatorBuilder Create(string name)
+		{
+
+
+			return null;
+		}
 	}
 }

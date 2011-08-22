@@ -6,7 +6,7 @@ using Xdr;
 
 namespace EmitTest
 {
-	public class XdrReaderExample: IReader
+	public class XdrReaderExample
 	{
 		private IByteReader _reader;
 

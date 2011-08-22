@@ -13,6 +13,11 @@ namespace Xdr
 			_stream = stream;
 		}
 
+		public void Throw(Exception ex, Action<Exception> excepted)
+		{
+			ThreadPool.QueueUserWorkItem((arg) => excepted(ex));
+		}
+
 		public void Read(uint uicount, Action<byte[]> completed, Action<Exception> excepted)
 		{
 			if(uicount == 0)
@@ -20,14 +25,25 @@ namespace Xdr
 				ThreadPool.QueueUserWorkItem((arg) => completed(new byte[0]));
 				return;
 			}
-			
-			if(uicount >= int.MaxValue)
-				throw new ArgumentOutOfRangeException("uicount");
-			int count = (int)uicount;
-			
-			byte[] buff = new byte[count];
-			_stream.BeginRead(buff, 0, count,
-				(ar) => OnRead(ar, buff, 0, count, completed, excepted), null);
+
+			if (uicount >= int.MaxValue)
+			{
+				ThreadPool.QueueUserWorkItem((arg) => excepted(new ArgumentOutOfRangeException("uicount")));
+				return;
+			}
+
+			try
+			{
+				int count = (int)uicount;
+
+				byte[] buff = new byte[count];
+				_stream.BeginRead(buff, 0, count,
+					(ar) => OnRead(ar, buff, 0, count, completed, excepted), null);
+			}
+			catch (Exception ex)
+			{
+				ThreadPool.QueueUserWorkItem((arg) => excepted(ex));
+			}
 		}
 		
 		private void OnRead(IAsyncResult ar, byte[] buff, int offset, int count, Action<byte[]> completed, Action<Exception> excepted)
