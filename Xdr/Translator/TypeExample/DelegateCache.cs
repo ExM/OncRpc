@@ -8,9 +8,11 @@ namespace Xdr.Examples
 {
 	public static class DelegateCache
 	{
-		public static Action<Type> ReadOneInit;
-		public static Action<Type> ReadManyInit;
+		public static Func<Type, Delegate> ReadOneBuild;
+		public static Func<Type, Delegate> ReadManyBuild;
+		/*
 		public static Action<Type> WriteOneInit;
 		public static Action<Type> WriteManyInit;
+		*/
 	}
 }

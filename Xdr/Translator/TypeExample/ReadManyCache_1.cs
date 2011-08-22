@@ -8,14 +8,25 @@ namespace Xdr.Examples
 {
 	public static class ReadManyCache<T>
 	{
-		public static Exception Error;
-		public static ReadManyDelegate<T> Instance;
-
+		public static readonly ReadManyDelegate<T> Instance;
+		public static readonly Exception Error;
+		
 		static ReadManyCache()
 		{
-			Error = null;
-			Instance = null;
-			DelegateCache.ReadManyInit(typeof(T));
+			try
+			{
+				Instance = (ReadManyDelegate<T>)DelegateCache.ReadManyBuild(typeof(T));
+			}
+			catch(Exception ex)
+			{
+				Error = ex;
+				Instance = ErrorStub;
+			}
+		}
+		
+		private static void ErrorStub(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted)
+		{
+			reader.Throw(Error, excepted);
 		}
 	}
 }

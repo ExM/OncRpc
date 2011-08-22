@@ -15,6 +15,11 @@ namespace Xdr.Examples
 			_translator = translator;
 			_reader = reader;
 		}
+		
+		public void Throw(Exception ex, Action<Exception> excepted)
+		{
+			_reader.Throw(ex, excepted);
+		}
 
 		private uint _maxLen;
 		private uint _len = 0;
