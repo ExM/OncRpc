@@ -10,9 +10,7 @@ namespace Xdr
 
 		public static TranslatorBuilder Create(string name)
 		{
-
-
-			return null;
+			return new TranslatorBuilder(name);
 		}
 	}
 }

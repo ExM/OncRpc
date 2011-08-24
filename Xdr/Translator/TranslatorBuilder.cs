@@ -3,28 +3,28 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
+using Xdr.Translating;
 
 namespace Xdr
 {
 	public class TranslatorBuilder
 	{
-		private ModuleBuilder _modBuilder;
-		private Func<Type, Delegate> _readOneContextMap;
-
+		private Xdr.Examples.Translator _t;
+		
 		internal TranslatorBuilder(string name)
 		{
-
+			_t = new Xdr.Examples.Translator();
 		}
 
 		public TranslatorBuilder Map<T>(ReadOneDelegate<T> reader)
 		{
-			
+			_t.AppendMethod(typeof(T), MethodType.ReadOne, reader);
 			return this;
 		}
 
 		public ITranslator Build()
 		{
-			return null;
+			return _t;
 		}
 	}
 }

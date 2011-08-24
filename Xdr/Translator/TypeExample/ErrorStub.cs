@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Xdr;
 
-namespace Xdr.Examples
+namespace Xdr.Translating
 {
 	public class ErrorStub<T>
 	{

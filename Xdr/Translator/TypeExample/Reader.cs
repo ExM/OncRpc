@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Xdr.Examples
+namespace Xdr.Translating
 {
 	internal class Reader : IReader
 	{
@@ -108,7 +108,7 @@ namespace Xdr.Examples
 			if(_len % 4 == 0)
 				_completed_bytes(_bytes);
 			else
-				_reader.Read((uint)(_len % 4), Bytes_Tail_Readed, _excepted);
+				_reader.Read((uint)(4 - _len % 4), Bytes_Tail_Readed, _excepted);
 		}
 
 		private void Bytes_Tail_Readed(byte[] val)

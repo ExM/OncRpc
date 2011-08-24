@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -41,14 +41,13 @@
     <Compile Include="BaseReaderTest.cs" />
     <Compile Include="EmitExample\DirectEmit.cs" />
     <Compile Include="Example\FileType.cs" />
-    <Compile Include="TestDtos\IntTreeTest.cs" />
     <Compile Include="Example\CompleteFile.cs" />
     <Compile Include="Example\FileKind.cs" />
     <Compile Include="CompleteFileTest.cs" />
-    <Compile Include="TestDtos\IntTree.cs" />
-    <Compile Include="TestDtos\StringContainer.cs" />
-    <Compile Include="TestDtos\DirectEmit.cs" />
     <Compile Include="TestExtensions.cs" />
+    <Compile Include="TestDtos\SimplyInt.cs" />
+    <Compile Include="TestDtos\SimplyInt_ReadContext.cs" />
+    <Compile Include="TestDtos\SimplyIntTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

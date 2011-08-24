@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -54,7 +54,6 @@
     <Compile Include="Translator\TypeExample\Reader.cs" />
     <Compile Include="Translator\TypeExample\DelegateCache.cs" />
     <Compile Include="Translator\TypeExample\ReadOneCache_1.cs" />
-    <Compile Include="Translator\TypeExample\Translator.cs" />
     <Compile Include="XdrReader.cs" />
     <Compile Include="IByteReader.cs" />
     <Compile Include="IByteWriter.cs" />
@@ -74,8 +73,13 @@
     <Compile Include="Attributes\VarAttribute.cs" />
     <Compile Include="Attributes\FixAttribute.cs" />
     <Compile Include="Emit\FieldDescriptions\Int32FieldDesc.cs" />
+    <Compile Include="Translator\BaseTranslator.cs" />
+    <Compile Include="Translator\TypeExample\Translator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Translator\TypeExample\" />
+  </ItemGroup>
 </Project>

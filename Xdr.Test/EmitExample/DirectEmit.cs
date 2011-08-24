@@ -26,7 +26,7 @@ namespace Xdr.Test
 
 			SyncStream ss = new SyncStream(s);
 
-			Examples.Translator t = new Examples.Translator();
+			ITranslator t = Translator.Create("test").Build();
 			IReader r = t.Create(ss);
 
 			Action<Exception> excepted = (ex) =>
@@ -34,15 +34,17 @@ namespace Xdr.Test
 				Assert.Fail("unexpected exception: {0}", ex);
 			};
 
-			Action<int> completed1 = (val) =>
-			{
-				Assert.AreEqual(1, val);
-			};
-
-			r.Read<int>(completed1, excepted);
-
 			r.Read<int>((val) => Assert.AreEqual(1, val), excepted);
-
+			Assert.AreEqual(4, s.Position);
+			r.Read<uint>((val) => Assert.AreEqual(1, val), excepted);
+			Assert.AreEqual(8, s.Position);
+			r.Read<uint>((val) => Assert.AreEqual(uint.MaxValue, val), excepted);
+			Assert.AreEqual(12, s.Position);
+			r.Read<byte[]>(3, true, (val) => Assert.AreEqual(3, val.Length), excepted);
+			Assert.AreEqual(16, s.Position);
+			r.Read<int>((val) => Assert.AreEqual(int.MaxValue, val), excepted);
+			Assert.AreEqual(20, s.Position);
+			
 			r.Read<object>(
 				(val) => Assert.Fail("missed exeption"),
 				(ex) => Assert.IsInstanceOf<NotImplementedException>(ex, "unknown error: {0}", ex));
