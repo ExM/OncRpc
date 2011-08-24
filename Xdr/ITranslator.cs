@@ -7,6 +7,9 @@ namespace Xdr
 {
 	public interface ITranslator
 	{
+		IReader Create(IByteReader reader);
+
+
 		void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted);
 		void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted);
 		/*

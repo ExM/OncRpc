@@ -12,5 +12,11 @@ namespace EmitTest
 		{
 			completed(new byte[] { 0x00, 0x00, 0x00, 0x05});
 		}
+
+
+		public void Throw(Exception ex, Action<Exception> excepted)
+		{
+			excepted(ex);
+		}
 	}
 }

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Xdr;
 
 namespace Xdr.Examples
 {
-	public static class DelegateCache
+	public class BuildRequest
 	{
-		public static Action<Type, MethodType> BuildRequest = null;
+		public Type TargetType { get; set; }
+		public MethodType Method { get; set; }
 	}
 }
