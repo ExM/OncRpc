@@ -13,14 +13,40 @@ namespace Xdr
 
 		private object _dependencySync = new object();
 		private Queue<BuildRequest> _dependency = new Queue<BuildRequest>();
-
+		
+		protected BaseTranslator()
+		{
+		}
+		
+		
 		internal abstract void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted);
 
-		internal abstract void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted);
+		//internal abstract void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted);
 
-		protected abstract Type GetReadOneCacheType();
+		//protected abstract Type GetReadOneCacheType();
 
-		protected abstract Type GetReadManyCacheType();
+		//protected abstract Type GetReadManyCacheType();
+		
+		
+		//internal virtual void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted)
+		//{
+		//	
+		//}
+
+		internal virtual void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted)
+		{
+			
+		}
+
+		protected virtual Type GetReadOneCacheType()
+		{
+			return null;
+		}
+
+		protected virtual Type GetReadManyCacheType()
+		{
+			return null;
+		}
 		
 		protected void BuildCaches()
 		{

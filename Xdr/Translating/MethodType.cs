@@ -7,9 +7,9 @@ namespace Xdr.Translating
 {
 	public enum MethodType
 	{
-		ReadOne,
-		ReadMany,
-		WriteOne,
-		WriteMany
+		ReadOne = 0,
+		ReadMany = 1,
+		WriteOne = 2,
+		WriteMany = 3
 	}
 }

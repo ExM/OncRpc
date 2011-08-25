@@ -9,20 +9,19 @@ using System.Reflection;
 
 namespace Xdr.Translating.Emit
 {
-	public class ReadOneCacheDescription
+	public class ReadManyCacheDescription
 	{
 		public readonly Type Result;
 		public readonly FieldInfo Instance;
 
-		public ReadOneCacheDescription(ModuleBuilder modBuilder, DelegateCacheDescription delegCacheDesc)
+		public ReadManyCacheDescription(ModuleBuilder modBuilder, DelegateCacheDescription delegCacheDesc)
 		{
-			TypeBuilder typeBuilder = modBuilder.DefineType("ReadOneCache",
+			TypeBuilder typeBuilder = modBuilder.DefineType("ReadManyCache",
 				TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Abstract | TypeAttributes.Sealed);
 			
 			GenericTypeParameterBuilder genTypeParam = typeBuilder.DefineGenericParameters("T")[0];
 
-			//public static readonly ReadOneDelegate<T> Instance;
-			FieldBuilder fb_Instance = typeBuilder.DefineField("Instance", typeof(ReadOneDelegate<>).MakeGenericType(genTypeParam),
+			FieldBuilder fb_Instance = typeBuilder.DefineField("Instance", typeof(ReadManyDelegate<>).MakeGenericType(genTypeParam),
 				FieldAttributes.Public | FieldAttributes.Static);
 
 			ConstructorBuilder ctor = typeBuilder.DefineConstructor(MethodAttributes.Static, CallingConventions.Standard, new Type[0]);
@@ -34,7 +33,7 @@ namespace Xdr.Translating.Emit
 			//ldtoken !T
 			ilCtor.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"));
 			//call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
-			ilCtor.Emit(OpCodes.Ldc_I4_0); // MethodType.ReadOne
+			ilCtor.Emit(OpCodes.Ldc_I4_1); // MethodType.ReadMany
 			//ldc.i4.0
 			ilCtor.Emit(OpCodes.Callvirt, typeof(Action<Type, MethodType>).GetMethod("Invoke"));
 			//callvirt instance void class [mscorlib]System.Action`2<class [mscorlib]System.Type, valuetype Xdr.Translating.MethodType>::Invoke(!0, !1)
@@ -44,16 +43,4 @@ namespace Xdr.Translating.Emit
 			Instance = fb_Instance;
 		}
 	}
-
-	/*
-	public static class ReadOneCache<T>
-	{
-		public static readonly ReadOneDelegate<T> Instance;
-		
-		static ReadOneCache()
-		{
-			DelegateCache.BuildRequest(typeof(T), MethodType.ReadOne);
-		}
-	}
-	*/
 }

@@ -11,7 +11,7 @@ namespace Xdr.Translating.Emit
 {
 	public class DelegateCacheDescription
 	{
-		public readonly Type Type;
+		public readonly Type Result;
 		public readonly FieldInfo BuildRequest;
 
 		public DelegateCacheDescription(ModuleBuilder modBuilder)
@@ -21,7 +21,7 @@ namespace Xdr.Translating.Emit
 			//public static Action<Type, MethodType> BuildRequest = null;
 			FieldBuilder fb_BuildRequest = typeBuilder.DefineField("BuildRequest", typeof(Action<Type, MethodType>), FieldAttributes.Public | FieldAttributes.Static);
 
-			Type = typeBuilder.CreateType();
+			Result = typeBuilder.CreateType();
 			BuildRequest = fb_BuildRequest;
 		}
 	}
