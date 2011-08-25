@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -23,7 +23,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,6 +35,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Attributes\ReadManyAttribute.cs" />
+    <Compile Include="Attributes\ReadOneAttribute.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Attributes\SwitchAttribute.cs" />
     <Compile Include="Attributes\CaseAttribute.cs" />
@@ -44,16 +46,17 @@
     <Compile Include="Emit\FieldDescriptions\UInt32FieldDesc.cs" />
     <Compile Include="Emit\CustomContextBuilder.cs" />
     <Compile Include="ITranslator.cs" />
-    <Compile Include="Translator\Translator.cs" />
-    <Compile Include="Translator\TranslatorBuilder.cs" />
+    <Compile Include="Translating\Translator.cs" />
+    <Compile Include="Translating\TranslatorBuilder.cs" />
     <Compile Include="Delegates.cs" />
-    <Compile Include="Translator\TypeExample\BuildRequest.cs" />
-    <Compile Include="Translator\TypeExample\ErrorStub.cs" />
-    <Compile Include="Translator\TypeExample\MethodType.cs" />
-    <Compile Include="Translator\TypeExample\ReadManyCache_1.cs" />
-    <Compile Include="Translator\TypeExample\Reader.cs" />
-    <Compile Include="Translator\TypeExample\DelegateCache.cs" />
-    <Compile Include="Translator\TypeExample\ReadOneCache_1.cs" />
+    <Compile Include="Translating\BuildRequest.cs" />
+    <Compile Include="Translating\ErrorStub.cs" />
+    <Compile Include="Translating\MethodType.cs" />
+    <Compile Include="Translating\TypeExample\ReadManyCache_1.cs" />
+    <Compile Include="Translating\Reader.cs" />
+    <Compile Include="Translating\TypeExample\DelegateCache.cs" />
+    <Compile Include="Translating\TypeExample\ReadOneCache_1.cs" />
+    <Compile Include="TypeExtensions.cs" />
     <Compile Include="XdrReader.cs" />
     <Compile Include="IByteReader.cs" />
     <Compile Include="IByteWriter.cs" />
@@ -73,13 +76,11 @@
     <Compile Include="Attributes\VarAttribute.cs" />
     <Compile Include="Attributes\FixAttribute.cs" />
     <Compile Include="Emit\FieldDescriptions\Int32FieldDesc.cs" />
-    <Compile Include="Translator\BaseTranslator.cs" />
-    <Compile Include="Translator\TypeExample\Translator.cs" />
+    <Compile Include="Translating\BaseTranslator.cs" />
+    <Compile Include="Translating\TypeExample\Translator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Translator\TypeExample\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

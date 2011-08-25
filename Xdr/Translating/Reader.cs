@@ -5,12 +5,12 @@ using System.Text;
 
 namespace Xdr.Translating
 {
-	internal class Reader : IReader
+	internal sealed class Reader : IReader
 	{
-		private ITranslator _translator;
+		private BaseTranslator _translator;
 		private IByteReader _reader;
 
-		internal Reader(ITranslator translator, IByteReader reader)
+		internal Reader(BaseTranslator translator, IByteReader reader)
 		{
 			_translator = translator;
 			_reader = reader;

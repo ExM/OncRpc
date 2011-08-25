@@ -6,7 +6,7 @@ using Xdr;
 
 namespace Xdr.Translating
 {
-	public class ErrorStub<T>
+	internal sealed class ErrorStub<T>
 	{
 		public readonly Exception Error;
 

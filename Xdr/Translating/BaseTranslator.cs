@@ -13,14 +13,14 @@ namespace Xdr
 
 		private object _dependencySync = new object();
 		private Queue<BuildRequest> _dependency = new Queue<BuildRequest>();
-		
-		public abstract void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted);
 
-		public abstract void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted);
+		internal abstract void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted);
 
-		public abstract Type ReadOneCacheType { get;}
-		
-		public abstract Type ReadManyCacheType { get;}
+		internal abstract void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted);
+
+		protected abstract Type GetReadOneCacheType();
+
+		protected abstract Type GetReadManyCacheType();
 		
 		protected void BuildCaches()
 		{
@@ -50,7 +50,7 @@ namespace Xdr
 		{
 			if (methodType == MethodType.ReadOne)
 			{
-				FieldInfo fi = ReadOneCacheType.MakeGenericType(targetType).GetField("Instance");
+				FieldInfo fi = GetReadOneCacheType().MakeGenericType(targetType).GetField("Instance");
 				if(fi.GetValue(null) == null)
 				{
 					if(method == null)
@@ -60,7 +60,7 @@ namespace Xdr
 			}
 			else if (methodType == MethodType.ReadMany)
 			{
-				FieldInfo fi = ReadManyCacheType.MakeGenericType(targetType).GetField("Instance");
+				FieldInfo fi = GetReadManyCacheType().MakeGenericType(targetType).GetField("Instance");
 				if(fi.GetValue(null) == null)
 				{
 					if(method == null)
@@ -81,6 +81,15 @@ namespace Xdr
 
 			try
 			{
+				ReadOneAttribute attr = targetType.GetCustomAttributes(typeof(ReadOneAttribute), true)
+					.Select((o) => (ReadOneAttribute)o)
+					.FirstOrDefault();
+				if (attr != null)
+					return attr.Create(targetType);
+
+
+
+
 
 
 
@@ -101,6 +110,26 @@ namespace Xdr
 			
 			try
 			{
+				Type itemType = targetType.GetKnownItemType();
+				if (itemType != null)
+				{
+					Delegate attrResult = null;
+					foreach (ReadManyAttribute attr in itemType.GetCustomAttributes(typeof(ReadManyAttribute), true)
+						.Select((o) => (ReadManyAttribute)o))
+					{
+						Delegate result = attr.Create(targetType);
+						if (attrResult != null)
+							throw new InvalidOperationException(string.Format("Duplicate methods in {0} ({1}.{2} & {2}.{3})",
+								targetType, result.Method.DeclaringType, result.Method.Name, attrResult.Method.DeclaringType, attrResult.Method.Name));
+						attrResult = result;
+					}
+
+					if (attrResult != null)
+						return attrResult;
+				}
+
+
+
 
 
 

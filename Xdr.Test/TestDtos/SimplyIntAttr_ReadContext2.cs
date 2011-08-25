@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace Xdr.TestDtos
 {
-	public class SimplyInt_ReadContext
+	public class SimplyIntAttr_ReadContext2
 	{
-		private SimplyInt _target = new SimplyInt();
+		private SimplyIntAttr _target = new SimplyIntAttr();
 		private IReader _reader;
-		private Action<SimplyInt> _completed;
+		private Action<SimplyIntAttr> _completed;
 		private Action<Exception> _excepted;
 
-		private SimplyInt_ReadContext(IReader reader, Action<SimplyInt> completed, Action<Exception> excepted)
+		private SimplyIntAttr_ReadContext2(IReader reader, Action<SimplyIntAttr> completed, Action<Exception> excepted)
 		{
 			_reader = reader;
 			_completed = completed;
@@ -21,7 +21,7 @@ namespace Xdr.TestDtos
 
 		private void Field1_Readed(int val)
 		{
-			_target.Field1 = val;
+			_target.Field1 = -val;
 			_reader.ReadUInt32(Field2_Readed, _excepted);
 		}
 
@@ -30,10 +30,11 @@ namespace Xdr.TestDtos
 			_target.Field2 = val;
 			_completed(_target);
 		}
-		
-		public static void Read(IReader reader, Action<SimplyInt> completed, Action<Exception> excepted)
+
+
+		public static void Read(IReader reader, Action<SimplyIntAttr> completed, Action<Exception> excepted)
 		{
-			new SimplyInt_ReadContext(reader, completed, excepted);
+			new SimplyIntAttr_ReadContext2(reader, completed, excepted);
 		}
 	}
 }

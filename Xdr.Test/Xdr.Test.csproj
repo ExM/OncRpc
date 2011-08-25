@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -39,15 +39,24 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseReaderTest.cs" />
-    <Compile Include="EmitExample\DirectEmit.cs" />
+    <Compile Include="TestDtos\IsolationMappingTest.cs" />
+    <Compile Include="TestDtos\SimplyIntAttr_ReadContext2.cs" />
+    <Compile Include="TestDtos\OverrideMappingTest.cs" />
+    <Compile Include="TypeExtensionTest.cs" />
+    <Compile Include="EmitExample\TranslatorTest.cs" />
     <Compile Include="Example\FileType.cs" />
     <Compile Include="Example\CompleteFile.cs" />
     <Compile Include="Example\FileKind.cs" />
     <Compile Include="CompleteFileTest.cs" />
+    <Compile Include="TestDtos\AttributeMappingTest.cs" />
+    <Compile Include="TestDtos\SimplyIntAttr_ReadListContext.cs" />
+    <Compile Include="TestDtos\SimplyIntAttr_ReadContext.cs" />
+    <Compile Include="TestDtos\SimplyIntAttr.cs" />
+    <Compile Include="TestDtos\SimplyInt_ReadListContext.cs" />
     <Compile Include="TestExtensions.cs" />
     <Compile Include="TestDtos\SimplyInt.cs" />
     <Compile Include="TestDtos\SimplyInt_ReadContext.cs" />
-    <Compile Include="TestDtos\SimplyIntTest.cs" />
+    <Compile Include="TestDtos\DirectMappingTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

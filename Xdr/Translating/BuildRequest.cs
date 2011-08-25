@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Xdr.Translating
 {
-	public class BuildRequest
+	internal sealed class BuildRequest
 	{
 		public Type TargetType { get; set; }
 		public MethodType Method { get; set; }

@@ -7,7 +7,7 @@ using Xdr.Translating;
 
 namespace Xdr
 {
-	public class TranslatorBuilder
+	public sealed class TranslatorBuilder
 	{
 		private Xdr.Examples.Translator _t;
 		
@@ -19,6 +19,12 @@ namespace Xdr
 		public TranslatorBuilder Map<T>(ReadOneDelegate<T> reader)
 		{
 			_t.AppendMethod(typeof(T), MethodType.ReadOne, reader);
+			return this;
+		}
+
+		public TranslatorBuilder Map<T>(ReadManyDelegate<T> reader)
+		{
+			_t.AppendMethod(typeof(T), MethodType.ReadMany, reader);
 			return this;
 		}
 
