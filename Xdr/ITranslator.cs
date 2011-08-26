@@ -7,7 +7,7 @@ namespace Xdr
 {
 	public interface ITranslator
 	{
-		IReader Create(IByteReader reader);
-		//IWriter Create(IByteWriter reader);
+		IReader CreateReader(IByteReader reader);
+		IWriter CreateWriter(IByteWriter reader);
 	}
 }

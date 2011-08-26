@@ -27,7 +27,7 @@ namespace Xdr.Test
 			SyncStream ss = new SyncStream(s);
 
 			ITranslator t = Translator.Create("test").Build();
-			IReader r = t.Create(ss);
+			IReader r = t.CreateReader(ss);
 
 			Action<Exception> excepted = (ex) =>
 			{

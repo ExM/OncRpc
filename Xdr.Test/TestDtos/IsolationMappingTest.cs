@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using NUnit.Framework;
 using System.IO;
 using Xdr.TestDtos;
@@ -19,9 +20,9 @@ namespace Xdr
 			ITranslator t1 = Translator.Create("test")
 				.Map<SimplyIntAttr>(SimplyIntAttr_ReadContext2.Read)
 				.Build();
-			
-			
-			IReader r1 = t1.Create(ss);
+
+
+			IReader r1 = t1.CreateReader(ss);
 
 			s.Position = 0;
 			r1.Read<SimplyIntAttr>((val) =>
@@ -34,7 +35,7 @@ namespace Xdr
 			ITranslator t2 = Translator.Create("test")
 				.Build();
 
-			IReader r2 = t2.Create(ss);
+			IReader r2 = t2.CreateReader(ss);
 
 			s.Position = 0;
 			r2.Read<SimplyIntAttr>((val) =>
@@ -42,6 +43,9 @@ namespace Xdr
 				Assert.AreEqual(7, val.Field1);
 				Assert.AreEqual(0xCDEF9876, val.Field2);
 			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+
+			foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+				Console.WriteLine("a:{0} f:{1}", a.FullName, a.Location);
 		}
 	}
 }

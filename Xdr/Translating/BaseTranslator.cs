@@ -7,7 +7,7 @@ using Xdr.Translating;
 
 namespace Xdr
 {
-	internal abstract class BaseTranslator: ITranslator
+	public abstract class BaseTranslator: ITranslator
 	{
 		private object _sync = new object();
 
@@ -17,36 +17,18 @@ namespace Xdr
 		protected BaseTranslator()
 		{
 		}
-		
-		
-		internal abstract void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted);
 
-		//internal abstract void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted);
+		protected abstract Type GetReadOneCacheType();
+		public abstract void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted);
 
-		//protected abstract Type GetReadOneCacheType();
+		protected abstract Type GetReadManyCacheType();
+		public abstract void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted);
 
-		//protected abstract Type GetReadManyCacheType();
-		
-		
-		//internal virtual void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted)
-		//{
-		//	
-		//}
+		protected abstract Type GetWriteOneCacheType();
+		public abstract void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted);
 
-		internal virtual void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted)
-		{
-			
-		}
-
-		protected virtual Type GetReadOneCacheType()
-		{
-			return null;
-		}
-
-		protected virtual Type GetReadManyCacheType()
-		{
-			return null;
-		}
+		protected abstract Type GetWriteManyCacheType();
+		public abstract void Write<T>(IWriter writer, T items, bool fix, Action completed, Action<Exception> excepted);
 		
 		protected void BuildCaches()
 		{
@@ -204,9 +186,14 @@ namespace Xdr
 			reader.ReadString(len, completed, excepted);
 		}
 
-		public IReader Create(IByteReader reader)
+		public IReader CreateReader(IByteReader reader)
 		{
 			return new Reader(this, reader);
+		}
+
+		public IWriter CreateWriter(IByteWriter writer)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

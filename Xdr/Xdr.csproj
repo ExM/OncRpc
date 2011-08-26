@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -40,24 +40,20 @@
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Attributes\SwitchAttribute.cs" />
     <Compile Include="Attributes\CaseAttribute.cs" />
+    <Compile Include="IWriter.cs" />
     <Compile Include="IReader.cs" />
     <Compile Include="Emit\FieldDescriptions\BaseFieldDesc.cs" />
     <Compile Include="Emit\FieldDescriptions\StringFieldDesc.cs" />
     <Compile Include="Emit\FieldDescriptions\UInt32FieldDesc.cs" />
     <Compile Include="Emit\CustomContextBuilder.cs" />
     <Compile Include="ITranslator.cs" />
-    <Compile Include="Translating\Emit\ReadOneCacheDescription.cs" />
-    <Compile Include="Translating\Emit\DelegateCacheDescription.cs" />
     <Compile Include="Translating\Translator.cs" />
     <Compile Include="Translating\TranslatorBuilder.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="Translating\BuildRequest.cs" />
     <Compile Include="Translating\ErrorStub.cs" />
     <Compile Include="Translating\MethodType.cs" />
-    <Compile Include="Translating\TypeExample\ReadManyCache_1.cs" />
     <Compile Include="Translating\Reader.cs" />
-    <Compile Include="Translating\TypeExample\DelegateCache.cs" />
-    <Compile Include="Translating\TypeExample\ReadOneCache_1.cs" />
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="XdrReader.cs" />
     <Compile Include="IByteReader.cs" />
@@ -79,12 +75,11 @@
     <Compile Include="Attributes\FixAttribute.cs" />
     <Compile Include="Emit\FieldDescriptions\Int32FieldDesc.cs" />
     <Compile Include="Translating\BaseTranslator.cs" />
-    <Compile Include="Translating\TypeExample\Translator.cs" />
-    <Compile Include="Translating\Emit\ReadManyCacheDescription.cs" />
-    <Compile Include="Translating\TranslatorBuilder.Emit.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="StaticSingletones.dll" />
+  </ItemGroup>
   <ItemGroup />
   <ItemGroup />
 </Project>
