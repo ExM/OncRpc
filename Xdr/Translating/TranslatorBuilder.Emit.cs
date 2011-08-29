@@ -51,7 +51,6 @@ namespace Xdr
 			//	IL_0022: stfld class [mscorlib]System.Type Xdr.StaticSingletones.Translator::_readOneCacheType
 			ilCtor.Emit(OpCodes.Stfld, fb_readOneCacheType);
 
-
 			//	IL_0017: ldarg.0
 			ilCtor.Emit(OpCodes.Ldarg_0);
 			//	IL_0018: ldtoken Xdr.StaticSingletones.ReadManyCache`1
@@ -62,41 +61,48 @@ namespace Xdr
 			ilCtor.Emit(OpCodes.Stfld, fb_readManyCacheType);
 
 			//	IL_0037: ldarg.0
+			ilCtor.Emit(OpCodes.Ldarg_0);
 			//	IL_0038: ldtoken Xdr.StaticSingletones.WriteOneCache`1
+			ilCtor.Emit(OpCodes.Ldtoken, _writeOneCacheDescription.Result);
 			//	IL_003d: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
+			ilCtor.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"));
 			//	IL_0042: stfld class [mscorlib]System.Type Xdr.StaticSingletones.Translator::_writeOneCacheType
-
+			ilCtor.Emit(OpCodes.Stfld, fb_writeOneCacheType);
+			
 			//	IL_0047: ldarg.0
+			ilCtor.Emit(OpCodes.Ldarg_0);
 			//	IL_0048: ldtoken Xdr.StaticSingletones.WriteManyCache`1
+			ilCtor.Emit(OpCodes.Ldtoken, _writeManyCacheDescription.Result);
 			//	IL_004d: call class [mscorlib]System.Type [mscorlib]System.Type::GetTypeFromHandle(valuetype [mscorlib]System.RuntimeTypeHandle)
+			ilCtor.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"));
 			//	IL_0052: stfld class [mscorlib]System.Type Xdr.StaticSingletones.Translator::_writeManyCacheType
-
+			ilCtor.Emit(OpCodes.Stfld, fb_writeManyCacheType);
+			
 			//	IL_0057: ret
 			ilCtor.Emit(OpCodes.Ret);
 
-			EmitOverride_GetReadOneCacheType(typeBuilder, fb_readOneCacheType);
+			EmitOverride_GetCacheType(typeBuilder, "GetReadOneCacheType", fb_readOneCacheType);
 			EmitOverride_ReadTOne(typeBuilder);
 
-			EmitOverride_GetReadManyCacheType(typeBuilder, fb_readManyCacheType);
+			EmitOverride_GetCacheType(typeBuilder, "GetReadManyCacheType", fb_readManyCacheType);
 			EmitOverride_ReadTMany(typeBuilder);
+			
+			EmitOverride_GetCacheType(typeBuilder, "GetWriteOneCacheType", fb_writeOneCacheType);
+			EmitOverride_GetCacheType(typeBuilder, "GetWriteManyCacheType", fb_writeManyCacheType);
 			
 			return typeBuilder.CreateType();
 		}
 
-		private void EmitOverride_GetReadManyCacheType(TypeBuilder typeBuilder, FieldBuilder fb_readManyCacheType)
+		private void EmitOverride_GetCacheType(TypeBuilder typeBuilder, string overrideName, FieldBuilder fb_cacheType)
 		{
-			MethodInfo miDeclaration = typeof(BaseTranslator).GetMethod("GetReadManyCacheType", BindingFlags.NonPublic | BindingFlags.Instance);
-
-			MethodBuilder mb = typeBuilder.DefineMethod("GetReadManyCacheType", MethodAttributes.Family | MethodAttributes.Virtual);
+			MethodBuilder mb = typeBuilder.DefineMethod(overrideName, MethodAttributes.Family | MethodAttributes.Virtual);
 			mb.SetReturnType(typeof(Type));
-			typeBuilder.DefineMethodOverride(mb, miDeclaration);
+			typeBuilder.DefineMethodOverride(mb,
+				typeof(BaseTranslator).GetMethod(overrideName, BindingFlags.NonPublic | BindingFlags.Instance));
 
 			ILGenerator il = mb.GetILGenerator();
-			//	IL_0000: ldarg.0
 			il.Emit(OpCodes.Ldarg_0);
-			//	IL_0001: ldfld class [mscorlib]System.Type Xdr.StaticSingletones.Translator::_readOneCacheType
-			il.Emit(OpCodes.Ldfld, fb_readManyCacheType);
-			//	IL_0006: ret
+			il.Emit(OpCodes.Ldfld, fb_cacheType);
 			il.Emit(OpCodes.Ret);
 		}
 
@@ -120,9 +126,7 @@ namespace Xdr
 			typeBuilder.DefineMethodOverride(mb, miDeclaration);
 
 
-			FieldInfo fi = TypeBuilder.GetField(_readManyCacheDescription.Result.MakeGenericType(genTypeParam),
-				_readManyCacheDescription.Result.GetField("Instance"));
-
+			FieldInfo fi = _readManyCacheDescription.Instance(genTypeParam);
 
 			ILGenerator il = mb.GetILGenerator();
 			Label noBuild = il.DefineLabel();
@@ -160,23 +164,6 @@ namespace Xdr
 
 			il.Emit(OpCodes.Callvirt, miInvoke);
 
-			il.Emit(OpCodes.Ret);
-		}
-
-		private void EmitOverride_GetReadOneCacheType(TypeBuilder typeBuilder, FieldBuilder fb_readOneCacheType)
-		{
-			MethodInfo miDeclaration = typeof(BaseTranslator).GetMethod("GetReadOneCacheType", BindingFlags.NonPublic | BindingFlags.Instance);
-
-			MethodBuilder mb = typeBuilder.DefineMethod("GetReadOneCacheType", MethodAttributes.Family | MethodAttributes.Virtual);
-			mb.SetReturnType(typeof(Type));
-			typeBuilder.DefineMethodOverride(mb, miDeclaration);
-
-			ILGenerator il = mb.GetILGenerator();
-			//	IL_0000: ldarg.0
-			il.Emit(OpCodes.Ldarg_0);
-			//	IL_0001: ldfld class [mscorlib]System.Type Xdr.StaticSingletones.Translator::_readOneCacheType
-			il.Emit(OpCodes.Ldfld, fb_readOneCacheType);
-			//	IL_0006: ret
 			il.Emit(OpCodes.Ret);
 		}
 		

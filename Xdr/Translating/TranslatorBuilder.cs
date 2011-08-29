@@ -17,6 +17,8 @@ namespace Xdr
 		private DelegateCacheDescription _delegateCacheDescription;
 		private ReadOneCacheDescription _readOneCacheDescription;
 		private ReadManyCacheDescription _readManyCacheDescription;
+		private WriteOneCacheDescription _writeOneCacheDescription;
+		private WriteManyCacheDescription _writeManyCacheDescription;
 		
 		internal TranslatorBuilder(string name)
 		{
@@ -28,22 +30,12 @@ namespace Xdr
 			_delegateCacheDescription = new DelegateCacheDescription(_modBuilder);
 			_readOneCacheDescription = new ReadOneCacheDescription(_modBuilder, _delegateCacheDescription);
 			_readManyCacheDescription = new ReadManyCacheDescription(_modBuilder, _delegateCacheDescription);
+			_writeOneCacheDescription = new WriteOneCacheDescription(_modBuilder, _delegateCacheDescription);
+			_writeManyCacheDescription = new WriteManyCacheDescription(_modBuilder, _delegateCacheDescription);
 
 			Type dynTrType = EmitDynTranslator();
 
 			_t = (BaseTranslator)Activator.CreateInstance(dynTrType);
-
-
-			/*
-			Stream stream = typeof(TranslatorBuilder).Assembly.GetManifestResourceStream("Xdr.StaticSingletones.dll");
-			byte[] bytes = new byte[stream.Length];
-			stream.Read(bytes, 0, (int)stream.Length - 1);
-
-			Assembly asm = Assembly.Load(bytes);
-
-			object inst = asm.CreateInstance("Xdr.StaticSingletones.Translator");
-			_t = inst as BaseTranslator;
-			*/
 		}
 
 		public TranslatorBuilder Map<T>(ReadOneDelegate<T> reader)

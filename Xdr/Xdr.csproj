@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -80,11 +80,11 @@
     <Compile Include="Attributes\FixAttribute.cs" />
     <Compile Include="Emit\FieldDescriptions\Int32FieldDesc.cs" />
     <Compile Include="Translating\BaseTranslator.cs" />
+    <Compile Include="Translating\Emit\GenCacheDescription.cs" />
+    <Compile Include="Translating\Emit\WriteOneCacheDescription.cs" />
+    <Compile Include="Translating\Emit\WriteManyCacheDescription.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <EmbeddedResource Include="StaticSingletones.dll" />
-  </ItemGroup>
   <ItemGroup />
   <ItemGroup />
 </Project>
