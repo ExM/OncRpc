@@ -28,6 +28,8 @@ namespace Xdr
 				Assert.AreEqual(0x1234ABCD, val.Field1);
 				Assert.AreEqual(0xCDEF9876, val.Field2);
 			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+
+			Assert.AreEqual(8, s.Position);
 		}
 
 		[Test]

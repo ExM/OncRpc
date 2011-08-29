@@ -45,7 +45,7 @@ namespace Xdr
 			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
 
 			foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
-				Console.WriteLine("a:{0} f:{1}", a.FullName, a.Location);
+				Console.WriteLine("a:{0}", a.FullName);
 		}
 	}
 }

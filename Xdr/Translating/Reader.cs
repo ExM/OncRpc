@@ -28,6 +28,10 @@ namespace Xdr.Translating
 		private Action<string> _completed_string;
 		private Action<Int32> _completed_Int32;
 		private Action<UInt32> _completed_UInt32;
+		private Action<Int64> _completed_Int64;
+		private Action<UInt64> _completed_UInt64;
+		private Action<Single> _completed_Single;
+		private Action<Double> _completed_Double;
 		private Action<Exception> _excepted;
 
 		#region Int32
@@ -59,6 +63,66 @@ namespace Xdr.Translating
 		}
 
 		#endregion UInt32
+
+		#region Int64
+
+		private void Int64_Readed(byte[] val)
+		{
+			_completed_Int64(XdrEncoding.DecodeInt64(val));
+		}
+
+		public void ReadInt64(Action<long> completed, Action<Exception> excepted)
+		{
+			_completed_Int64 = completed;
+			_reader.Read(8, Int64_Readed, excepted);
+		}
+
+		#endregion Int64
+
+		#region UInt64
+
+		private void UInt64_Readed(byte[] val)
+		{
+			_completed_UInt64(XdrEncoding.DecodeUInt64(val));
+		}
+
+		public void ReadUInt64(Action<ulong> completed, Action<Exception> excepted)
+		{
+			_completed_UInt64 = completed;
+			_reader.Read(8, UInt64_Readed, excepted);
+		}
+
+		#endregion UInt64
+
+		#region Single
+
+		private void Single_Readed(byte[] val)
+		{
+			_completed_Single(XdrEncoding.DecodeSingle(val));
+		}
+
+		public void ReadSingle(Action<float> completed, Action<Exception> excepted)
+		{
+			_completed_Single = completed;
+			_reader.Read(4, Single_Readed, excepted);
+		}
+
+		#endregion Single
+
+		#region Double
+
+		private void Double_Readed(byte[] val)
+		{
+			_completed_Double(XdrEncoding.DecodeDouble(val));
+		}
+
+		public void ReadDouble(Action<double> completed, Action<Exception> excepted)
+		{
+			_completed_Double = completed;
+			_reader.Read(8, Double_Readed, excepted);
+		}
+
+		#endregion Double
 
 		#region String
 

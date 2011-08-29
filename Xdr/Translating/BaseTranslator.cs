@@ -20,16 +20,38 @@ namespace Xdr
 
 		protected abstract Type GetReadOneCacheType();
 		public abstract void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted);
-
+		
 		protected abstract Type GetReadManyCacheType();
 		public abstract void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted);
-
+/*
 		protected abstract Type GetWriteOneCacheType();
 		public abstract void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted);
 
 		protected abstract Type GetWriteManyCacheType();
 		public abstract void Write<T>(IWriter writer, T items, bool fix, Action completed, Action<Exception> excepted);
-		
+		*/
+
+		protected virtual Type GetWriteOneCacheType()
+		{
+			throw new NotImplementedException();
+		}
+
+		public virtual void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected virtual Type GetWriteManyCacheType()
+		{
+			throw new NotImplementedException();
+		}
+
+		public virtual void Write<T>(IWriter writer, T items, bool fix, Action completed, Action<Exception> excepted)
+		{
+			throw new NotImplementedException();
+		}
+
+
 		protected void BuildCaches()
 		{
 			lock (_sync)
@@ -86,6 +108,14 @@ namespace Xdr
 				return (Delegate)(ReadOneDelegate<Int32>)ReadInt32;
 			if(targetType == typeof(UInt32))
 				return (Delegate)(ReadOneDelegate<UInt32>)ReadUInt32;
+			if (targetType == typeof(Int64))
+				return (Delegate)(ReadOneDelegate<Int64>)ReadInt64;
+			if (targetType == typeof(UInt64))
+				return (Delegate)(ReadOneDelegate<UInt64>)ReadUInt64;
+			if (targetType == typeof(Single))
+				return (Delegate)(ReadOneDelegate<Single>)ReadSingle;
+			if (targetType == typeof(Double))
+				return (Delegate)(ReadOneDelegate<Double>)ReadDouble;
 
 			try
 			{
@@ -171,6 +201,26 @@ namespace Xdr
 		private static void ReadUInt32(IReader reader, Action<uint> completed, Action<Exception> excepted)
 		{
 			reader.ReadUInt32(completed, excepted);
+		}
+
+		private static void ReadInt64(IReader reader, Action<long> completed, Action<Exception> excepted)
+		{
+			reader.ReadInt64(completed, excepted);
+		}
+
+		private static void ReadUInt64(IReader reader, Action<ulong> completed, Action<Exception> excepted)
+		{
+			reader.ReadUInt64(completed, excepted);
+		}
+
+		private static void ReadSingle(IReader reader, Action<float> completed, Action<Exception> excepted)
+		{
+			reader.ReadSingle(completed, excepted);
+		}
+
+		private static void ReadDouble(IReader reader, Action<double> completed, Action<Exception> excepted)
+		{
+			reader.ReadDouble(completed, excepted);
 		}
 		
 		private static void ReadBytes(IReader reader, uint len, bool fix, Action<byte[]> completed, Action<Exception> excepted)
