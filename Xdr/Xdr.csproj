@@ -70,11 +70,6 @@
     <Compile Include="Reading\XdrReadBuilder.cs" />
     <Compile Include="Reading\TypeCache.cs" />
     <Compile Include="ByteReaderExtensions.cs" />
-    <Compile Include="ReadContexts\Integer.cs" />
-    <Compile Include="ReadContexts\VarOpaqueData.cs" />
-    <Compile Include="ReadContexts\UInteger.cs" />
-    <Compile Include="ReadContexts\FixOpaqueData.cs" />
-    <Compile Include="ReadContexts\StringData.cs" />
     <Compile Include="ReadContexts\CustomTypeCollection.cs" />
     <Compile Include="Emit\StructureModel.cs" />
     <Compile Include="Attributes\VarAttribute.cs" />

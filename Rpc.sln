@@ -9,39 +9,33 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xdr.Test", "Xdr.Test\Xdr.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmitTest", "EmitTest\EmitTest.csproj", "{7E827ABB-01F4-427A-8AF2-DB00D8315FC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xdr.StaticSingletones", "Xdr.StaticSingletones\Xdr.StaticSingletones.csproj", "{F3CF59A6-117B-45F4-8E46-4BC37F8C0DD2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3D05D93B-A861-4CE0-810A-7A0C6BC5D46E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D05D93B-A861-4CE0-810A-7A0C6BC5D46E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D05D93B-A861-4CE0-810A-7A0C6BC5D46E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D05D93B-A861-4CE0-810A-7A0C6BC5D46E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E9D7D0A1-F900-44B1-A649-98D88846610C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E9D7D0A1-F900-44B1-A649-98D88846610C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E9D7D0A1-F900-44B1-A649-98D88846610C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E9D7D0A1-F900-44B1-A649-98D88846610C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{23BDA9BE-07C5-4B72-8F15-A50C0FB9E1A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{23BDA9BE-07C5-4B72-8F15-A50C0FB9E1A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23BDA9BE-07C5-4B72-8F15-A50C0FB9E1A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23BDA9BE-07C5-4B72-8F15-A50C0FB9E1A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D05D93B-A861-4CE0-810A-7A0C6BC5D46E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D05D93B-A861-4CE0-810A-7A0C6BC5D46E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D05D93B-A861-4CE0-810A-7A0C6BC5D46E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D05D93B-A861-4CE0-810A-7A0C6BC5D46E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7E827ABB-01F4-427A-8AF2-DB00D8315FC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7E827ABB-01F4-427A-8AF2-DB00D8315FC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E827ABB-01F4-427A-8AF2-DB00D8315FC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E827ABB-01F4-427A-8AF2-DB00D8315FC2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3CF59A6-117B-45F4-8E46-4BC37F8C0DD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3CF59A6-117B-45F4-8E46-4BC37F8C0DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3CF59A6-117B-45F4-8E46-4BC37F8C0DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3CF59A6-117B-45F4-8E46-4BC37F8C0DD2}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
+		{E9D7D0A1-F900-44B1-A649-98D88846610C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9D7D0A1-F900-44B1-A649-98D88846610C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9D7D0A1-F900-44B1-A649-98D88846610C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9D7D0A1-F900-44B1-A649-98D88846610C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Rpc\Rpc.csproj
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
