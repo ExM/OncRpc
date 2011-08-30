@@ -38,7 +38,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="BaseReaderTest.cs" />
     <Compile Include="TestDtos\EnumTest.cs" />
     <Compile Include="TestDtos\IntEnum.cs" />
     <Compile Include="TestDtos\IsolationMappingTest.cs" />
@@ -49,7 +48,6 @@
     <Compile Include="Example\FileType.cs" />
     <Compile Include="Example\CompleteFile.cs" />
     <Compile Include="Example\FileKind.cs" />
-    <Compile Include="CompleteFileTest.cs" />
     <Compile Include="TestDtos\AttributeMappingTest.cs" />
     <Compile Include="TestDtos\SimplyIntAttr_ReadListContext.cs" />
     <Compile Include="TestDtos\SimplyIntAttr_ReadContext.cs" />
@@ -60,6 +58,7 @@
     <Compile Include="TestDtos\SimplyInt_ReadContext.cs" />
     <Compile Include="TestDtos\DirectMappingTest.cs" />
     <Compile Include="TestDtos\ByteEnum.cs" />
+    <Compile Include="TestDtos\ArrayReadindTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

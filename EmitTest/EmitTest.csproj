@@ -43,7 +43,6 @@
     <Compile Include="TypeCacheExample.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="TreeNode.cs" />
-    <Compile Include="TreeNode_ReadContext.cs" />
     <Compile Include="XdrReaderExample.cs" />
   </ItemGroup>
   <ItemGroup>

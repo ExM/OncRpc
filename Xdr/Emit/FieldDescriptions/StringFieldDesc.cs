@@ -38,7 +38,7 @@ namespace Xdr.Emit
 			il.Emit(OpCodes.Newobj, typeof(Action<string>).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldfld, exceptedField);
-			il.Emit(OpCodes.Newobj, typeof(StringData).GetConstructor(new Type[] { typeof(IByteReader), typeof(uint), typeof(Action<string>), typeof(Action<Exception>) }));
+			//il.Emit(OpCodes.Newobj, typeof(StringData).GetConstructor(new Type[] { typeof(IByteReader), typeof(uint), typeof(Action<string>), typeof(Action<Exception>) }));
 			il.Emit(OpCodes.Pop);
 		}
 	}

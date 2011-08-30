@@ -61,16 +61,11 @@
     <Compile Include="Translating\Reader.cs" />
     <Compile Include="Translating\TranslatorBuilder.Emit.cs" />
     <Compile Include="TypeExtensions.cs" />
-    <Compile Include="XdrReader.cs" />
     <Compile Include="IByteReader.cs" />
     <Compile Include="IByteWriter.cs" />
     <Compile Include="SyncStream.cs" />
     <Compile Include="AsyncStream.cs" />
     <Compile Include="XdrEncoding.cs" />
-    <Compile Include="Reading\XdrReadBuilder.cs" />
-    <Compile Include="Reading\TypeCache.cs" />
-    <Compile Include="ByteReaderExtensions.cs" />
-    <Compile Include="ReadContexts\CustomTypeCollection.cs" />
     <Compile Include="Emit\StructureModel.cs" />
     <Compile Include="Attributes\VarAttribute.cs" />
     <Compile Include="Attributes\FixAttribute.cs" />
@@ -80,6 +75,8 @@
     <Compile Include="Translating\Emit\WriteOneCacheDescription.cs" />
     <Compile Include="Translating\Emit\WriteManyCacheDescription.cs" />
     <Compile Include="ReadContexts\BoolReader.cs" />
+    <Compile Include="ReadContexts\ListReader_1.cs" />
+    <Compile Include="ReadContexts\ArrayReader_1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

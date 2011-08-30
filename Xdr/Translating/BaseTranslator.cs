@@ -171,11 +171,14 @@ namespace Xdr
 					if (attrResult != null)
 						return attrResult;
 				}
-
-
-
-
-
+				
+				Delegate d = null;
+				d = CreateArrayReader(targetType);
+				if(d != null)
+					return d;
+				d = CreateListReader(targetType);
+				if(d != null)
+					return d;
 
 				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
 			}
@@ -183,6 +186,32 @@ namespace Xdr
 			{
 				return CreateStubDelegate(ex, "ReadMany", targetType, typeof(ReadManyDelegate<>));
 			}
+		}
+
+		public static Delegate CreateArrayReader(Type collectionType)
+		{
+			if (!collectionType.HasElementType)
+				return null;
+			Type itemType = collectionType.GetElementType();
+			if (itemType == null || itemType.MakeArrayType() != collectionType)
+				return null;
+			
+			MethodInfo mi = typeof(ArrayReader<>).MakeGenericType(itemType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
+			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
+		}
+		
+		public static Delegate CreateListReader(Type collectionType)
+		{
+			if (!collectionType.IsGenericType)
+				return null;
+			
+			Type genericType = collectionType.GetGenericTypeDefinition();
+			if(genericType != typeof(List<>))
+				return null;
+			Type itemType = collectionType.GetGenericArguments()[0];
+			
+			MethodInfo mi = typeof(ListReader<>).MakeGenericType(itemType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
+			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
 		private Delegate CreateStubDelegate(Exception ex, string method, Type targetType, Type genDelegateType)
