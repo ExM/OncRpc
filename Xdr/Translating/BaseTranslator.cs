@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using Xdr.Translating;
+using Xdr.ReadContexts;
 
 namespace Xdr
 {
@@ -119,6 +120,10 @@ namespace Xdr
 
 			try
 			{
+				if (targetType.IsEnum)
+					return CreateEnumDelegate(targetType);
+
+
 				ReadOneAttribute attr = targetType.GetCustomAttributes(typeof(ReadOneAttribute), true)
 					.Select((o) => (ReadOneAttribute)o)
 					.FirstOrDefault();
@@ -137,6 +142,12 @@ namespace Xdr
 			{
 				return CreateStubDelegate(ex, "ReadOne", targetType, typeof(ReadOneDelegate<>));
 			}
+		}
+
+		public static Delegate CreateEnumDelegate(Type targetType)
+		{
+			MethodInfo mi = typeof(EnumReader<>).MakeGenericType(targetType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
+			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 
 		private Delegate ReadManyBuild(Type targetType)

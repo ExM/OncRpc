@@ -39,6 +39,8 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseReaderTest.cs" />
+    <Compile Include="TestDtos\EnumTest.cs" />
+    <Compile Include="TestDtos\IntEnum.cs" />
     <Compile Include="TestDtos\IsolationMappingTest.cs" />
     <Compile Include="TestDtos\SimplyIntAttr_ReadContext2.cs" />
     <Compile Include="TestDtos\OverrideMappingTest.cs" />
