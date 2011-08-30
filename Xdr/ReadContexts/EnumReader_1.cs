@@ -15,11 +15,26 @@ namespace Xdr.ReadContexts
 
 		static EnumReader()
 		{
+			Type underType = typeof(T).GetEnumUnderlyingType();
+			Func<object, int> conv;
+			if(underType == typeof(byte))
+				conv = (item) => (int)(byte)(ValueType)item;
+			else if(underType == typeof(sbyte))
+				conv = (item) => (int)(sbyte)(ValueType)item;
+			else if(underType == typeof(short))
+				conv = (item) => (int)(short)(ValueType)item;
+			else if(underType == typeof(ushort))
+				conv = (item) => (int)(ushort)(ValueType)item;
+			else if(underType == typeof(int))
+				conv = (item) => (int)(ValueType)item;
+			else
+				throw new NotSupportedException(string.Format("unsupported type {0}", typeof(T).FullName));
+			
 			_enumMap = new Dictionary<int,T>();
 			foreach (object item in Enum.GetValues(typeof(T)))
 			{
 				T exist;
-				int key = (int)(ValueType)item;
+				int key = conv(item);
 				if(!_enumMap.TryGetValue(key, out exist))
 					_enumMap.Add(key, (T)item);
 			}

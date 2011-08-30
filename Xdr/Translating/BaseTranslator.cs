@@ -117,24 +117,19 @@ namespace Xdr
 				return (Delegate)(ReadOneDelegate<Single>)ReadSingle;
 			if (targetType == typeof(Double))
 				return (Delegate)(ReadOneDelegate<Double>)ReadDouble;
-
+			if (targetType == typeof(bool))
+				return (Delegate)(ReadOneDelegate<bool>)BoolReader.Read;
+			
 			try
 			{
 				if (targetType.IsEnum)
 					return CreateEnumDelegate(targetType);
-
 
 				ReadOneAttribute attr = targetType.GetCustomAttributes(typeof(ReadOneAttribute), true)
 					.Select((o) => (ReadOneAttribute)o)
 					.FirstOrDefault();
 				if (attr != null)
 					return attr.Create(targetType);
-
-
-
-
-
-
 
 				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
 			}
