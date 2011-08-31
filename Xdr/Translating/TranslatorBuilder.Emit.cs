@@ -88,7 +88,10 @@ namespace Xdr
 			EmitOverride_ReadTMany(typeBuilder);
 			
 			EmitOverride_GetCacheType(typeBuilder, "GetWriteOneCacheType", fb_writeOneCacheType);
+			EmitOverride_WriteTOne(typeBuilder);
+			
 			EmitOverride_GetCacheType(typeBuilder, "GetWriteManyCacheType", fb_writeManyCacheType);
+			EmitOverride_WriteTMany(typeBuilder);
 			
 			return typeBuilder.CreateType();
 		}
@@ -130,7 +133,6 @@ namespace Xdr
 
 			ILGenerator il = mb.GetILGenerator();
 			Label noBuild = il.DefineLabel();
-			//TODO: emit
 			//	IL_0000:  ldsfld class Xdr.ReadOneDelegate`1<!0> class Xdr.Examples.ReadOneCache`1<!!0>::Instance
 			il.Emit(OpCodes.Ldsfld, fi);
 			//	IL_0005:  brtrue IL_0010
@@ -193,7 +195,6 @@ namespace Xdr
 			
 			ILGenerator il = mb.GetILGenerator();
 			Label noBuild = il.DefineLabel();
-			//TODO: emit
 //	IL_0000:  ldsfld class Xdr.ReadOneDelegate`1<!0> class Xdr.Examples.ReadOneCache`1<!!0>::Instance
 			il.Emit(OpCodes.Ldsfld, fi);
 //	IL_0005:  brtrue IL_0010
@@ -219,6 +220,87 @@ namespace Xdr
 
 			il.Emit(OpCodes.Callvirt, miInvoke);
 
+			il.Emit(OpCodes.Ret);
+		}
+		
+		private void EmitOverride_WriteTOne(TypeBuilder typeBuilder)
+		{
+			MethodInfo miDeclaration = null;
+			foreach(var mi in typeof(BaseTranslator).GetMethods(BindingFlags.Public | BindingFlags.Instance))
+			{
+				if(mi.Name != "Write")
+					continue;
+				
+				if(mi.GetParameters().Length == 4)
+					miDeclaration = mi;
+			}
+			
+			
+			MethodBuilder mb = typeBuilder.DefineMethod("Write", MethodAttributes.Public | MethodAttributes.Virtual);
+			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
+			mb.SetReturnType(null);
+			mb.SetParameters(typeof(IWriter), genTypeParam, typeof(Action), typeof(Action<Exception>));
+			typeBuilder.DefineMethodOverride(mb, miDeclaration);
+
+
+			FieldInfo fi = TypeBuilder.GetField(_writeOneCacheDescription.Result.MakeGenericType(genTypeParam),
+				_writeOneCacheDescription.Result.GetField("Instance"));
+			
+			ILGenerator il = mb.GetILGenerator();
+			Label noBuild = il.DefineLabel();
+			il.Emit(OpCodes.Ldsfld, fi);
+			il.Emit(OpCodes.Brtrue, noBuild);
+			il.Emit(OpCodes.Ldarg_0);
+			il.Emit(OpCodes.Call, typeof(BaseTranslator).GetMethod("BuildCaches", BindingFlags.NonPublic | BindingFlags.Instance));
+			il.MarkLabel(noBuild);
+			il.Emit(OpCodes.Ldsfld, fi);
+			il.Emit(OpCodes.Ldarg_1);
+			il.Emit(OpCodes.Ldarg_2);
+			il.Emit(OpCodes.Ldarg_3);
+			il.Emit(OpCodes.Ldarg_S, 4);
+			MethodInfo miInvoke = TypeBuilder.GetMethod( typeof(WriteOneDelegate<>).MakeGenericType(genTypeParam),
+				typeof(WriteOneDelegate<>).GetMethod("Invoke"));
+
+			il.Emit(OpCodes.Callvirt, miInvoke);
+			il.Emit(OpCodes.Ret);
+		}
+		
+		private void EmitOverride_WriteTMany(TypeBuilder typeBuilder)
+		{
+			MethodInfo miDeclaration = null;
+			foreach (var mi in typeof(BaseTranslator).GetMethods(BindingFlags.Public | BindingFlags.Instance))
+			{
+				if (mi.Name != "Write")
+					continue;
+
+				if (mi.GetParameters().Length == 5)
+					miDeclaration = mi;
+			}
+
+			MethodBuilder mb = typeBuilder.DefineMethod("Write", MethodAttributes.Public | MethodAttributes.Virtual);
+			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
+			mb.SetReturnType(null);
+			mb.SetParameters(typeof(IWriter), genTypeParam, typeof(bool), typeof(Action), typeof(Action<Exception>));
+			typeBuilder.DefineMethodOverride(mb, miDeclaration);
+
+			FieldInfo fi = _writeManyCacheDescription.Instance(genTypeParam);
+
+			ILGenerator il = mb.GetILGenerator();
+			Label noBuild = il.DefineLabel();
+			il.Emit(OpCodes.Ldsfld, fi);
+			il.Emit(OpCodes.Brtrue, noBuild);
+			il.Emit(OpCodes.Ldarg_0);
+			il.Emit(OpCodes.Call, typeof(BaseTranslator).GetMethod("BuildCaches", BindingFlags.NonPublic | BindingFlags.Instance));
+			il.MarkLabel(noBuild);
+			il.Emit(OpCodes.Ldsfld, fi);
+			il.Emit(OpCodes.Ldarg_1);
+			il.Emit(OpCodes.Ldarg_2);
+			il.Emit(OpCodes.Ldarg_3);
+			il.Emit(OpCodes.Ldarg_S, 4);
+			il.Emit(OpCodes.Ldarg_S, 5);
+			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(WriteManyDelegate<>).MakeGenericType(genTypeParam),
+				typeof(WriteManyDelegate<>).GetMethod("Invoke"));
+			il.Emit(OpCodes.Callvirt, miInvoke);
 			il.Emit(OpCodes.Ret);
 		}
 	}

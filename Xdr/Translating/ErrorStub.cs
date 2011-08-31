@@ -24,5 +24,15 @@ namespace Xdr.Translating
 		{
 			reader.Throw(Error, excepted);
 		}
+		
+		public void WriteOne(IWriter writer, T item, Action completed, Action<Exception> excepted)
+		{
+			writer.Throw(Error, excepted);
+		}
+
+		public void WriteMany(IWriter writer, T item, bool fix, Action completed, Action<Exception> excepted)
+		{
+			writer.Throw(Error, excepted);
+		}
 	}
 }

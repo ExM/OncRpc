@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -78,6 +78,11 @@
     <Compile Include="ReadContexts\BoolReader.cs" />
     <Compile Include="ReadContexts\ListReader_1.cs" />
     <Compile Include="ReadContexts\ArrayReader_1.cs" />
+    <Compile Include="Translating\Writer.cs" />
+    <Compile Include="Translating\BaseTranslator.ReadOne.cs" />
+    <Compile Include="Translating\BaseTranslator.ReadMany.cs" />
+    <Compile Include="Translating\BaseTranslator.WriteOne.cs" />
+    <Compile Include="Translating\BaseTranslator.WriteMany.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
