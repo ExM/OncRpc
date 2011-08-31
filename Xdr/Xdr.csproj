@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -48,6 +48,7 @@
     <Compile Include="Emit\FieldDescriptions\UInt32FieldDesc.cs" />
     <Compile Include="Emit\CustomContextBuilder.cs" />
     <Compile Include="ITranslator.cs" />
+    <Compile Include="ReadContexts\NullableReader_1.cs" />
     <Compile Include="ReadContexts\EnumReader_1.cs" />
     <Compile Include="Translating\Emit\DelegateCacheDescription.cs" />
     <Compile Include="Translating\Emit\ReadManyCacheDescription.cs" />

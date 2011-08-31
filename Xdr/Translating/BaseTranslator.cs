@@ -24,25 +24,14 @@ namespace Xdr
 		
 		protected abstract Type GetReadManyCacheType();
 		public abstract void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted);
-/*
+
 		protected abstract Type GetWriteOneCacheType();
-		public abstract void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted);
+		//public abstract void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted);
 
 		protected abstract Type GetWriteManyCacheType();
-		public abstract void Write<T>(IWriter writer, T items, bool fix, Action completed, Action<Exception> excepted);
-		*/
-
-		protected virtual Type GetWriteOneCacheType()
-		{
-			throw new NotImplementedException();
-		}
+		//public abstract void Write<T>(IWriter writer, T items, bool fix, Action completed, Action<Exception> excepted);
 
 		public virtual void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted)
-		{
-			throw new NotImplementedException();
-		}
-
-		protected virtual Type GetWriteManyCacheType()
 		{
 			throw new NotImplementedException();
 		}
@@ -51,7 +40,6 @@ namespace Xdr
 		{
 			throw new NotImplementedException();
 		}
-
 
 		protected void BuildCaches()
 		{
@@ -105,31 +93,36 @@ namespace Xdr
 
 		private Delegate ReadOneBuild(Type targetType)
 		{
-			if(targetType == typeof(Int32))
-				return (Delegate)(ReadOneDelegate<Int32>)ReadInt32;
-			if(targetType == typeof(UInt32))
-				return (Delegate)(ReadOneDelegate<UInt32>)ReadUInt32;
-			if (targetType == typeof(Int64))
-				return (Delegate)(ReadOneDelegate<Int64>)ReadInt64;
-			if (targetType == typeof(UInt64))
-				return (Delegate)(ReadOneDelegate<UInt64>)ReadUInt64;
-			if (targetType == typeof(Single))
-				return (Delegate)(ReadOneDelegate<Single>)ReadSingle;
-			if (targetType == typeof(Double))
-				return (Delegate)(ReadOneDelegate<Double>)ReadDouble;
-			if (targetType == typeof(bool))
-				return (Delegate)(ReadOneDelegate<bool>)BoolReader.Read;
-			
 			try
 			{
-				if (targetType.IsEnum)
-					return CreateEnumDelegate(targetType);
+				Delegate result = null;
 
-				ReadOneAttribute attr = targetType.GetCustomAttributes(typeof(ReadOneAttribute), true)
-					.Select((o) => (ReadOneAttribute)o)
-					.FirstOrDefault();
-				if (attr != null)
-					return attr.Create(targetType);
+				result = CreateReadOneForAttribute(targetType);
+				if (result != null)
+					return result;
+
+				result = CreateEnumDelegate(targetType);
+				if (result != null)
+					return result;
+
+				result = CreateNullableReader(targetType);
+				if (result != null)
+					return result;
+
+				if (targetType == typeof(Int32))
+					return (Delegate)(ReadOneDelegate<Int32>)ReadInt32;
+				if (targetType == typeof(UInt32))
+					return (Delegate)(ReadOneDelegate<UInt32>)ReadUInt32;
+				if (targetType == typeof(Int64))
+					return (Delegate)(ReadOneDelegate<Int64>)ReadInt64;
+				if (targetType == typeof(UInt64))
+					return (Delegate)(ReadOneDelegate<UInt64>)ReadUInt64;
+				if (targetType == typeof(Single))
+					return (Delegate)(ReadOneDelegate<Single>)ReadSingle;
+				if (targetType == typeof(Double))
+					return (Delegate)(ReadOneDelegate<Double>)ReadDouble;
+				if (targetType == typeof(bool))
+					return (Delegate)(ReadOneDelegate<bool>)BoolReader.Read;
 
 				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
 			}
@@ -139,46 +132,59 @@ namespace Xdr
 			}
 		}
 
+		public static Delegate CreateReadOneForAttribute(Type targetType)
+		{
+			ReadOneAttribute attr = targetType.GetCustomAttributes(typeof(ReadOneAttribute), true)
+					.Select((o) => (ReadOneAttribute)o)
+					.FirstOrDefault();
+			if (attr == null)
+				return null;
+			else
+				return attr.Create(targetType);
+		}
+
+		public static Delegate CreateNullableReader(Type targetType)
+		{
+			if (!targetType.IsGenericType)
+				return null;
+			if (targetType.GetGenericTypeDefinition() != typeof(Nullable<>))
+				return null;
+			Type itemType = targetType.GetGenericArguments()[0];
+
+			MethodInfo mi = typeof(NullableReader<>).MakeGenericType(itemType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
+			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
+		}
+
 		public static Delegate CreateEnumDelegate(Type targetType)
 		{
+			if (!targetType.IsEnum)
+				return null;
 			MethodInfo mi = typeof(EnumReader<>).MakeGenericType(targetType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 
 		private Delegate ReadManyBuild(Type targetType)
 		{
-			if(targetType == typeof(byte[]))
-				return (Delegate)(ReadManyDelegate<byte[]>)ReadBytes;
-			if(targetType == typeof(string))
-				return (Delegate)(ReadManyDelegate<string>)ReadString;
-			
 			try
 			{
-				Type itemType = targetType.GetKnownItemType();
-				if (itemType != null)
-				{
-					Delegate attrResult = null;
-					foreach (ReadManyAttribute attr in itemType.GetCustomAttributes(typeof(ReadManyAttribute), true)
-						.Select((o) => (ReadManyAttribute)o))
-					{
-						Delegate result = attr.Create(targetType);
-						if (attrResult != null)
-							throw new InvalidOperationException(string.Format("Duplicate methods in {0} ({1}.{2} & {2}.{3})",
-								targetType, result.Method.DeclaringType, result.Method.Name, attrResult.Method.DeclaringType, attrResult.Method.Name));
-						attrResult = result;
-					}
+				Delegate result = null;
 
-					if (attrResult != null)
-						return attrResult;
-				}
-				
-				Delegate d = null;
-				d = CreateArrayReader(targetType);
-				if(d != null)
-					return d;
-				d = CreateListReader(targetType);
-				if(d != null)
-					return d;
+				result = CreateReadManyForAttribute(targetType);
+				if (result != null)
+					return result;
+
+				if (targetType == typeof(byte[]))
+					return (Delegate)(ReadManyDelegate<byte[]>)ReadBytes;
+				if (targetType == typeof(string))
+					return (Delegate)(ReadManyDelegate<string>)ReadString;
+
+				result = CreateArrayReader(targetType);
+				if (result != null)
+					return result;
+
+				result = CreateListReader(targetType);
+				if (result != null)
+					return result;
 
 				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
 			}
@@ -186,6 +192,29 @@ namespace Xdr
 			{
 				return CreateStubDelegate(ex, "ReadMany", targetType, typeof(ReadManyDelegate<>));
 			}
+		}
+
+		public static Delegate CreateReadManyForAttribute(Type collectionType)
+		{
+			Type itemType = collectionType.GetKnownItemType();
+			if (itemType == null)
+				return null;
+
+			Delegate attrResult = null;
+			foreach (ReadManyAttribute attr in itemType.GetCustomAttributes(typeof(ReadManyAttribute), true)
+				.Select((o) => (ReadManyAttribute)o))
+			{
+				Delegate candidate = attr.Create(collectionType);
+				if (attrResult != null)
+					throw new InvalidOperationException(string.Format("Duplicate methods in {0} ({1}.{2} & {2}.{3})",
+						collectionType, candidate.Method.DeclaringType, candidate.Method.Name, attrResult.Method.DeclaringType, attrResult.Method.Name));
+				attrResult = candidate;
+			}
+
+			if (attrResult == null)
+				return null;
+			else
+				return attrResult;
 		}
 
 		public static Delegate CreateArrayReader(Type collectionType)

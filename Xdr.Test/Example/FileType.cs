@@ -16,7 +16,8 @@ namespace Xdr.Example
 		/// <summary>
 		/// info about file
 		/// </summary>
-		[Switch, Case(FileKind.Text)] // no extra information
+		[Switch]
+		[Case(FileKind.Text)] // no extra information
 		public FileKind Type {get; set;}
 		
 		/// <summary>
