@@ -6,6 +6,7 @@ namespace Xdr.Example
 	/// Complete file structure.
 	/// http://tools.ietf.org/html/rfc4506#section-7
 	/// </summary>
+	[ReadOne(typeof(CompleteFile_HandReadContext), "Read")]
 	public class CompleteFile
 	{
 		/// <summary>

@@ -5,15 +5,16 @@ namespace Xdr
 	public static class XdrEncoding
 	{
 		/// <summary>
-		/// Decodes the int32.
+		/// Decodes the Int32.
 		/// http://tools.ietf.org/html/rfc4506#section-4.1
 		/// </summary>
 		public static int DecodeInt32(byte[] buff)
 		{
 			return (buff[0] << 0x18) | (buff[1] << 0x10) | (buff[2]  << 0x08) | buff[3];
 		}
+
 		/// <summary>
-		/// Encodes the int32.
+		/// Encodes the Int32.
 		/// http://tools.ietf.org/html/rfc4506#section-4.1
 		/// </summary>
 		public static byte[] EncodeInt32(int v)
@@ -27,7 +28,7 @@ namespace Xdr
 		}
 		
 		/// <summary>
-		/// Decodes the uint32.
+		/// Decodes the UInt32.
 		/// http://tools.ietf.org/html/rfc4506#section-4.2
 		/// </summary>
 		public static uint DecodeUInt32(byte[] buff)
@@ -35,7 +36,10 @@ namespace Xdr
 			return ((uint)buff[0] << 0x18) | ((uint)buff[1] << 0x10) | ((uint)buff[2] << 0x08) | (uint)buff[3];
 		}
 
-
+		/// <summary>
+		/// Decodes the Int64.
+		/// http://tools.ietf.org/html/rfc4506#section-4.5
+		/// </summary>
 		public static long DecodeInt64(byte[] buff)
 		{
 			return
@@ -49,6 +53,10 @@ namespace Xdr
 				(long)buff[7];
 		}
 
+		/// <summary>
+		/// Decodes the UInt64.
+		/// http://tools.ietf.org/html/rfc4506#section-4.5
+		/// </summary>
 		public static ulong DecodeUInt64(byte[] buff)
 		{
 			return
@@ -62,12 +70,20 @@ namespace Xdr
 				(ulong)buff[7];
 		}
 
+		/// <summary>
+		/// Decodes the Single.
+		/// http://tools.ietf.org/html/rfc4506#section-4.6
+		/// </summary>
 		public unsafe static Single DecodeSingle(byte[] buff)
 		{
 			int num = DecodeInt32(buff);
 			return *(float*)(&num);
 		}
 
+		/// <summary>
+		/// Decodes the Double.
+		/// http://tools.ietf.org/html/rfc4506#section-4.7
+		/// </summary>
 		public unsafe static double DecodeDouble(byte[] buff)
 		{
 			long num = DecodeInt64(buff);

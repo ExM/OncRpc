@@ -3,7 +3,7 @@ using System;
 namespace Xdr.TestDtos
 {
 	[ReadOne(typeof(SimplyIntAttr_ReadContext), "Read")]
-	[ReadMany(typeof(SimplyIntAttr_ReadListContext), "Read", "ReadList")]
+	[ReadMany(typeof(SimplyIntAttr_ReadListContext), "ReadArray", "ReadList")]
 	public class SimplyIntAttr
 	{
 		public int Field1;

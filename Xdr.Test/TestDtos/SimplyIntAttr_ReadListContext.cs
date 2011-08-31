@@ -60,6 +60,11 @@ namespace Xdr.TestDtos
 		{
 			new SimplyIntAttr_ReadListContext(reader, len, fix, completed, excepted);
 		}
+
+		public static void ReadArray(IReader reader, uint len, bool fix, Action<SimplyIntAttr[]> completed, Action<Exception> excepted)
+		{
+			new SimplyIntAttr_ReadListContext(reader, len, fix, (list) => completed(list.ToArray()), excepted);
+		}
 	}
 }
 

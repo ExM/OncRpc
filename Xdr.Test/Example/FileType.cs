@@ -6,6 +6,7 @@ namespace Xdr.Example
 	/// union types of files
 	/// http://tools.ietf.org/html/rfc4506#section-7
 	/// </summary>
+	[ReadOne(typeof(FileType_HandReadContext), "Read")]
 	public class FileType
 	{
 		/// <summary>
