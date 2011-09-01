@@ -76,6 +76,24 @@ namespace Xdr
 		}
 
 		/// <summary>
+		/// Encodes the Int64.
+		/// http://tools.ietf.org/html/rfc4506#section-4.5
+		/// </summary>
+		public static byte[] EncodeInt64(long v)
+		{
+			byte[] b = new byte[8];
+			b[0] = (byte)((v >> 56) & 0xff);
+			b[1] = (byte)((v >> 48) & 0xff);
+			b[2] = (byte)((v >> 40) & 0xff);
+			b[3] = (byte)((v >> 32) & 0xff);
+			b[4] = (byte)((v >> 24) & 0xff);
+			b[5] = (byte)((v >> 16) & 0xff);
+			b[6] = (byte)((v >>  8) & 0xff);
+			b[7] = (byte)(v & 0xff);
+			return b;
+		}
+
+		/// <summary>
 		/// Decodes the UInt64.
 		/// http://tools.ietf.org/html/rfc4506#section-4.5
 		/// </summary>
@@ -93,6 +111,24 @@ namespace Xdr
 		}
 
 		/// <summary>
+		/// Encodes the UInt64.
+		/// http://tools.ietf.org/html/rfc4506#section-4.5
+		/// </summary>
+		public static byte[] EncodeUInt64(ulong v)
+		{
+			byte[] b = new byte[8];
+			b[0] = (byte)((v >> 56) & 0xff);
+			b[1] = (byte)((v >> 48) & 0xff);
+			b[2] = (byte)((v >> 40) & 0xff);
+			b[3] = (byte)((v >> 32) & 0xff);
+			b[4] = (byte)((v >> 24) & 0xff);
+			b[5] = (byte)((v >> 16) & 0xff);
+			b[6] = (byte)((v >> 8) & 0xff);
+			b[7] = (byte)(v & 0xff);
+			return b;
+		}
+
+		/// <summary>
 		/// Decodes the Single.
 		/// http://tools.ietf.org/html/rfc4506#section-4.6
 		/// </summary>
@@ -103,13 +139,31 @@ namespace Xdr
 		}
 
 		/// <summary>
+		/// Encodes the Single.
+		/// http://tools.ietf.org/html/rfc4506#section-4.6
+		/// </summary>
+		public unsafe static byte[] EncodeSingle(Single v)
+		{
+			return EncodeInt32(*(int*)(&v));
+		}
+
+		/// <summary>
 		/// Decodes the Double.
 		/// http://tools.ietf.org/html/rfc4506#section-4.7
 		/// </summary>
-		public unsafe static double DecodeDouble(byte[] buff)
+		public unsafe static Double DecodeDouble(byte[] buff)
 		{
 			long num = DecodeInt64(buff);
 			return *(double*)(&num);
+		}
+
+		/// <summary>
+		/// Encodes the Double.
+		/// http://tools.ietf.org/html/rfc4506#section-4.7
+		/// </summary>
+		public unsafe static byte[] EncodeDouble(Double v)
+		{
+			return EncodeInt64(*(long*)(&v));
 		}
 	}
 }
