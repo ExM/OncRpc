@@ -5,15 +5,15 @@ using System.Text;
 
 namespace Xdr.WriteContexts
 {
-	public class ArrayWriter<T>
+	public class ListWriter<T>
 	{
-		private T[] _items;
+		private List<T> _items;
 		private IWriter _writer;
-		private uint _index = 0;
+		private int _index = 0;
 		private Action _completed;
 		private Action<Exception> _excepted;
 
-		private ArrayWriter(IWriter writer, T[] items, bool fix, Action completed, Action<Exception> excepted)
+		private ListWriter(IWriter writer, List<T> items, bool fix, Action completed, Action<Exception> excepted)
 		{
 			_writer = writer;
 			_items = items;
@@ -23,12 +23,12 @@ namespace Xdr.WriteContexts
 			if(fix)
 				WriteNextItem();
 			else
-				_writer.WriteUInt32((uint)_items.LongLength, WriteNextItem, _excepted);
+				_writer.WriteUInt32((uint)_items.Count, WriteNextItem, _excepted);
 		}
 
 		private void WriteNextItem()
 		{
-			if (_index < _items.LongLength)
+			if (_index < _items.Count)
 			{
 				T item = _items[_index];
 				_index++;
@@ -38,10 +38,10 @@ namespace Xdr.WriteContexts
 				_completed();
 
 		}
-		
-		public static void Write(IWriter writer, T[] items, bool fix, Action completed, Action<Exception> excepted)
+
+		public static void Write(IWriter writer, List<T> items, bool fix, Action completed, Action<Exception> excepted)
 		{
-			new ArrayWriter<T>(writer, items, fix, completed, excepted);
+			new ListWriter<T>(writer, items, fix, completed, excepted);
 		}
 	}
 }

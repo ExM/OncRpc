@@ -67,6 +67,7 @@
     <Compile Include="SyncStream.cs" />
     <Compile Include="AsyncStream.cs" />
     <Compile Include="WriteContexts\ArrayWriter_1.cs" />
+    <Compile Include="WriteContexts\ListWriter_1.cs" />
     <Compile Include="WriteContexts\EnumWriter_1.cs" />
     <Compile Include="XdrEncoding.cs" />
     <Compile Include="Emit\StructureModel.cs" />

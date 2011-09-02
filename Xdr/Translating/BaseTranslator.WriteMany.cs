@@ -29,9 +29,9 @@ namespace Xdr
 				if (result != null)
 					return result;
 
-				//result = CreateListWriter(targetType);
-				//if (result != null)
-				//	return result;
+				result = CreateListWriter(targetType);
+				if (result != null)
+					return result;
 
 				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
 			}
@@ -39,6 +39,20 @@ namespace Xdr
 			{
 				return CreateStubDelegate(ex, "WriteMany", targetType, typeof(WriteManyDelegate<>));
 			}
+		}
+
+		public static Delegate CreateListWriter(Type collectionType)
+		{
+			if (!collectionType.IsGenericType)
+				return null;
+
+			Type genericType = collectionType.GetGenericTypeDefinition();
+			if (genericType != typeof(List<>))
+				return null;
+			Type itemType = collectionType.GetGenericArguments()[0];
+
+			MethodInfo mi = typeof(ListWriter<>).MakeGenericType(itemType).GetMethod("Write", BindingFlags.Static | BindingFlags.Public);
+			return Delegate.CreateDelegate(typeof(WriteManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
 		public static Delegate CreateArrayWriter(Type collectionType)

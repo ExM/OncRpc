@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Xdr
 {
-	public static class TestExtensions
+	internal static class TestExtensions
 	{
 		public static void Write(this Stream stream, params byte[] buf)
 		{
