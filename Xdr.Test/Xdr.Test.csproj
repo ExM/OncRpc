@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="StandartReadersTest.cs" />
     <Compile Include="Example\CompleteFileTest.cs" />
     <Compile Include="Example\CompleteFile_HandReadContext.cs" />
     <Compile Include="Example\FileType_HandReadContext.cs" />

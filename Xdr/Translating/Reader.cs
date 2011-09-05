@@ -21,196 +21,78 @@ namespace Xdr.Translating
 			_reader.Throw(ex, excepted);
 		}
 
-		private uint _maxLen;
-		private uint _len = 0;
-		private byte[] _bytes = null;
-		private Action<byte[]> _completed_bytes;
-		private Action<string> _completed_string;
-		private Action<Int32> _completed_Int32;
-		private Action<UInt32> _completed_UInt32;
-		private Action<Int64> _completed_Int64;
-		private Action<UInt64> _completed_UInt64;
-		private Action<Single> _completed_Single;
-		private Action<Double> _completed_Double;
-		private Action<Exception> _excepted;
-
-		#region Int32
-
-		private void Int32_Readed(byte[] val)
-		{
-			_completed_Int32(XdrEncoding.DecodeInt32(val));
-		}
-
 		public void ReadInt32(Action<int> completed, Action<Exception> excepted)
 		{
-			_completed_Int32 = completed;
-			_reader.Read(4, Int32_Readed, excepted);
-		}
-
-		#endregion Int32
-
-		#region UInt32
-
-		private void UInt32_Readed(byte[] val)
-		{
-			_completed_UInt32(XdrEncoding.DecodeUInt32(val));
+			_reader.Read(4,
+				(bytes) => completed(XdrEncoding.DecodeInt32(bytes)),
+				excepted);
 		}
 
 		public void ReadUInt32(Action<uint> completed, Action<Exception> excepted)
 		{
-			_completed_UInt32 = completed;
-			_reader.Read(4, UInt32_Readed, excepted);
-		}
-
-		#endregion UInt32
-
-		#region Int64
-
-		private void Int64_Readed(byte[] val)
-		{
-			_completed_Int64(XdrEncoding.DecodeInt64(val));
+			_reader.Read(4,
+				(bytes) => completed(XdrEncoding.DecodeUInt32(bytes)),
+				excepted);
 		}
 
 		public void ReadInt64(Action<long> completed, Action<Exception> excepted)
 		{
-			_completed_Int64 = completed;
-			_reader.Read(8, Int64_Readed, excepted);
-		}
-
-		#endregion Int64
-
-		#region UInt64
-
-		private void UInt64_Readed(byte[] val)
-		{
-			_completed_UInt64(XdrEncoding.DecodeUInt64(val));
+			_reader.Read(8,
+				(bytes) => completed(XdrEncoding.DecodeInt64(bytes)),
+				excepted);
 		}
 
 		public void ReadUInt64(Action<ulong> completed, Action<Exception> excepted)
 		{
-			_completed_UInt64 = completed;
-			_reader.Read(8, UInt64_Readed, excepted);
-		}
-
-		#endregion UInt64
-
-		#region Single
-
-		private void Single_Readed(byte[] val)
-		{
-			_completed_Single(XdrEncoding.DecodeSingle(val));
+			_reader.Read(8,
+				(bytes) => completed(XdrEncoding.DecodeUInt64(bytes)),
+				excepted);
 		}
 
 		public void ReadSingle(Action<float> completed, Action<Exception> excepted)
 		{
-			_completed_Single = completed;
-			_reader.Read(4, Single_Readed, excepted);
-		}
-
-		#endregion Single
-
-		#region Double
-
-		private void Double_Readed(byte[] val)
-		{
-			_completed_Double(XdrEncoding.DecodeDouble(val));
+			_reader.Read(4,
+				(bytes) => completed(XdrEncoding.DecodeSingle(bytes)),
+				excepted);
 		}
 
 		public void ReadDouble(Action<double> completed, Action<Exception> excepted)
 		{
-			_completed_Double = completed;
-			_reader.Read(8, Double_Readed, excepted);
-		}
-
-		#endregion Double
-
-		#region String
-
-		private void String_Length_Readed(byte[] val)
-		{
-			_len = XdrEncoding.DecodeUInt32(val);
-			
-			if(_len == 0)
-				_completed_string(string.Empty);
-			else if (_len <= _maxLen)
-				_reader.Read(_len, String_Readed, _excepted);
-			else
-				_excepted(new InvalidOperationException("unexpected length"));
-		}
-
-		private void String_Readed(byte[] val)
-		{
-			_bytes = val;
-
-			if(_len % 4 == 0)
-				_completed_string(Encoding.ASCII.GetString(_bytes));
-			else
-				_reader.Read((uint)(4 - _len % 4), String_Tail_Readed, _excepted);
-		}
-
-		private void String_Tail_Readed(byte[] val)
-		{
-			_completed_string(Encoding.ASCII.GetString(_bytes));
+			_reader.Read(8,
+				(bytes) => completed(XdrEncoding.DecodeDouble(bytes)),
+				excepted);
 		}
 
 		public void ReadString(uint max, Action<string> completed, Action<Exception> excepted)
 		{
-			_maxLen = max;
-			_completed_string = completed;
-			_excepted = excepted;
-			_reader.Read(4, String_Length_Readed, _excepted);
-		}
-
-		#endregion String
-
-		#region FixOpaque
-
-		private void Bytes_Readed(byte[] val)
-		{
-			_bytes = val;
-			
-			if(_len % 4 == 0)
-				_completed_bytes(_bytes);
-			else
-				_reader.Read((uint)(4 - _len % 4), Bytes_Tail_Readed, _excepted);
-		}
-
-		private void Bytes_Tail_Readed(byte[] val)
-		{
-			_completed_bytes(_bytes);
+			ReadVarOpaque(max,
+				(bytes) => completed(Encoding.ASCII.GetString(bytes)),
+				excepted);
 		}
 
 		public void ReadFixOpaque(uint len, Action<byte[]> completed, Action<Exception> excepted)
 		{
-			_len = len;
-			_completed_bytes = completed;
-			_excepted = excepted;
-			_reader.Read(_len, Bytes_Readed, _excepted);
-		}
-
-		#endregion FixOpaque
-
-		#region VarOpaque
-
-		private void Bytes_Length_Readed(byte[] val)
-		{
-			_len = XdrEncoding.DecodeUInt32(val);
-		
-			if (_len > _maxLen)
-				_excepted(new InvalidOperationException("unexpected length"));
-			else
-				_reader.Read(_len, Bytes_Readed, _excepted);
+			_reader.Read(len, (bytes) =>
+			{
+				if (len % 4u == 0)
+					completed(bytes);
+				else
+					_reader.Read(4u - len % 4u, (tail) => completed(bytes), excepted);
+			}, excepted);
 		}
 
 		public void ReadVarOpaque(uint max, Action<byte[]> completed, Action<Exception> excepted)
 		{
-			_maxLen = max;
-			_completed_bytes = completed;
-			_excepted = excepted;
-			_reader.Read(4, Bytes_Length_Readed, _excepted);
+			ReadUInt32((len) =>
+			{
+				if (len == 0)
+					completed(new byte[0]);
+				else if (len <= max)
+					ReadFixOpaque(len, completed, excepted);
+				else
+					excepted(new InvalidOperationException("unexpected length"));
+			}, excepted);
 		}
-
-		#endregion VarOpaque
 
 		public void Read<T>(Action<T> completed, Action<Exception> excepted)
 		{

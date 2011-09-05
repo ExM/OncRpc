@@ -51,10 +51,6 @@ namespace Xdr.Translating
 			_writer.Write(XdrEncoding.EncodeDouble(item), completed, excepted);
 		}
 
-		private Action _completed = null;
-		private Action<Exception> _excepted = null;
-		private byte[] _buffer = null;
-
 		private static byte[][] _tail = new byte[][]
 		{
 			null,
@@ -65,40 +61,26 @@ namespace Xdr.Translating
 
 		public void WriteString(string item, Action completed, Action<Exception> excepted)
 		{
-			_completed = completed;
-			_excepted = excepted;
-			_buffer = Encoding.ASCII.GetBytes(item);
-			_writer.Write(XdrEncoding.EncodeUInt32((uint)_buffer.LongLength), Len_Writed, excepted);
-		}
-
-		private void Len_Writed()
-		{
-			_writer.Write(_buffer, Buffer_Writed, _excepted);
-		}
-
-		private void Buffer_Writed()
-		{
-			uint tailLen = 4 - (uint)_buffer.LongLength % 4;
-			if(tailLen == 0)
-				_completed();
-			else
-				_writer.Write(_tail[tailLen], _completed, _excepted);
+			WriteVarOpaque(Encoding.ASCII.GetBytes(item), completed, excepted);
 		}
 
 		public void WriteFixOpaque(byte[] item, Action completed, Action<Exception> excepted)
 		{
-			_completed = completed;
-			_excepted = excepted;
-			_buffer = item;
-			_writer.Write(_buffer, Buffer_Writed, _excepted);
+			_writer.Write(item, () =>
+			{
+				uint tailLen = 4 - (uint)item.LongLength % 4;
+				if (tailLen == 0)
+					completed();
+				else
+					_writer.Write(_tail[tailLen], completed, excepted);
+			}, excepted);
 		}
 
 		public void WriteVarOpaque(byte[] item, Action completed, Action<Exception> excepted)
 		{
-			_completed = completed;
-			_excepted = excepted;
-			_buffer = item;
-			_writer.Write(XdrEncoding.EncodeUInt32((uint)_buffer.LongLength), Len_Writed, excepted);
+			_writer.Write(XdrEncoding.EncodeUInt32((uint)item.LongLength),
+				() => WriteFixOpaque(item, completed, excepted),
+				excepted);
 		}
 
 		public void Write<T>(T item, Action completed, Action<Exception> excepted)
