@@ -69,7 +69,7 @@ namespace Xdr.Translating
 			_writer.Write(item, () =>
 			{
 				uint tailLen = 4 - (uint)item.LongLength % 4;
-				if (tailLen == 0)
+				if (tailLen == 4)
 					completed();
 				else
 					_writer.Write(_tail[tailLen], completed, excepted);

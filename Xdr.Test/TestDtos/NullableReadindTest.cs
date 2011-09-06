@@ -18,7 +18,7 @@ namespace Xdr
 				0x00, 0x00, 0x00, 0x02);
 			s.Position = 0;
 			
-			ITranslator t = Translator.Create("test")
+			ITranslator t = Translator.Create()
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
@@ -41,7 +41,7 @@ namespace Xdr
 				0x00, 0x00, 0x00, 0x02);
 			s.Position = 0;
 			
-			ITranslator t = Translator.Create("test")
+			ITranslator t = Translator.Create()
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);

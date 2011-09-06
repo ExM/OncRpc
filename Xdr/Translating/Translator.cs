@@ -8,9 +8,9 @@ namespace Xdr
 	public static class Translator
 	{
 
-		public static TranslatorBuilder Create(string name)
+		public static TranslatorBuilder Create()
 		{
-			return new TranslatorBuilder(name);
+			return new TranslatorBuilder();
 		}
 	}
 }

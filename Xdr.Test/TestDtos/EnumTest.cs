@@ -17,7 +17,7 @@ namespace Xdr
 			s.Write(0x00, 0x00, 0x00, 0x00);
 			s.Position = 0;
 			
-			ITranslator t = Translator.Create("test").Build();
+			ITranslator t = Translator.Create().Build();
 			
 			SyncStream ss = new SyncStream(s);
 			IReader r = t.CreateReader(ss);
@@ -37,7 +37,7 @@ namespace Xdr
 			s.Write(0x00, 0x00, 0x00, 0x01);
 			s.Position = 0;
 
-			ITranslator t = Translator.Create("test").Build();
+			ITranslator t = Translator.Create().Build();
 
 			SyncStream ss = new SyncStream(s);
 			IReader r = t.CreateReader(ss);
@@ -57,7 +57,7 @@ namespace Xdr
 			s.Write(0x00, 0x00, 0x00, 0x02);
 			s.Position = 0;
 
-			ITranslator t = Translator.Create("test").Build();
+			ITranslator t = Translator.Create().Build();
 
 			SyncStream ss = new SyncStream(s);
 			IReader r = t.CreateReader(ss);
@@ -77,7 +77,7 @@ namespace Xdr
 			s.Write(0x00, 0x00, 0x00, 0x01);
 			s.Position = 0;
 
-			ITranslator t = Translator.Create("test").Build();
+			ITranslator t = Translator.Create().Build();
 
 			SyncStream ss = new SyncStream(s);
 			IReader r = t.CreateReader(ss);

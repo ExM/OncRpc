@@ -16,8 +16,8 @@ namespace Xdr
 			s.Write(0x12, 0x34, 0xAB, 0xCD, 0xCD, 0xEF, 0x98, 0x76);
 			s.Position = 0;
 			
-			ITranslator t = Translator.Create("test")
-				.Map<SimplyInt>(SimplyInt_ReadContext.Read)
+			ITranslator t = Translator.Create()
+				.Map<SimplyInt>(SimplyInt.Read)
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
@@ -43,9 +43,8 @@ namespace Xdr
 				0x00, 0x00, 0x00, 0x04);
 			s.Position = 0;
 
-			ITranslator t = Translator.Create("test")
-				.Map<SimplyInt>(SimplyInt_ReadContext.Read)
-				.Map<List<SimplyInt>>(SimplyInt_ReadListContext.ReadList)
+			ITranslator t = Translator.Create()
+				.Map<SimplyInt>(SimplyInt.Read)
 				.Build();
 
 			SyncStream ss = new SyncStream(s);

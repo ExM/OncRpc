@@ -16,10 +16,6 @@ namespace Xdr
 			{
 				Delegate result = null;
 
-				result = CreateReadManyForAttribute(targetType);
-				if (result != null)
-					return result;
-
 				if (targetType == typeof(byte[]))
 					return (Delegate)(ReadManyDelegate<byte[]>)ReadBytes;
 				if (targetType == typeof(string))
@@ -39,29 +35,6 @@ namespace Xdr
 			{
 				return CreateStubDelegate(ex, "ReadMany", targetType, typeof(ReadManyDelegate<>));
 			}
-		}
-
-		public static Delegate CreateReadManyForAttribute(Type collectionType)
-		{
-			Type itemType = collectionType.GetKnownItemType();
-			if (itemType == null)
-				return null;
-
-			Delegate attrResult = null;
-			foreach (ReadManyAttribute attr in itemType.GetCustomAttributes(typeof(ReadManyAttribute), true)
-				.Select((o) => (ReadManyAttribute)o))
-			{
-				Delegate candidate = attr.Create(collectionType);
-				if (attrResult != null)
-					throw new InvalidOperationException(string.Format("Duplicate methods in {0} ({1}.{2} & {2}.{3})",
-						collectionType, candidate.Method.DeclaringType, candidate.Method.Name, attrResult.Method.DeclaringType, attrResult.Method.Name));
-				attrResult = candidate;
-			}
-
-			if (attrResult == null)
-				return null;
-			else
-				return attrResult;
 		}
 
 		public static Delegate CreateArrayReader(Type collectionType)

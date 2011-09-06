@@ -6,8 +6,7 @@ namespace Xdr.Example
 	/// union types of files
 	/// http://tools.ietf.org/html/rfc4506#section-7
 	/// </summary>
-	[ReadOne(typeof(FileType_HandReadContext), "Read")]
-	public class FileType
+	public partial class FileType
 	{
 		/// <summary>
 		/// max length of a file name
@@ -32,6 +31,16 @@ namespace Xdr.Example
 		/// </summary>
 		[Case(FileKind.Exec), Var(MaxNameLen)]
 		public string Interpretor {get; set;}
+		
+		public static void Read(IReader reader, Action<FileType> completed, Action<Exception> excepted)
+		{
+			new ReadContext(reader, completed, excepted);
+		}
+		
+		public static void Write(IWriter writer, FileType item, Action completed, Action<Exception> excepted)
+		{
+			new WriteContext(writer, item, completed, excepted);
+		}
 	}
 }
 

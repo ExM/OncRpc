@@ -20,9 +20,9 @@ namespace Xdr
 		private WriteOneCacheDescription _writeOneCacheDescription;
 		private WriteManyCacheDescription _writeManyCacheDescription;
 		
-		internal TranslatorBuilder(string name)
+		internal TranslatorBuilder()
 		{
-
+			string name = "DynamicXdr";
 			AssemblyName asmName = new AssemblyName(name);
 			AssemblyBuilder asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.RunAndSave);
 			_modBuilder = asmBuilder.DefineDynamicModule(name + ".dll", name + ".dll");
@@ -47,6 +47,18 @@ namespace Xdr
 		public TranslatorBuilder Map<T>(ReadManyDelegate<T> reader)
 		{
 			_t.AppendMethod(typeof(T), MethodType.ReadMany, reader);
+			return this;
+		}
+		
+		public TranslatorBuilder Map<T>(WriteOneDelegate<T> writer)
+		{
+			_t.AppendMethod(typeof(T), MethodType.WriteOne, writer);
+			return this;
+		}
+
+		public TranslatorBuilder Map<T>(WriteManyDelegate<T> writer)
+		{
+			_t.AppendMethod(typeof(T), MethodType.WriteMany, writer);
 			return this;
 		}
 

@@ -16,10 +16,6 @@ namespace Xdr
 			{
 				Delegate result = null;
 
-				result = CreateReadOneForAttribute(targetType);
-				if (result != null)
-					return result;
-
 				result = CreateEnumDelegate(targetType);
 				if (result != null)
 					return result;
@@ -49,17 +45,6 @@ namespace Xdr
 			{
 				return CreateStubDelegate(ex, "ReadOne", targetType, typeof(ReadOneDelegate<>));
 			}
-		}
-
-		public static Delegate CreateReadOneForAttribute(Type targetType)
-		{
-			ReadOneAttribute attr = targetType.GetCustomAttributes(typeof(ReadOneAttribute), true)
-					.Select((o) => (ReadOneAttribute)o)
-					.FirstOrDefault();
-			if (attr == null)
-				return null;
-			else
-				return attr.Create(targetType);
 		}
 
 		public static Delegate CreateNullableReader(Type targetType)

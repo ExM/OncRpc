@@ -6,8 +6,7 @@ namespace Xdr.Example
 	/// Complete file structure.
 	/// http://tools.ietf.org/html/rfc4506#section-7
 	/// </summary>
-	[ReadOne(typeof(CompleteFile_HandReadContext), "Read")]
-	public class CompleteFile
+	public partial class CompleteFile
 	{
 		/// <summary>
 		/// max length of a user name
@@ -47,6 +46,16 @@ namespace Xdr.Example
 		/// </summary>
 		[Field(3), Var(MaxFileLen)]
 		public byte[] Data {get; set;}
+		
+		public static void Read(IReader reader, Action<CompleteFile> completed, Action<Exception> excepted)
+		{
+			new ReadContext(reader, completed, excepted);
+		}
+		
+		public static void Write(IWriter writer, CompleteFile item, Action completed, Action<Exception> excepted)
+		{
+			new WriteContext(writer, item, completed, excepted);
+		}
 	}
 }
 

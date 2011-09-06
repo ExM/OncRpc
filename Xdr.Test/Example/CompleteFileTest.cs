@@ -33,7 +33,9 @@ namespace Xdr
 				0x74, 0x29, 0x00, 0x00);
 			s.Position = 0;
 			
-			ITranslator t = Translator.Create("test")
+			ITranslator t = Translator.Create()
+				.Map<CompleteFile>(CompleteFile.Read)
+				.Map<FileType>(FileType.Read)
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
@@ -70,6 +72,55 @@ namespace Xdr
 			Assert.AreEqual(6, result.Data.Length);
 			Assert.AreEqual(0x28, result.Data[0]);
 			Assert.AreEqual(0x29, result.Data[5]);
+		}
+		
+		[Test]
+		public void Write()
+		{
+			CompleteFile cf = new CompleteFile();
+			cf.FileName = "sillyprog";
+			cf.Type = new FileType();
+			cf.Type.Type = FileKind.Exec;
+			cf.Type.Interpretor = "lisp";
+			cf.Owner = "john";
+			cf.Data = new byte[] {0x28, 0x71, 0x75, 0x69, 0x74, 0x29};
+			
+			
+			MemoryStream s = new MemoryStream();
+			
+			
+			ITranslator t = Translator.Create()
+				.Map<CompleteFile>(CompleteFile.Write)
+				.Map<FileType>(FileType.Write)
+				.Build();
+			
+			SyncStream ss = new SyncStream(s);
+			IWriter w = t.CreateWriter(ss);
+
+			w.Write<CompleteFile>(cf,
+				() => {},
+				(ex) => Assert.Fail("unexpected exception: {0}", ex));
+			
+			Assert.AreEqual(12*4, s.Position);
+			
+			byte[] expected = new byte[]
+			{
+				0x00, 0x00, 0x00, 0x09,
+				0x73, 0x69, 0x6c, 0x6c,
+				0x79, 0x70, 0x72, 0x6f,
+				0x67, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x02,
+				0x00, 0x00, 0x00, 0x04,
+				0x6c, 0x69, 0x73, 0x70,
+				0x00, 0x00, 0x00, 0x04,
+				0x6a, 0x6f, 0x68, 0x6e,
+				0x00, 0x00, 0x00, 0x06,
+				0x28, 0x71, 0x75, 0x69,
+				0x74, 0x29, 0x00, 0x00
+			};
+			
+			s.Position = 0;
+			Assert.AreEqual(expected, s.ToArray());
 		}
 
 	}

@@ -25,7 +25,7 @@ namespace Xdr.Test
 				0x21, 0x00, 0x00, 0x00);
 			s.Position = 0;
 
-			ITranslator t = Translator.Create("test")
+			ITranslator t = Translator.Create()
 				.Build();
 
 			SyncStream ss = new SyncStream(s);

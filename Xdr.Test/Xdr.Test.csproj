@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -40,30 +40,26 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="StandartReadersTest.cs" />
     <Compile Include="Example\CompleteFileTest.cs" />
-    <Compile Include="Example\CompleteFile_HandReadContext.cs" />
-    <Compile Include="Example\FileType_HandReadContext.cs" />
     <Compile Include="TestDtos\NullableReadindTest.cs" />
     <Compile Include="TestDtos\EnumTest.cs" />
     <Compile Include="TestDtos\IntEnum.cs" />
     <Compile Include="TestDtos\IsolationMappingTest.cs" />
-    <Compile Include="TestDtos\SimplyIntAttr_ReadContext2.cs" />
-    <Compile Include="TestDtos\OverrideMappingTest.cs" />
     <Compile Include="TypeExtensionTest.cs" />
     <Compile Include="EmitExample\TranslatorTest.cs" />
     <Compile Include="Example\FileType.cs" />
     <Compile Include="Example\CompleteFile.cs" />
     <Compile Include="Example\FileKind.cs" />
-    <Compile Include="TestDtos\AttributeMappingTest.cs" />
-    <Compile Include="TestDtos\SimplyIntAttr_ReadListContext.cs" />
-    <Compile Include="TestDtos\SimplyIntAttr_ReadContext.cs" />
-    <Compile Include="TestDtos\SimplyIntAttr.cs" />
-    <Compile Include="TestDtos\SimplyInt_ReadListContext.cs" />
     <Compile Include="TestExtensions.cs" />
     <Compile Include="TestDtos\SimplyInt.cs" />
-    <Compile Include="TestDtos\SimplyInt_ReadContext.cs" />
     <Compile Include="TestDtos\DirectMappingTest.cs" />
     <Compile Include="TestDtos\ByteEnum.cs" />
     <Compile Include="TestDtos\ArrayReadindTest.cs" />
+    <Compile Include="TestDtos\SimplyInt.ReadContext.cs" />
+    <Compile Include="Example\CompleteFile.ReadContext.cs" />
+    <Compile Include="Example\FileType.ReadContext.cs" />
+    <Compile Include="TestDtos\SimplyInt.ReadContext2.cs" />
+    <Compile Include="Example\CompleteFile.WriteContext.cs" />
+    <Compile Include="Example\FileType.WriteContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
