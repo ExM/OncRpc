@@ -16,12 +16,6 @@ namespace Xdr
 			{
 				Delegate result = null;
 
-				//TODO: write many build
-
-				//result = CreateWriteManyForAttribute(targetType);
-				//if (result != null)
-				//	return result;
-
 				if (targetType == typeof(byte[]))
 					return (Delegate)(WriteManyDelegate<byte[]>)WriteBytes;
 

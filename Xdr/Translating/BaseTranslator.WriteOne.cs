@@ -16,8 +16,6 @@ namespace Xdr
 			{
 				Delegate result = null;
 
-				//TODO: create  write one for attribute
-
 				result = CreateEnumWriter(targetType);
 				if (result != null)
 					return result;
