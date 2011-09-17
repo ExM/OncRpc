@@ -23,7 +23,9 @@ namespace Xdr.Translating.Emit
 			Type instanceType;
 			if(mType == MethodType.ReadOne)
 				instanceType = typeof(ReadOneDelegate<>);
-			else if(mType == MethodType.ReadMany)
+			else if(mType == MethodType.ReadFix)
+				instanceType = typeof(ReadManyDelegate<>);
+			else if(mType == MethodType.ReadVar)
 				instanceType = typeof(ReadManyDelegate<>);
 			else if(mType == MethodType.WriteOne)
 				instanceType = typeof(WriteOneDelegate<>);

@@ -26,7 +26,7 @@ namespace Xdr
 			SyncStream ss = new SyncStream(s);
 			IReader r = t.CreateReader(ss);
 			
-			r.Read<List<int>>(3, true, (val) =>
+			r.ReadFix<List<int>>(3, (val) =>
 			{
 				Assert.AreEqual(3, val.Count);
 				Assert.AreEqual(1, val[0]);
@@ -54,7 +54,7 @@ namespace Xdr
 			SyncStream ss = new SyncStream(s);
 			IReader r = t.CreateReader(ss);
 			
-			r.Read<List<int>>(4, false, (val) =>
+			r.ReadVar<List<int>>(4, (val) =>
 			{
 				Assert.AreEqual(3, val.Count);
 				Assert.AreEqual(2, val[0]);
@@ -82,7 +82,7 @@ namespace Xdr
 			SyncStream ss = new SyncStream(s);
 			IReader r = t.CreateReader(ss);
 			
-			r.Read<int[]>(3, true, (val) =>
+			r.ReadFix<int[]>(3, (val) =>
 			{
 				Assert.AreEqual(3, val.Length);
 				Assert.AreEqual(1, val[0]);
@@ -110,7 +110,7 @@ namespace Xdr
 			SyncStream ss = new SyncStream(s);
 			IReader r = t.CreateReader(ss);
 			
-			r.Read<int[]>(4, false, (val) =>
+			r.ReadVar<int[]>(4, (val) =>
 			{
 				Assert.AreEqual(3, val.Length);
 				Assert.AreEqual(2, val[0]);

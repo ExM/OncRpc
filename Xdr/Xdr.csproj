@@ -49,7 +49,6 @@
     <Compile Include="ReadContexts\NullableReader_1.cs" />
     <Compile Include="ReadContexts\EnumReader_1.cs" />
     <Compile Include="Translating\Emit\DelegateCacheDescription.cs" />
-    <Compile Include="Translating\Emit\ReadManyCacheDescription.cs" />
     <Compile Include="Translating\Emit\ReadOneCacheDescription.cs" />
     <Compile Include="Translating\Translator.cs" />
     <Compile Include="Translating\TranslatorBuilder.cs" />
@@ -77,13 +76,18 @@
     <Compile Include="Translating\Emit\WriteOneCacheDescription.cs" />
     <Compile Include="Translating\Emit\WriteManyCacheDescription.cs" />
     <Compile Include="ReadContexts\BoolReader.cs" />
-    <Compile Include="ReadContexts\ListReader_1.cs" />
-    <Compile Include="ReadContexts\ArrayReader_1.cs" />
     <Compile Include="Translating\Writer.cs" />
     <Compile Include="Translating\BaseTranslator.ReadOne.cs" />
-    <Compile Include="Translating\BaseTranslator.ReadMany.cs" />
     <Compile Include="Translating\BaseTranslator.WriteOne.cs" />
     <Compile Include="Translating\BaseTranslator.WriteMany.cs" />
+    <Compile Include="Translating\Emit\ReadFixCacheDescription.cs" />
+    <Compile Include="Translating\Emit\ReadVarCacheDescription.cs" />
+    <Compile Include="Translating\BaseTranslator.ReadFix.cs" />
+    <Compile Include="Translating\BaseTranslator.ReadVar.cs" />
+    <Compile Include="ReadContexts\FixArrayReader_1.cs" />
+    <Compile Include="ReadContexts\FixListReader_1.cs" />
+    <Compile Include="ReadContexts\VarArrayReader_1.cs" />
+    <Compile Include="ReadContexts\VarListReader_1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

@@ -17,7 +17,8 @@ namespace Xdr
 		void ReadVarOpaque(uint max, Action<byte[]> completed, Action<Exception> excepted);
 
 		void Read<T>(Action<T> completed, Action<Exception> excepted);
-		void Read<T>(uint len, bool fix, Action<T> completed, Action<Exception> excepted);
+		void ReadFix<T>(uint len, Action<T> completed, Action<Exception> excepted);
+		void ReadVar<T>(uint max, Action<T> completed, Action<Exception> excepted);
 	}
 }
 

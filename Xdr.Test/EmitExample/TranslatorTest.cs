@@ -40,7 +40,7 @@ namespace Xdr.Test
 			Assert.AreEqual(8, s.Position);
 			r.Read<uint>((val) => Assert.AreEqual(uint.MaxValue, val), excepted);
 			Assert.AreEqual(12, s.Position);
-			r.Read<byte[]>(3, true, (val) => Assert.AreEqual(3, val.Length), excepted);
+			r.ReadFix<byte[]>(3, (val) => Assert.AreEqual(3, val.Length), excepted);
 			Assert.AreEqual(16, s.Position);
 			r.Read<int>((val) => Assert.AreEqual(int.MaxValue, val), excepted);
 			Assert.AreEqual(20, s.Position);

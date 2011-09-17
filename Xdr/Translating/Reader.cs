@@ -99,9 +99,14 @@ namespace Xdr.Translating
 			_translator.Read<T>(this, completed, excepted);
 		}
 
-		public void Read<T>(uint len, bool fix, Action<T> completed, Action<Exception> excepted)
+		public void ReadFix<T>(uint len, Action<T> completed, Action<Exception> excepted)
 		{
-			_translator.Read<T>(this, len, fix, completed, excepted);
+			_translator.ReadFix<T>(this, len, completed, excepted);
+		}
+		
+		public void ReadVar<T>(uint max, Action<T> completed, Action<Exception> excepted)
+		{
+			_translator.ReadVar<T>(this, max, completed, excepted);
 		}
 	}
 }

@@ -50,7 +50,7 @@ namespace Xdr
 			SyncStream ss = new SyncStream(s);
 			IReader r = t.CreateReader(ss);
 
-			r.Read<List<SimplyInt>>(2, true, (val) =>
+			r.ReadFix<List<SimplyInt>>(2, (val) =>
 			{
 				Assert.AreEqual(2, val.Count);
 				Assert.AreEqual(1, val[0].Field1);

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Xdr.ReadContexts
 {
-	public class ListReader<T>
+	public class VarListReader<T>
 	{
 		private List<T> _target;
 		private IReader _reader;
@@ -14,24 +14,15 @@ namespace Xdr.ReadContexts
 		private Action<List<T>> _completed;
 		private Action<Exception> _excepted;
 
-		private ListReader(IReader reader, uint len, bool fix, Action<List<T>> completed, Action<Exception> excepted)
+		private VarListReader(IReader reader, uint len, Action<List<T>> completed, Action<Exception> excepted)
 		{
 			_reader = reader;
 			_completed = completed;
 			_excepted = excepted;
 
 			_target = new List<T>();
-			
-			if (fix)
-			{
-				_length = len;
-				ReadNextItem();
-			}
-			else
-			{
-				_maxlength = len;
-				_reader.ReadUInt32(Lenght_Readed, _excepted);
-			}
+			_maxlength = len;
+			_reader.ReadUInt32(Lenght_Readed, _excepted);
 		}
 
 		private void Lenght_Readed(uint val)
@@ -58,9 +49,9 @@ namespace Xdr.ReadContexts
 			ReadNextItem();
 		}
 		
-		public static void Read(IReader reader, uint len, bool fix, Action<List<T>> completed, Action<Exception> excepted)
+		public static void Read(IReader reader, uint len, Action<List<T>> completed, Action<Exception> excepted)
 		{
-			new ListReader<T>(reader, len, fix, completed, excepted);
+			new VarListReader<T>(reader, len, completed, excepted);
 		}
 	}
 }

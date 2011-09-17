@@ -22,9 +22,12 @@ namespace Xdr
 		protected abstract Type GetReadOneCacheType();
 		public abstract void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted);
 		
-		protected abstract Type GetReadManyCacheType();
-		public abstract void Read<T>(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted);
+		protected abstract Type GetReadFixCacheType();
+		public abstract void ReadFix<T>(IReader reader, uint len, Action<T> completed, Action<Exception> excepted);
 
+		protected abstract Type GetReadVarCacheType();
+		public abstract void ReadVar<T>(IReader reader, uint max, Action<T> completed, Action<Exception> excepted);
+		
 		protected abstract Type GetWriteOneCacheType();
 		public abstract void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted);
 
@@ -67,13 +70,23 @@ namespace Xdr
 					fi.SetValue(null, method);
 				}
 			}
-			else if (methodType == MethodType.ReadMany)
+			else if (methodType == MethodType.ReadFix)
 			{
-				FieldInfo fi = GetReadManyCacheType().MakeGenericType(targetType).GetField("Instance");
+				FieldInfo fi = GetReadFixCacheType().MakeGenericType(targetType).GetField("Instance");
 				if(fi.GetValue(null) == null)
 				{
 					if(method == null)
-						method = ReadManyBuild(targetType);
+						method = ReadFixBuild(targetType);
+					fi.SetValue(null, method);
+				}
+			}
+			else if (methodType == MethodType.ReadVar)
+			{
+				FieldInfo fi = GetReadVarCacheType().MakeGenericType(targetType).GetField("Instance");
+				if(fi.GetValue(null) == null)
+				{
+					if(method == null)
+						method = ReadVarBuild(targetType);
 					fi.SetValue(null, method);
 				}
 			}

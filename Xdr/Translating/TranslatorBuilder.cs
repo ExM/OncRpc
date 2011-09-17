@@ -16,7 +16,8 @@ namespace Xdr
 		private ModuleBuilder _modBuilder;
 		private DelegateCacheDescription _delegateCacheDescription;
 		private ReadOneCacheDescription _readOneCacheDescription;
-		private ReadManyCacheDescription _readManyCacheDescription;
+		private ReadVarCacheDescription _readVarCacheDescription;
+		private ReadFixCacheDescription _readFixCacheDescription;
 		private WriteOneCacheDescription _writeOneCacheDescription;
 		private WriteManyCacheDescription _writeManyCacheDescription;
 		
@@ -29,7 +30,8 @@ namespace Xdr
 
 			_delegateCacheDescription = new DelegateCacheDescription(_modBuilder);
 			_readOneCacheDescription = new ReadOneCacheDescription(_modBuilder, _delegateCacheDescription);
-			_readManyCacheDescription = new ReadManyCacheDescription(_modBuilder, _delegateCacheDescription);
+			_readFixCacheDescription = new ReadFixCacheDescription(_modBuilder, _delegateCacheDescription);
+			_readVarCacheDescription = new ReadVarCacheDescription(_modBuilder, _delegateCacheDescription);
 			_writeOneCacheDescription = new WriteOneCacheDescription(_modBuilder, _delegateCacheDescription);
 			_writeManyCacheDescription = new WriteManyCacheDescription(_modBuilder, _delegateCacheDescription);
 
@@ -44,9 +46,15 @@ namespace Xdr
 			return this;
 		}
 
-		public TranslatorBuilder Map<T>(ReadManyDelegate<T> reader)
+		public TranslatorBuilder MapFix<T>(ReadManyDelegate<T> reader)
 		{
-			_t.AppendMethod(typeof(T), MethodType.ReadMany, reader);
+			_t.AppendMethod(typeof(T), MethodType.ReadFix, reader);
+			return this;
+		}
+		
+		public TranslatorBuilder MapVar<T>(ReadManyDelegate<T> reader)
+		{
+			_t.AppendMethod(typeof(T), MethodType.ReadVar, reader);
 			return this;
 		}
 		

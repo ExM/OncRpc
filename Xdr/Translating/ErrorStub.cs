@@ -19,8 +19,13 @@ namespace Xdr.Translating
 		{
 			reader.Throw(Error, excepted);
 		}
+		
+		public void ReadFix(IReader reader, uint len, Action<T> completed, Action<Exception> excepted)
+		{
+			reader.Throw(Error, excepted);
+		}
 
-		public void ReadMany(IReader reader, uint len, bool fix, Action<T> completed, Action<Exception> excepted)
+		public void ReadVar(IReader reader, uint max, Action<T> completed, Action<Exception> excepted)
 		{
 			reader.Throw(Error, excepted);
 		}

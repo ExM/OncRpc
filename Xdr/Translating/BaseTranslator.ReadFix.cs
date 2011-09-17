@@ -10,22 +10,20 @@ namespace Xdr
 {
 	public abstract partial class BaseTranslator: ITranslator
 	{
-		private Delegate ReadManyBuild(Type targetType)
+		private Delegate ReadFixBuild(Type targetType)
 		{
 			try
 			{
 				Delegate result = null;
 
 				if (targetType == typeof(byte[]))
-					return (Delegate)(ReadManyDelegate<byte[]>)ReadBytes;
-				if (targetType == typeof(string))
-					return (Delegate)(ReadManyDelegate<string>)ReadString;
+					return (Delegate)(ReadManyDelegate<byte[]>)ReadFixBytes;
 
-				result = CreateArrayReader(targetType);
+				result = CreateFixArrayReader(targetType);
 				if (result != null)
 					return result;
 
-				result = CreateListReader(targetType);
+				result = CreateFixListReader(targetType);
 				if (result != null)
 					return result;
 
@@ -33,11 +31,11 @@ namespace Xdr
 			}
 			catch (Exception ex)
 			{
-				return CreateStubDelegate(ex, "ReadMany", targetType, typeof(ReadManyDelegate<>));
+				return CreateStubDelegate(ex, "ReadFix", targetType, typeof(ReadManyDelegate<>));
 			}
 		}
 
-		public static Delegate CreateArrayReader(Type collectionType)
+		public static Delegate CreateFixArrayReader(Type collectionType)
 		{
 			if (!collectionType.HasElementType)
 				return null;
@@ -45,11 +43,11 @@ namespace Xdr
 			if (itemType == null || itemType.MakeArrayType() != collectionType)
 				return null;
 			
-			MethodInfo mi = typeof(ArrayReader<>).MakeGenericType(itemType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
+			MethodInfo mi = typeof(FixArrayReader<>).MakeGenericType(itemType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 		
-		public static Delegate CreateListReader(Type collectionType)
+		public static Delegate CreateFixListReader(Type collectionType)
 		{
 			if (!collectionType.IsGenericType)
 				return null;
@@ -59,21 +57,13 @@ namespace Xdr
 				return null;
 			Type itemType = collectionType.GetGenericArguments()[0];
 			
-			MethodInfo mi = typeof(ListReader<>).MakeGenericType(itemType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
+			MethodInfo mi = typeof(FixListReader<>).MakeGenericType(itemType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
-		private static void ReadBytes(IReader reader, uint len, bool fix, Action<byte[]> completed, Action<Exception> excepted)
+		private static void ReadFixBytes(IReader reader, uint len, Action<byte[]> completed, Action<Exception> excepted)
 		{
-			if(fix)
-				reader.ReadFixOpaque(len, completed, excepted);
-			else
-				reader.ReadVarOpaque(len, completed, excepted);
-		}
-		
-		private static void ReadString(IReader reader, uint len, bool fix, Action<string> completed, Action<Exception> excepted)
-		{
-			reader.ReadString(len, completed, excepted);
+			reader.ReadFixOpaque(len, completed, excepted);
 		}
 	}
 }

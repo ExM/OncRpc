@@ -33,7 +33,7 @@ namespace Xdr.Test
 
 			string result = null;
 
-			r.Read<string>(30, false, (val) =>
+			r.ReadVar<string>(30, (val) =>
 			{
 				result = val;
 			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
