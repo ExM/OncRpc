@@ -88,9 +88,9 @@ namespace Xdr.Translating
 			_translator.Write<T>(this, item, completed, excepted);
 		}
 
-		public void Write<T>(T items, bool fix, Action completed, Action<Exception> excepted)
+		public void WriteVar<T>(T items, Action completed, Action<Exception> excepted)
 		{
-			_translator.Write<T>(this, items, fix, completed, excepted);
+			_translator.WriteVar<T>(this, items, completed, excepted);
 		}
 	}
 }

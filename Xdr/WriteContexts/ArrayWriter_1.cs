@@ -13,17 +13,12 @@ namespace Xdr.WriteContexts
 		private Action _completed;
 		private Action<Exception> _excepted;
 
-		private ArrayWriter(IWriter writer, T[] items, bool fix, Action completed, Action<Exception> excepted)
+		private ArrayWriter(IWriter writer, T[] items, Action completed, Action<Exception> excepted)
 		{
 			_writer = writer;
 			_items = items;
 			_completed = completed;
 			_excepted = excepted;
-			
-			if(fix)
-				WriteNextItem();
-			else
-				_writer.WriteUInt32((uint)_items.LongLength, WriteNextItem, _excepted);
 		}
 
 		private void WriteNextItem()
@@ -39,9 +34,16 @@ namespace Xdr.WriteContexts
 
 		}
 		
-		public static void Write(IWriter writer, T[] items, bool fix, Action completed, Action<Exception> excepted)
+		public static void WriteFix(IWriter writer, T[] items, Action completed, Action<Exception> excepted)
 		{
-			new ArrayWriter<T>(writer, items, fix, completed, excepted);
+			var context = new ArrayWriter<T>(writer, items, completed, excepted);
+			context.WriteNextItem();
+		}
+		
+		public static void WriteVar(IWriter writer, T[] items, Action completed, Action<Exception> excepted)
+		{
+			var context = new ArrayWriter<T>(writer, items, completed, excepted);
+			writer.WriteUInt32((uint)items.LongLength, context.WriteNextItem, excepted);
 		}
 	}
 }

@@ -62,7 +62,6 @@
     <Compile Include="IByteWriter.cs" />
     <Compile Include="SyncStream.cs" />
     <Compile Include="AsyncStream.cs" />
-    <Compile Include="WriteContexts\ArrayWriter_1.cs" />
     <Compile Include="WriteContexts\ListWriter_1.cs" />
     <Compile Include="WriteContexts\EnumWriter_1.cs" />
     <Compile Include="XdrEncoding.cs" />
@@ -76,7 +75,6 @@
     <Compile Include="Translating\Writer.cs" />
     <Compile Include="Translating\BaseTranslator.ReadOne.cs" />
     <Compile Include="Translating\BaseTranslator.WriteOne.cs" />
-    <Compile Include="Translating\BaseTranslator.WriteMany.cs" />
     <Compile Include="Translating\Emit\ReadFixCacheDescription.cs" />
     <Compile Include="Translating\Emit\ReadVarCacheDescription.cs" />
     <Compile Include="Translating\BaseTranslator.ReadFix.cs" />
@@ -86,6 +84,8 @@
     <Compile Include="ReadContexts\VarArrayReader_1.cs" />
     <Compile Include="ReadContexts\VarListReader_1.cs" />
     <Compile Include="Translating\Emit\WriteVarCacheDescription.cs" />
+    <Compile Include="Translating\BaseTranslator.WriteVar.cs" />
+    <Compile Include="WriteContexts\ArrayWriter_1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

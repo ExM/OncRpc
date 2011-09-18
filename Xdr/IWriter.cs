@@ -17,7 +17,7 @@ namespace Xdr
 		void WriteVarOpaque(byte[] item, Action completed, Action<Exception> excepted);
 
 		void Write<T>(T item, Action completed, Action<Exception> excepted);
-		void Write<T>(T items, bool fix, Action completed, Action<Exception> excepted);
+		void WriteVar<T>(T items, Action completed, Action<Exception> excepted);
 	}
 }
 

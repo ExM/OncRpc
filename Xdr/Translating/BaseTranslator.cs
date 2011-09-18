@@ -32,7 +32,7 @@ namespace Xdr
 		public abstract void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted);
 
 		protected abstract Type GetWriteVarCacheType();
-		public abstract void Write<T>(IWriter writer, T items, bool fix, Action completed, Action<Exception> excepted);
+		public abstract void WriteVar<T>(IWriter writer, T items, Action completed, Action<Exception> excepted);
 
 		protected void BuildCaches()
 		{
@@ -106,7 +106,7 @@ namespace Xdr
 				if(fi.GetValue(null) == null)
 				{
 					if(method == null)
-						method = WriteManyBuild(targetType);
+						method = WriteVarBuild(targetType);
 					fi.SetValue(null, method);
 				}
 			}

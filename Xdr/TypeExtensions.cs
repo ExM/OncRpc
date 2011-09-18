@@ -41,5 +41,26 @@ namespace Xdr
 				return null;
 			return type.GetGenericArguments()[0];
 		}
+		
+		public static Type ArraySubType(this Type type)
+		{
+			if (!type.HasElementType)
+				return null;
+			Type itemType = type.GetElementType();
+			if (itemType == null || itemType.MakeArrayType() != type)
+				return null;
+			return itemType;
+		}
+		
+		public static Type ListSubType(this Type type)
+		{
+			if (!type.IsGenericType)
+				return null;
+
+			Type genericType = type.GetGenericTypeDefinition();
+			if (genericType != typeof(List<>))
+				return null;
+			return type.GetGenericArguments()[0];
+		}
 	}
 }

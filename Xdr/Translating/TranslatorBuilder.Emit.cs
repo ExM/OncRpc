@@ -231,8 +231,8 @@ namespace Xdr
 			il.Emit(OpCodes.Ldarg_2);
 			il.Emit(OpCodes.Ldarg_3);
 			il.Emit(OpCodes.Ldarg_S, 4);
-			MethodInfo miInvoke = TypeBuilder.GetMethod( typeof(WriteOneDelegate<>).MakeGenericType(genTypeParam),
-				typeof(WriteOneDelegate<>).GetMethod("Invoke"));
+			MethodInfo miInvoke = TypeBuilder.GetMethod( typeof(WriteDelegate<>).MakeGenericType(genTypeParam),
+				typeof(WriteDelegate<>).GetMethod("Invoke"));
 
 			il.Emit(OpCodes.Callvirt, miInvoke);
 			il.Emit(OpCodes.Ret);
@@ -240,20 +240,12 @@ namespace Xdr
 		
 		private void EmitOverride_WriteTVar(TypeBuilder typeBuilder)
 		{
-			MethodInfo miDeclaration = null;
-			foreach (var mi in typeof(BaseTranslator).GetMethods(BindingFlags.Public | BindingFlags.Instance))
-			{
-				if (mi.Name != "Write")
-					continue;
+			MethodInfo miDeclaration = typeof(BaseTranslator).GetMethod("WriteVar", BindingFlags.Public | BindingFlags.Instance);
 
-				if (mi.GetParameters().Length == 5)
-					miDeclaration = mi;
-			}
-
-			MethodBuilder mb = typeBuilder.DefineMethod("Write", MethodAttributes.Public | MethodAttributes.Virtual);
+			MethodBuilder mb = typeBuilder.DefineMethod("WriteVar", MethodAttributes.Public | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
 			mb.SetReturnType(null);
-			mb.SetParameters(typeof(IWriter), genTypeParam, typeof(bool), typeof(Action), typeof(Action<Exception>));
+			mb.SetParameters(typeof(IWriter), genTypeParam, typeof(Action), typeof(Action<Exception>));
 			typeBuilder.DefineMethodOverride(mb, miDeclaration);
 
 			FieldInfo fi = _writeVarCacheDescription.Instance(genTypeParam);
@@ -270,9 +262,8 @@ namespace Xdr
 			il.Emit(OpCodes.Ldarg_2);
 			il.Emit(OpCodes.Ldarg_3);
 			il.Emit(OpCodes.Ldarg_S, 4);
-			il.Emit(OpCodes.Ldarg_S, 5);
-			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(WriteManyDelegate<>).MakeGenericType(genTypeParam),
-				typeof(WriteManyDelegate<>).GetMethod("Invoke"));
+			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(WriteDelegate<>).MakeGenericType(genTypeParam),
+				typeof(WriteDelegate<>).GetMethod("Invoke"));
 			il.Emit(OpCodes.Callvirt, miInvoke);
 			il.Emit(OpCodes.Ret);
 		}
