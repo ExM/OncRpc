@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Xdr.ReadContexts
 {
-	public class VarArrayReader<T>
+	public class ArrayReader<T>
 	{
 		private T[] _target = null;
 		private IReader _reader;
@@ -14,16 +14,13 @@ namespace Xdr.ReadContexts
 		private Action<T[]> _completed;
 		private Action<Exception> _excepted;
 
-		private VarArrayReader(IReader reader, uint len, Action<T[]> completed, Action<Exception> excepted)
+		private ArrayReader(IReader reader, Action<T[]> completed, Action<Exception> excepted)
 		{
 			_reader = reader;
 			_completed = completed;
 			_excepted = excepted;
-			
-			_maxlength = len;
-			_reader.ReadUInt32(Lenght_Readed, _excepted);
 		}
-
+		
 		private void Lenght_Readed(uint val)
 		{
 			if (val > _maxlength)
@@ -50,9 +47,18 @@ namespace Xdr.ReadContexts
 			ReadNextItem();
 		}
 		
-		public static void Read(IReader reader, uint len, Action<T[]> completed, Action<Exception> excepted)
+		public static void ReadFix(IReader reader, uint len, Action<T[]> completed, Action<Exception> excepted)
 		{
-			new VarArrayReader<T>(reader, len, completed, excepted);
+			var context = new ArrayReader<T>(reader, completed, excepted);
+			context._target = new T[len];
+			context.ReadNextItem();
+		}
+		
+		public static void ReadVar(IReader reader, uint len, Action<T[]> completed, Action<Exception> excepted)
+		{
+			var context = new ArrayReader<T>(reader, completed, excepted);
+			context._maxlength = len;
+			reader.ReadUInt32(context.Lenght_Readed, excepted);
 		}
 	}
 }

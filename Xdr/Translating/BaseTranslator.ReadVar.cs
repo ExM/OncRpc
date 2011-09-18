@@ -45,7 +45,7 @@ namespace Xdr
 			if (itemType == null || itemType.MakeArrayType() != collectionType)
 				return null;
 			
-			MethodInfo mi = typeof(VarArrayReader<>).MakeGenericType(itemType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
+			MethodInfo mi = typeof(ArrayReader<>).MakeGenericType(itemType).GetMethod("ReadVar", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 		
@@ -59,7 +59,7 @@ namespace Xdr
 				return null;
 			Type itemType = collectionType.GetGenericArguments()[0];
 			
-			MethodInfo mi = typeof(VarListReader<>).MakeGenericType(itemType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
+			MethodInfo mi = typeof(ListReader<>).MakeGenericType(itemType).GetMethod("ReadVar", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 

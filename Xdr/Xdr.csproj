@@ -79,13 +79,11 @@
     <Compile Include="Translating\Emit\ReadVarCacheDescription.cs" />
     <Compile Include="Translating\BaseTranslator.ReadFix.cs" />
     <Compile Include="Translating\BaseTranslator.ReadVar.cs" />
-    <Compile Include="ReadContexts\FixArrayReader_1.cs" />
-    <Compile Include="ReadContexts\FixListReader_1.cs" />
-    <Compile Include="ReadContexts\VarArrayReader_1.cs" />
-    <Compile Include="ReadContexts\VarListReader_1.cs" />
     <Compile Include="Translating\Emit\WriteVarCacheDescription.cs" />
     <Compile Include="Translating\BaseTranslator.WriteVar.cs" />
     <Compile Include="WriteContexts\ArrayWriter_1.cs" />
+    <Compile Include="ReadContexts\ArrayReader_1.cs" />
+    <Compile Include="ReadContexts\ListReader_1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
