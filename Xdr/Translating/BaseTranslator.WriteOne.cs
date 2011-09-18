@@ -62,6 +62,8 @@ namespace Xdr
 		public static Delegate CreateFixListWriter(Type collectionType)
 		{
 			Type itemType = collectionType.ListSubType();
+			if(itemType == null)
+				return null;
 
 			MethodInfo mi = typeof(ListWriter<>).MakeGenericType(itemType).GetMethod("WriteFix", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(WriteDelegate<>).MakeGenericType(collectionType), mi);

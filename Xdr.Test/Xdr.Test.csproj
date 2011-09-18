@@ -59,6 +59,7 @@
     <Compile Include="TestDtos\SimplyInt.ReadContext2.cs" />
     <Compile Include="Example\CompleteFile.WriteContext.cs" />
     <Compile Include="Example\FileType.WriteContext.cs" />
+    <Compile Include="StandartWritersTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

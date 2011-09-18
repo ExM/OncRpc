@@ -38,6 +38,8 @@ namespace Xdr
 		public static Delegate CreateVarListWriter(Type collectionType)
 		{
 			Type itemType = collectionType.ListSubType();
+			if (itemType == null)
+				return null;
 
 			MethodInfo mi = typeof(ListWriter<>).MakeGenericType(itemType).GetMethod("WriteVar", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(WriteDelegate<>).MakeGenericType(collectionType), mi);
