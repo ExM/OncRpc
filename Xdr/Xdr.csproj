@@ -46,7 +46,6 @@
     <Compile Include="Emit\FieldDescriptions\UInt32FieldDesc.cs" />
     <Compile Include="Emit\CustomContextBuilder.cs" />
     <Compile Include="ITranslator.cs" />
-    <Compile Include="ReadContexts\NullableReader_1.cs" />
     <Compile Include="ReadContexts\EnumReader_1.cs" />
     <Compile Include="Translating\Emit\DelegateCacheDescription.cs" />
     <Compile Include="Translating\Emit\ReadOneCacheDescription.cs" />
@@ -75,7 +74,6 @@
     <Compile Include="Translating\Emit\GenCacheDescription.cs" />
     <Compile Include="Translating\Emit\WriteOneCacheDescription.cs" />
     <Compile Include="Translating\Emit\WriteManyCacheDescription.cs" />
-    <Compile Include="ReadContexts\BoolReader.cs" />
     <Compile Include="Translating\Writer.cs" />
     <Compile Include="Translating\BaseTranslator.ReadOne.cs" />
     <Compile Include="Translating\BaseTranslator.WriteOne.cs" />

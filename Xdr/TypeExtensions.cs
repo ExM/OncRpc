@@ -32,6 +32,14 @@ namespace Xdr
 
 			return null;
 		}
-
+		
+		public static Type NullableSubType(this Type type)
+		{
+			if (!type.IsGenericType)
+				return null;
+			if (type.GetGenericTypeDefinition() != typeof(Nullable<>))
+				return null;
+			return type.GetGenericArguments()[0];
+		}
 	}
 }

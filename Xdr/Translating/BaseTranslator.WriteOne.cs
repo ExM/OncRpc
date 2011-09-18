@@ -60,11 +60,9 @@ namespace Xdr
 
 		public static Delegate CreateNullableWriter(Type targetType)
 		{
-			if (!targetType.IsGenericType)
+			Type itemType = targetType.NullableSubType();
+			if(itemType == null)
 				return null;
-			if (targetType.GetGenericTypeDefinition() != typeof(Nullable<>))
-				return null;
-			Type itemType = targetType.GetGenericArguments()[0];
 
 			MethodInfo mi = typeof(BaseTranslator).GetMethod("WriteNullable", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(itemType);
 			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(targetType), mi);

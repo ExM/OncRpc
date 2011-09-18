@@ -40,7 +40,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="StandartReadersTest.cs" />
     <Compile Include="Example\CompleteFileTest.cs" />
-    <Compile Include="TestDtos\NullableReadindTest.cs" />
     <Compile Include="TestDtos\EnumTest.cs" />
     <Compile Include="TestDtos\IntEnum.cs" />
     <Compile Include="TestDtos\IsolationMappingTest.cs" />

@@ -37,7 +37,7 @@ namespace Xdr
 				if (targetType == typeof(Double))
 					return (Delegate)(ReadOneDelegate<Double>)ReadDouble;
 				if (targetType == typeof(bool))
-					return (Delegate)(ReadOneDelegate<bool>)BoolReader.Read;
+					return (Delegate)(ReadOneDelegate<bool>)ReadBool;
 
 				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
 			}
@@ -49,13 +49,11 @@ namespace Xdr
 
 		public static Delegate CreateNullableReader(Type targetType)
 		{
-			if (!targetType.IsGenericType)
+			Type itemType = targetType.NullableSubType();
+			if(itemType == null)
 				return null;
-			if (targetType.GetGenericTypeDefinition() != typeof(Nullable<>))
-				return null;
-			Type itemType = targetType.GetGenericArguments()[0];
-
-			MethodInfo mi = typeof(NullableReader<>).MakeGenericType(itemType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
+			
+			MethodInfo mi = typeof(BaseTranslator).GetMethod("ReadNullable", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(itemType);
 			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 
@@ -65,6 +63,33 @@ namespace Xdr
 				return null;
 			MethodInfo mi = typeof(EnumReader<>).MakeGenericType(targetType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
+		}
+		
+		private static void ReadNullable<T>(IReader reader, Action<T?> completed, Action<Exception> excepted)
+			where T: struct
+		{
+			reader.ReadUInt32((val) => 
+			{
+				if (val == 0)
+					completed(null);
+				else if(val == 1)
+					reader.Read<T>((item) => completed(item), excepted);
+				else
+					excepted(new InvalidOperationException(string.Format("unexpected value {0}", val)));
+			}, excepted);
+		}
+		
+		private static void ReadBool(IReader reader, Action<bool> completed, Action<Exception> excepted)
+		{
+			reader.ReadInt32((val) =>
+			{
+				if (val == 0)
+					completed(false);
+				else if(val == 1)
+					completed(true);
+				else
+					excepted(new InvalidCastException(string.Format("no boolean value `{0}'", val)));
+			}, excepted);
 		}
 		
 		private static void ReadInt32(IReader reader, Action<int> completed, Action<Exception> excepted)

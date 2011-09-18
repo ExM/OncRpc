@@ -42,6 +42,60 @@ namespace Xdr.Test
 			Assert.IsNotNull(result);
 			Assert.AreEqual(expected, result);
 		}
+		
+		[TestCase(0, false)]
+		[TestCase(1, true)]
+		public void ReadBool(byte num, bool expected)
+		{
+			MemoryStream s = new MemoryStream();
+			s.Write(
+				0x00, 0x00, 0x00, num);
+			s.Position = 0;
+
+			ITranslator t = Translator.Create()
+				.Build();
+
+			SyncStream ss = new SyncStream(s);
+			IReader r = t.CreateReader(ss);
+
+			bool? result = null;
+
+			r.Read<bool>((val) =>
+			{
+				result = val;
+			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+
+			Assert.AreEqual(4, s.Position);
+			Assert.IsNotNull(result);
+			Assert.AreEqual(expected, result.Value);
+		}
+		
+		[TestCase(0, 4, null)]
+		[TestCase(1, 8, 123)]
+		public void ReadNullable(byte num, int readed, int? expected)
+		{
+			MemoryStream s = new MemoryStream();
+			s.Write(
+				0x00, 0x00, 0x00, num,
+				0x00, 0x00, 0x00, 123);
+			s.Position = 0;
+
+			ITranslator t = Translator.Create()
+				.Build();
+
+			SyncStream ss = new SyncStream(s);
+			IReader r = t.CreateReader(ss);
+
+			int? result = null;
+
+			r.Read<int?>((val) =>
+			{
+				result = val;
+			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+
+			Assert.AreEqual(readed, s.Position);
+			Assert.AreEqual(expected, result);
+		}
 	}
 }
 
