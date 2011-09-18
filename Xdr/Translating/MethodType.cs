@@ -11,6 +11,6 @@ namespace Xdr.Translating
 		ReadFix = 1,
 		ReadVar = 2,
 		WriteOne = 3,
-		WriteMany = 4
+		WriteVar = 4
 	}
 }

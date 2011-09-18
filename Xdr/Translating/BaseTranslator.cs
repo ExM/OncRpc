@@ -31,7 +31,7 @@ namespace Xdr
 		protected abstract Type GetWriteOneCacheType();
 		public abstract void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted);
 
-		protected abstract Type GetWriteManyCacheType();
+		protected abstract Type GetWriteVarCacheType();
 		public abstract void Write<T>(IWriter writer, T items, bool fix, Action completed, Action<Exception> excepted);
 
 		protected void BuildCaches()
@@ -100,9 +100,9 @@ namespace Xdr
 					fi.SetValue(null, method);
 				}
 			}
-			else if (methodType == MethodType.WriteMany)
+			else if (methodType == MethodType.WriteVar)
 			{
-				FieldInfo fi = GetWriteManyCacheType().MakeGenericType(targetType).GetField("Instance");
+				FieldInfo fi = GetWriteVarCacheType().MakeGenericType(targetType).GetField("Instance");
 				if(fi.GetValue(null) == null)
 				{
 					if(method == null)

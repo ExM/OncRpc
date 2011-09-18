@@ -20,7 +20,7 @@ namespace Xdr
 			FieldBuilder fb_readVarCacheType = DefineCacheField(typeBuilder, "_readVarCacheType");
 			
 			FieldBuilder fb_writeOneCacheType = DefineCacheField(typeBuilder, "_writeOneCacheType");
-			FieldBuilder fb_writeManyCacheType = DefineCacheField(typeBuilder, "_writeManyCacheType");
+			FieldBuilder fb_writeVarCacheType = DefineCacheField(typeBuilder, "_writeVarCacheType");
 			
 			
 
@@ -46,7 +46,7 @@ namespace Xdr
 			EmitInitField(ilCtor, fb_readVarCacheType, _readVarCacheDescription.Result);
 			
 			EmitInitField(ilCtor, fb_writeOneCacheType, _writeOneCacheDescription.Result);
-			EmitInitField(ilCtor, fb_writeManyCacheType, _writeManyCacheDescription.Result);
+			EmitInitField(ilCtor, fb_writeVarCacheType, _writeVarCacheDescription.Result);
 			
 			//	IL_0057: ret
 			ilCtor.Emit(OpCodes.Ret);
@@ -63,8 +63,8 @@ namespace Xdr
 			EmitOverride_GetCacheType(typeBuilder, "GetWriteOneCacheType", fb_writeOneCacheType);
 			EmitOverride_WriteTOne(typeBuilder);
 			
-			EmitOverride_GetCacheType(typeBuilder, "GetWriteManyCacheType", fb_writeManyCacheType);
-			EmitOverride_WriteTMany(typeBuilder);
+			EmitOverride_GetCacheType(typeBuilder, "GetWriteVarCacheType", fb_writeVarCacheType);
+			EmitOverride_WriteTVar(typeBuilder);
 			
 			return typeBuilder.CreateType();
 		}
@@ -238,7 +238,7 @@ namespace Xdr
 			il.Emit(OpCodes.Ret);
 		}
 		
-		private void EmitOverride_WriteTMany(TypeBuilder typeBuilder)
+		private void EmitOverride_WriteTVar(TypeBuilder typeBuilder)
 		{
 			MethodInfo miDeclaration = null;
 			foreach (var mi in typeof(BaseTranslator).GetMethods(BindingFlags.Public | BindingFlags.Instance))
@@ -256,7 +256,7 @@ namespace Xdr
 			mb.SetParameters(typeof(IWriter), genTypeParam, typeof(bool), typeof(Action), typeof(Action<Exception>));
 			typeBuilder.DefineMethodOverride(mb, miDeclaration);
 
-			FieldInfo fi = _writeManyCacheDescription.Instance(genTypeParam);
+			FieldInfo fi = _writeVarCacheDescription.Instance(genTypeParam);
 
 			ILGenerator il = mb.GetILGenerator();
 			Label noBuild = il.DefineLabel();

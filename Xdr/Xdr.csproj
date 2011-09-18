@@ -73,7 +73,6 @@
     <Compile Include="Translating\BaseTranslator.cs" />
     <Compile Include="Translating\Emit\GenCacheDescription.cs" />
     <Compile Include="Translating\Emit\WriteOneCacheDescription.cs" />
-    <Compile Include="Translating\Emit\WriteManyCacheDescription.cs" />
     <Compile Include="Translating\Writer.cs" />
     <Compile Include="Translating\BaseTranslator.ReadOne.cs" />
     <Compile Include="Translating\BaseTranslator.WriteOne.cs" />
@@ -86,6 +85,7 @@
     <Compile Include="ReadContexts\FixListReader_1.cs" />
     <Compile Include="ReadContexts\VarArrayReader_1.cs" />
     <Compile Include="ReadContexts\VarListReader_1.cs" />
+    <Compile Include="Translating\Emit\WriteVarCacheDescription.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
