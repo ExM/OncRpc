@@ -28,9 +28,9 @@ namespace Xdr.Translating.Emit
 			else if(mType == MethodType.ReadVar)
 				instanceType = typeof(ReadManyDelegate<>);
 			else if(mType == MethodType.WriteOne)
-				instanceType = typeof(WriteDelegate<>);
+				instanceType = typeof(WriteOneDelegate<>);
 			else if(mType == MethodType.WriteVar)
-				instanceType = typeof(WriteDelegate<>);
+				instanceType = typeof(WriteOneDelegate<>);
 			else
 				throw new ArgumentException("unknown MethodType", "mType");
 				

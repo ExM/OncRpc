@@ -28,11 +28,11 @@ namespace Xdr.Example
 				switch (val)
 				{
 					case FileKind.Data:
-						_reader.ReadString(CompleteFile.MaxNameLen, Creator_Readed, _excepted);
+						_reader.ReadVar<string>(CompleteFile.MaxNameLen, Creator_Readed, _excepted);
 						break;
 	
 					case FileKind.Exec:
-						_reader.ReadString(CompleteFile.MaxNameLen, Interpretor_Readed, _excepted);
+						_reader.ReadVar<string>(CompleteFile.MaxNameLen, Interpretor_Readed, _excepted);
 						break;
 	
 					case FileKind.Text:

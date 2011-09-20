@@ -18,8 +18,8 @@ namespace Xdr.Example
 				_item = item;
 				_completed = completed;
 				_excepted = excepted;
-	
-				_writer.WriteString(_item.FileName, FileName_Writed, _excepted);
+				
+				_writer.Write<string>(_item.FileName, FileName_Writed, _excepted);
 			}
 	
 			private void FileName_Writed()
@@ -29,12 +29,12 @@ namespace Xdr.Example
 	
 			private void Type_Writed()
 			{
-				_writer.WriteString(_item.Owner, Owner_Writed, _excepted);
+				_writer.Write<string>(_item.Owner, Owner_Writed, _excepted);
 			}
 	
 			private void Owner_Writed()
 			{
-				_writer.WriteVarOpaque(_item.Data, _completed, _excepted);
+				_writer.WriteVar<byte[]>(_item.Data, _completed, _excepted);
 			}
 		}
 	}

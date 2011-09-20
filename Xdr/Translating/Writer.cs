@@ -59,38 +59,50 @@ namespace Xdr.Translating
 			new byte[] { 0x00, 0x00, 0x00}
 		};
 
-		public void WriteString(string item, Action completed, Action<Exception> excepted)
+		public void WriteString(string item, uint max, Action completed, Action<Exception> excepted)
 		{
-			WriteVarOpaque(Encoding.ASCII.GetBytes(item), completed, excepted);
+			byte[] bytes = Encoding.ASCII.GetBytes(item);
+			WriteVarOpaque(bytes, max, completed, excepted);
 		}
 
-		public void WriteFixOpaque(byte[] item, Action completed, Action<Exception> excepted)
+		public void WriteFixOpaque(byte[] item, uint len, Action completed, Action<Exception> excepted)
 		{
-			_writer.Write(item, () =>
-			{
-				uint tailLen = 4 - (uint)item.LongLength % 4;
-				if (tailLen == 4)
-					completed();
-				else
-					_writer.Write(_tail[tailLen], completed, excepted);
-			}, excepted);
+			if(item.LongLength == len)
+				_writer.Write(item, () =>
+				{
+					uint tailLen = 4 - (uint)item.LongLength % 4;
+					if (tailLen == 4)
+						completed();
+					else
+						_writer.Write(_tail[tailLen], completed, excepted);
+				}, excepted);
+			else
+				excepted(new InvalidOperationException("unexpected length"));
 		}
 
-		public void WriteVarOpaque(byte[] item, Action completed, Action<Exception> excepted)
+		public void WriteVarOpaque(byte[] item, uint max, Action completed, Action<Exception> excepted)
 		{
-			WriteUInt32((uint)item.LongLength,
-				() => WriteFixOpaque(item, completed, excepted),
-				excepted);
+			if(item.LongLength <= max)
+				WriteUInt32((uint)item.LongLength,
+					() => WriteFixOpaque(item, (uint)item.LongLength, completed, excepted), //FIXME: extract internal WriteFixOpaque
+					excepted);
+			else
+				excepted(new InvalidOperationException("unexpected length"));
 		}
 
 		public void Write<T>(T item, Action completed, Action<Exception> excepted)
 		{
 			_translator.Write<T>(this, item, completed, excepted);
 		}
-
-		public void WriteVar<T>(T items, Action completed, Action<Exception> excepted)
+		
+		public void WriteFix<T>(T items, uint len, Action completed, Action<Exception> excepted)
 		{
-			_translator.WriteVar<T>(this, items, completed, excepted);
+			_translator.WriteFix<T>(this, items, len, completed, excepted);
+		}
+
+		public void WriteVar<T>(T items, uint max, Action completed, Action<Exception> excepted)
+		{
+			_translator.WriteVar<T>(this, items, max, completed, excepted);
 		}
 		
 		public void WriteOption<T>(T item, Action completed, Action<Exception> excepted) where T: class

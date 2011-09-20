@@ -19,7 +19,7 @@ namespace Xdr.Example
 				_excepted = excepted;
 	
 				_target = new CompleteFile();
-				_reader.ReadString(CompleteFile.MaxNameLen, FileName_Readed, _excepted);
+				_reader.ReadVar<string>(CompleteFile.MaxNameLen, FileName_Readed, _excepted);
 			}
 	
 			private void FileName_Readed(string val)
@@ -31,13 +31,13 @@ namespace Xdr.Example
 			private void Type_Readed(FileType val)
 			{
 				_target.Type = val;
-				_reader.ReadString(CompleteFile.MaxUserName, Owner_Readed, _excepted);
+				_reader.ReadVar<string>(CompleteFile.MaxUserName, Owner_Readed, _excepted);
 			}
 	
 			private void Owner_Readed(string val)
 			{
 				_target.Owner = val;
-				_reader.ReadVarOpaque(CompleteFile.MaxFileLen, Data_Readed, _excepted);
+				_reader.ReadVar<byte[]>(CompleteFile.MaxFileLen, Data_Readed, _excepted);
 			}
 	
 			private void Data_Readed(byte[] val)

@@ -27,11 +27,11 @@ namespace Xdr.Example
 				switch (_item.Type)
 				{
 					case FileKind.Data:
-						_writer.WriteString(_item.Creator, _completed, _excepted);
+						_writer.Write<string>(_item.Creator, _completed, _excepted);
 						break;
 	
 					case FileKind.Exec:
-						_writer.WriteString(_item.Interpretor, _completed, _excepted);
+						_writer.Write<string>(_item.Interpretor, _completed, _excepted);
 						break;
 	
 					case FileKind.Text:

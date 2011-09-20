@@ -85,6 +85,8 @@
     <Compile Include="ReadContexts\ArrayReader_1.cs" />
     <Compile Include="ReadContexts\ListReader_1.cs" />
     <Compile Include="Attributes\OptionAttribute.cs" />
+    <Compile Include="Emit\OrderModel.cs" />
+    <Compile Include="Emit\FieldDescriptions\OrderFieldDesc.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

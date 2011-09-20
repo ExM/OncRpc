@@ -33,29 +33,29 @@ namespace Xdr
 					return result;
 
 				if (targetType == typeof(Int32))
-					return (Delegate)(WriteDelegate<Int32>)WriteInt32;
+					return (Delegate)(WriteOneDelegate<Int32>)WriteInt32;
 				if (targetType == typeof(UInt32))
-					return (Delegate)(WriteDelegate<UInt32>)WriteUInt32;
+					return (Delegate)(WriteOneDelegate<UInt32>)WriteUInt32;
 				if (targetType == typeof(Int64))
-					return (Delegate)(WriteDelegate<Int64>)WriteInt64;
+					return (Delegate)(WriteOneDelegate<Int64>)WriteInt64;
 				if (targetType == typeof(UInt64))
-					return (Delegate)(WriteDelegate<UInt64>)WriteUInt64;
+					return (Delegate)(WriteOneDelegate<UInt64>)WriteUInt64;
 				if (targetType == typeof(Single))
-					return (Delegate)(WriteDelegate<Single>)WriteSingle;
+					return (Delegate)(WriteOneDelegate<Single>)WriteSingle;
 				if (targetType == typeof(Double))
-					return (Delegate)(WriteDelegate<Double>)WriteDouble;
+					return (Delegate)(WriteOneDelegate<Double>)WriteDouble;
 				if (targetType == typeof(bool))
-					return (Delegate)(WriteDelegate<bool>)WriteBool;
+					return (Delegate)(WriteOneDelegate<bool>)WriteBool;
 				if (targetType == typeof(string))
-					return (Delegate)(WriteDelegate<string>)WriteString;
+					return (Delegate)(WriteOneDelegate<string>)WriteString;
 				if (targetType == typeof(byte[]))
-					return (Delegate)(WriteDelegate<byte[]>)WriteFixBytes;
+					return (Delegate)(WriteOneDelegate<byte[]>)WriteFixBytes;
 
 				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
 			}
 			catch (Exception ex)
 			{
-				return CreateStubDelegate(ex, "Write", targetType, typeof(WriteDelegate<>));
+				return CreateStubDelegate(ex, "Write", targetType, typeof(WriteOneDelegate<>));
 			}
 		}
 		
@@ -66,7 +66,7 @@ namespace Xdr
 				return null;
 
 			MethodInfo mi = typeof(ListWriter<>).MakeGenericType(itemType).GetMethod("WriteFix", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteDelegate<>).MakeGenericType(collectionType), mi);
+			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(collectionType), mi);
 		}
 		
 		public static Delegate CreateFixArrayWriter(Type collectionType)
@@ -76,7 +76,7 @@ namespace Xdr
 				return null;
 
 			MethodInfo mi = typeof(ArrayWriter<>).MakeGenericType(itemType).GetMethod("WriteFix", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteDelegate<>).MakeGenericType(collectionType), mi);
+			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
 		public static Delegate CreateEnumWriter(Type targetType)
@@ -85,7 +85,7 @@ namespace Xdr
 				return null;
 
 			MethodInfo mi = typeof(EnumWriter<>).MakeGenericType(targetType).GetMethod("Write", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteDelegate<>).MakeGenericType(targetType), mi);
+			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 
 		public static Delegate CreateNullableWriter(Type targetType)
@@ -95,7 +95,7 @@ namespace Xdr
 				return null;
 
 			MethodInfo mi = typeof(BaseTranslator).GetMethod("WriteNullable", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(itemType);
-			return Delegate.CreateDelegate(typeof(WriteDelegate<>).MakeGenericType(targetType), mi);
+			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 
 		private static void WriteNullable<T>(IWriter writer, T? item, Action completed, Action<Exception> excepted) where T: struct

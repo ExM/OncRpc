@@ -231,8 +231,8 @@ namespace Xdr
 			il.Emit(OpCodes.Ldarg_2);
 			il.Emit(OpCodes.Ldarg_3);
 			il.Emit(OpCodes.Ldarg_S, 4);
-			MethodInfo miInvoke = TypeBuilder.GetMethod( typeof(WriteDelegate<>).MakeGenericType(genTypeParam),
-				typeof(WriteDelegate<>).GetMethod("Invoke"));
+			MethodInfo miInvoke = TypeBuilder.GetMethod( typeof(WriteOneDelegate<>).MakeGenericType(genTypeParam),
+				typeof(WriteOneDelegate<>).GetMethod("Invoke"));
 
 			il.Emit(OpCodes.Callvirt, miInvoke);
 			il.Emit(OpCodes.Ret);
@@ -262,8 +262,8 @@ namespace Xdr
 			il.Emit(OpCodes.Ldarg_2);
 			il.Emit(OpCodes.Ldarg_3);
 			il.Emit(OpCodes.Ldarg_S, 4);
-			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(WriteDelegate<>).MakeGenericType(genTypeParam),
-				typeof(WriteDelegate<>).GetMethod("Invoke"));
+			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(WriteOneDelegate<>).MakeGenericType(genTypeParam),
+				typeof(WriteOneDelegate<>).GetMethod("Invoke"));
 			il.Emit(OpCodes.Callvirt, miInvoke);
 			il.Emit(OpCodes.Ret);
 		}

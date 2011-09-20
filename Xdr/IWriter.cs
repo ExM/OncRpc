@@ -12,12 +12,13 @@ namespace Xdr
 		void WriteSingle(Single item, Action completed, Action<Exception> excepted);
 		void WriteDouble(Double item, Action completed, Action<Exception> excepted);
 		
-		void WriteString(string item, Action completed, Action<Exception> excepted);
-		void WriteFixOpaque(byte[] item, Action completed, Action<Exception> excepted);
-		void WriteVarOpaque(byte[] item, Action completed, Action<Exception> excepted);
+		void WriteString(string item, uint max, Action completed, Action<Exception> excepted);
+		void WriteFixOpaque(byte[] item, uint len, Action completed, Action<Exception> excepted);
+		void WriteVarOpaque(byte[] item, uint max, Action completed, Action<Exception> excepted);
 
 		void Write<T>(T item, Action completed, Action<Exception> excepted);
-		void WriteVar<T>(T items, Action completed, Action<Exception> excepted);
+		void WriteFix<T>(T items, uint len, Action completed, Action<Exception> excepted);
+		void WriteVar<T>(T items, uint max, Action completed, Action<Exception> excepted);
 		void WriteOption<T>(T item, Action completed, Action<Exception> excepted) where T: class;
 	}
 }

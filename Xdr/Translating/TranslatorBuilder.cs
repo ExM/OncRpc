@@ -58,13 +58,13 @@ namespace Xdr
 			return this;
 		}
 		
-		public TranslatorBuilder Map<T>(WriteDelegate<T> writer)
+		public TranslatorBuilder Map<T>(WriteOneDelegate<T> writer)
 		{
 			_t.AppendMethod(typeof(T), MethodType.WriteOne, writer);
 			return this;
 		}
 
-		public TranslatorBuilder MapVar<T>(WriteDelegate<T> writer)
+		public TranslatorBuilder MapVar<T>(WriteOneDelegate<T> writer)
 		{
 			_t.AppendMethod(typeof(T), MethodType.WriteVar, writer);
 			return this;

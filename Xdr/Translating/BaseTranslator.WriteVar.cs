@@ -17,7 +17,7 @@ namespace Xdr
 				Delegate result = null;
 
 				if (targetType == typeof(byte[]))
-					return (Delegate)(WriteDelegate<byte[]>)WriteVarBytes;
+					return (Delegate)(WriteOneDelegate<byte[]>)WriteVarBytes;
 
 				result = CreateVarArrayWriter(targetType);
 				if (result != null)
@@ -31,7 +31,7 @@ namespace Xdr
 			}
 			catch (Exception ex)
 			{
-				return CreateStubDelegate(ex, "Write", targetType, typeof(WriteDelegate<>));
+				return CreateStubDelegate(ex, "Write", targetType, typeof(WriteOneDelegate<>));
 			}
 		}
 
@@ -42,7 +42,7 @@ namespace Xdr
 				return null;
 
 			MethodInfo mi = typeof(ListWriter<>).MakeGenericType(itemType).GetMethod("WriteVar", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteDelegate<>).MakeGenericType(collectionType), mi);
+			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
 		public static Delegate CreateVarArrayWriter(Type collectionType)
@@ -52,7 +52,7 @@ namespace Xdr
 				return null;
 
 			MethodInfo mi = typeof(ArrayWriter<>).MakeGenericType(itemType).GetMethod("WriteVar", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteDelegate<>).MakeGenericType(collectionType), mi);
+			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
 		private static void WriteVarBytes(IWriter writer, byte[] items, Action completed, Action<Exception> excepted)
