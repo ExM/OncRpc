@@ -84,6 +84,7 @@
     <Compile Include="WriteContexts\ArrayWriter_1.cs" />
     <Compile Include="ReadContexts\ArrayReader_1.cs" />
     <Compile Include="ReadContexts\ListReader_1.cs" />
+    <Compile Include="Attributes\OptionAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

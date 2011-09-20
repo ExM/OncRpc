@@ -9,7 +9,6 @@ namespace Xdr.Emit
 	public class CustomContextBuilder
 	{
 		private ModuleBuilder _modBuilder;
-		private Func<Type, Delegate> _dependencyResolver;
 
 		private StructureModel _model;
 		private Type _targetType;
@@ -19,10 +18,9 @@ namespace Xdr.Emit
 		private FieldBuilder _completedField;
 		private FieldBuilder _exceptedField;
 
-		public CustomContextBuilder(ModuleBuilder modBuilder, Func<Type, Delegate> dependencyResolver)
+		public CustomContextBuilder(ModuleBuilder modBuilder)
 		{
 			_modBuilder = modBuilder;
-			_dependencyResolver = dependencyResolver;
 		}
 
 		private static Type ActionType(Type t)
@@ -45,7 +43,7 @@ namespace Xdr.Emit
 		private void AppendCall(ILGenerator il, int index)
 		{
 			MethodBuilder nextMethod = CreateRead(index);
-			_model.Fields[index].AppendCall(il, _readerField, nextMethod, _exceptedField, _dependencyResolver);
+			_model.Fields[index].AppendCall(il, _readerField, nextMethod, _exceptedField);
 			il.Emit(OpCodes.Ret);
 		}
 

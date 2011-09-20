@@ -18,6 +18,7 @@ namespace Xdr
 
 		void Write<T>(T item, Action completed, Action<Exception> excepted);
 		void WriteVar<T>(T items, Action completed, Action<Exception> excepted);
+		void WriteOption<T>(T item, Action completed, Action<Exception> excepted) where T: class;
 	}
 }
 

@@ -78,7 +78,7 @@ namespace Xdr.Translating
 
 		public void WriteVarOpaque(byte[] item, Action completed, Action<Exception> excepted)
 		{
-			_writer.Write(XdrEncoding.EncodeUInt32((uint)item.LongLength),
+			WriteUInt32((uint)item.LongLength,
 				() => WriteFixOpaque(item, completed, excepted),
 				excepted);
 		}
@@ -91,6 +91,14 @@ namespace Xdr.Translating
 		public void WriteVar<T>(T items, Action completed, Action<Exception> excepted)
 		{
 			_translator.WriteVar<T>(this, items, completed, excepted);
+		}
+		
+		public void WriteOption<T>(T item, Action completed, Action<Exception> excepted) where T: class
+		{
+			if(item == null)
+				WriteUInt32(0, completed, excepted);
+			else
+				WriteUInt32(1, () => Write(item, completed, excepted), excepted);
 		}
 	}
 }

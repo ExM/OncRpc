@@ -35,7 +35,7 @@ namespace Xdr.Emit
 		}
 
 		public abstract MethodBuilder CreateRead(TypeBuilder typeBuilder, FieldBuilder targetField, out ILGenerator il);
-		public abstract void AppendCall(ILGenerator il, FieldBuilder readerField, MethodBuilder nextMethod, FieldBuilder exceptedField, Func<Type, Delegate> dependencyResolver);
+		public abstract void AppendCall(ILGenerator il, FieldBuilder readerField, MethodBuilder nextMethod, FieldBuilder exceptedField);
 	}
 }
 

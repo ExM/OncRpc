@@ -108,5 +108,18 @@ namespace Xdr.Translating
 		{
 			_translator.ReadVar<T>(this, max, completed, excepted);
 		}
+		
+		public void ReadOption<T>(Action<T> completed, Action<Exception> excepted) where T: class
+		{
+			ReadUInt32((len) =>
+			{
+				if (len == 0)
+					completed(null);
+				else if (len == 1)
+					Read<T>(completed, excepted);
+				else
+					excepted(new InvalidOperationException("unexpected option sign"));
+			}, excepted);
+		}
 	}
 }

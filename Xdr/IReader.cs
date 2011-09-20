@@ -19,6 +19,7 @@ namespace Xdr
 		void Read<T>(Action<T> completed, Action<Exception> excepted);
 		void ReadFix<T>(uint len, Action<T> completed, Action<Exception> excepted);
 		void ReadVar<T>(uint max, Action<T> completed, Action<Exception> excepted);
+		void ReadOption<T>(Action<T> completed, Action<Exception> excepted) where T: class;
 	}
 }
 

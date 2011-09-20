@@ -25,7 +25,7 @@ namespace Xdr.Emit
 			return mb;
 		}
 
-		public override void AppendCall(ILGenerator il, FieldBuilder readerField, MethodBuilder nextMethod, FieldBuilder exceptedField, Func<Type, Delegate> dependencyResolver)
+		public override void AppendCall(ILGenerator il, FieldBuilder readerField, MethodBuilder nextMethod, FieldBuilder exceptedField)
 		{
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldfld, readerField);
