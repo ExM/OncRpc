@@ -19,6 +19,7 @@ namespace Xdr
 		private ReadVarCacheDescription _readVarCacheDescription;
 		private ReadFixCacheDescription _readFixCacheDescription;
 		private WriteOneCacheDescription _writeOneCacheDescription;
+		private WriteFixCacheDescription _writeFixCacheDescription;
 		private WriteVarCacheDescription _writeVarCacheDescription;
 		
 		internal TranslatorBuilder()
@@ -33,6 +34,7 @@ namespace Xdr
 			_readFixCacheDescription = new ReadFixCacheDescription(_modBuilder, _delegateCacheDescription);
 			_readVarCacheDescription = new ReadVarCacheDescription(_modBuilder, _delegateCacheDescription);
 			_writeOneCacheDescription = new WriteOneCacheDescription(_modBuilder, _delegateCacheDescription);
+			_writeFixCacheDescription = new WriteFixCacheDescription(_modBuilder, _delegateCacheDescription);
 			_writeVarCacheDescription = new WriteVarCacheDescription(_modBuilder, _delegateCacheDescription);
 
 			Type dynTrType = EmitDynTranslator();
@@ -63,8 +65,14 @@ namespace Xdr
 			_t.AppendMethod(typeof(T), MethodType.WriteOne, writer);
 			return this;
 		}
+		
+		public TranslatorBuilder MapFix<T>(WriteManyDelegate<T> writer)
+		{
+			_t.AppendMethod(typeof(T), MethodType.WriteFix, writer);
+			return this;
+		}
 
-		public TranslatorBuilder MapVar<T>(WriteOneDelegate<T> writer)
+		public TranslatorBuilder MapVar<T>(WriteManyDelegate<T> writer)
 		{
 			_t.AppendMethod(typeof(T), MethodType.WriteVar, writer);
 			return this;

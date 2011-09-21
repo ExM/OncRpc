@@ -30,9 +30,12 @@ namespace Xdr
 		
 		protected abstract Type GetWriteOneCacheType();
 		public abstract void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted);
-
+		
+		protected abstract Type GetWriteFixCacheType();
+		public abstract void WriteFix<T>(IWriter writer, T items, uint len, Action completed, Action<Exception> excepted);
+		
 		protected abstract Type GetWriteVarCacheType();
-		public abstract void WriteVar<T>(IWriter writer, T items, Action completed, Action<Exception> excepted);
+		public abstract void WriteVar<T>(IWriter writer, T items, uint max, Action completed, Action<Exception> excepted);
 
 		protected void BuildCaches()
 		{
@@ -100,6 +103,16 @@ namespace Xdr
 					fi.SetValue(null, method);
 				}
 			}
+			else if (methodType == MethodType.WriteFix)
+			{
+				FieldInfo fi = GetWriteFixCacheType().MakeGenericType(targetType).GetField("Instance");
+				if(fi.GetValue(null) == null)
+				{
+					if(method == null)
+						method = WriteFixBuild(targetType);
+					fi.SetValue(null, method);
+				}
+			}
 			else if (methodType == MethodType.WriteVar)
 			{
 				FieldInfo fi = GetWriteVarCacheType().MakeGenericType(targetType).GetField("Instance");
@@ -112,14 +125,6 @@ namespace Xdr
 			}
 			else
 				throw new NotImplementedException("unknown method type");
-		}
-
-		private Delegate CreateStubDelegate(Exception ex, string method, Type targetType, Type genDelegateType)
-		{
-			Type stubType = typeof(ErrorStub<>).MakeGenericType(targetType);
-			object stubInstance = Activator.CreateInstance(stubType, ex);
-			MethodInfo mi = stubType.GetMethod(method);
-			return Delegate.CreateDelegate(genDelegateType.MakeGenericType(targetType), stubInstance, mi);
 		}
 
 		protected void AppendBuildRequest(Type targetType, MethodType methodType)

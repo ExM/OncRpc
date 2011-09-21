@@ -68,14 +68,7 @@ namespace Xdr.Translating
 		public void WriteFixOpaque(byte[] item, uint len, Action completed, Action<Exception> excepted)
 		{
 			if(item.LongLength == len)
-				_writer.Write(item, () =>
-				{
-					uint tailLen = 4 - (uint)item.LongLength % 4;
-					if (tailLen == 4)
-						completed();
-					else
-						_writer.Write(_tail[tailLen], completed, excepted);
-				}, excepted);
+				WriteFixOpaqueInternal(item, completed, excepted);
 			else
 				excepted(new InvalidOperationException("unexpected length"));
 		}
@@ -84,10 +77,22 @@ namespace Xdr.Translating
 		{
 			if(item.LongLength <= max)
 				WriteUInt32((uint)item.LongLength,
-					() => WriteFixOpaque(item, (uint)item.LongLength, completed, excepted), //FIXME: extract internal WriteFixOpaque
+					() => WriteFixOpaqueInternal(item, completed, excepted),
 					excepted);
 			else
 				excepted(new InvalidOperationException("unexpected length"));
+		}
+		
+		private void WriteFixOpaqueInternal(byte[] item, Action completed, Action<Exception> excepted)
+		{
+			_writer.Write(item, () =>
+			{
+				uint tailLen = 4 - (uint)item.LongLength % 4;
+				if (tailLen == 4)
+					completed();
+				else
+					_writer.Write(_tail[tailLen], completed, excepted);
+			}, excepted);
 		}
 
 		public void Write<T>(T item, Action completed, Action<Exception> excepted)

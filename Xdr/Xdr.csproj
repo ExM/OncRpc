@@ -87,6 +87,9 @@
     <Compile Include="Attributes\OptionAttribute.cs" />
     <Compile Include="Emit\OrderModel.cs" />
     <Compile Include="Emit\FieldDescriptions\OrderFieldDesc.cs" />
+    <Compile Include="Translating\Emit\WriteFixCacheDescription.cs" />
+    <Compile Include="Translating\BaseTranslator.WriteFix.cs" />
+    <Compile Include="Translating\ErrorStub_1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

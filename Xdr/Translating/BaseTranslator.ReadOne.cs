@@ -43,7 +43,7 @@ namespace Xdr
 			}
 			catch (Exception ex)
 			{
-				return CreateStubDelegate(ex, "ReadOne", targetType, typeof(ReadOneDelegate<>));
+				return ErrorStub.ReadOneDelegate(targetType, ex);
 			}
 		}
 

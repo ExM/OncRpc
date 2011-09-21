@@ -3,36 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xdr;
+using System.Reflection;
 
 namespace Xdr.Translating
 {
-	internal sealed class ErrorStub<T>
+	internal static class ErrorStub
 	{
-		public readonly Exception Error;
-
-		public ErrorStub(Exception ex)
+		private static Delegate StubDelegate(Exception ex, string method, Type targetType, Type genDelegateType)
 		{
-			Error = ex;
-		}
-
-		public void ReadOne(IReader reader, Action<T> completed, Action<Exception> excepted)
-		{
-			reader.Throw(Error, excepted);
+			Type stubType = typeof(ErrorStub<>).MakeGenericType(targetType);
+			object stubInstance = Activator.CreateInstance(stubType, ex);
+			MethodInfo mi = stubType.GetMethod(method);
+			return Delegate.CreateDelegate(genDelegateType.MakeGenericType(targetType), stubInstance, mi);
 		}
 		
-		public void ReadFix(IReader reader, uint len, Action<T> completed, Action<Exception> excepted)
+		internal static Delegate ReadOneDelegate(Type t, Exception ex)
 		{
-			reader.Throw(Error, excepted);
-		}
-
-		public void ReadVar(IReader reader, uint max, Action<T> completed, Action<Exception> excepted)
-		{
-			reader.Throw(Error, excepted);
+			return StubDelegate(ex, "ReadOne", t, typeof(ReadOneDelegate<>));
 		}
 		
-		public void Write(IWriter writer, T item, Action completed, Action<Exception> excepted)
+		internal static Delegate ReadManyDelegate(Type t, Exception ex)
 		{
-			writer.Throw(Error, excepted);
+			return StubDelegate(ex, "ReadMany", t, typeof(ReadManyDelegate<>));
+		}
+		
+		internal static Delegate WriteOneDelegate(Type t, Exception ex)
+		{
+			return StubDelegate(ex, "WriteOne", t, typeof(WriteOneDelegate<>));
+		}
+		
+		internal static Delegate WriteManyDelegate(Type t, Exception ex)
+		{
+			return StubDelegate(ex, "WriteMany", t, typeof(WriteManyDelegate<>));
 		}
 	}
 }

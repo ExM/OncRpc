@@ -31,7 +31,7 @@ namespace Xdr
 			}
 			catch (Exception ex)
 			{
-				return CreateStubDelegate(ex, "ReadFix", targetType, typeof(ReadManyDelegate<>));
+				return ErrorStub.ReadManyDelegate(targetType, ex);
 			}
 		}
 

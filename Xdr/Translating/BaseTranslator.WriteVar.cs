@@ -15,9 +15,11 @@ namespace Xdr
 			try
 			{
 				Delegate result = null;
-
+				
+				if (targetType == typeof(string))
+					return (Delegate)(WriteManyDelegate<string>)WriteString;
 				if (targetType == typeof(byte[]))
-					return (Delegate)(WriteOneDelegate<byte[]>)WriteVarBytes;
+					return (Delegate)(WriteManyDelegate<byte[]>)WriteVarBytes;
 
 				result = CreateVarArrayWriter(targetType);
 				if (result != null)
@@ -31,7 +33,7 @@ namespace Xdr
 			}
 			catch (Exception ex)
 			{
-				return CreateStubDelegate(ex, "Write", targetType, typeof(WriteOneDelegate<>));
+				return ErrorStub.WriteManyDelegate(targetType, ex);
 			}
 		}
 
@@ -42,7 +44,7 @@ namespace Xdr
 				return null;
 
 			MethodInfo mi = typeof(ListWriter<>).MakeGenericType(itemType).GetMethod("WriteVar", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(collectionType), mi);
+			return Delegate.CreateDelegate(typeof(WriteManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
 		public static Delegate CreateVarArrayWriter(Type collectionType)
@@ -52,12 +54,17 @@ namespace Xdr
 				return null;
 
 			MethodInfo mi = typeof(ArrayWriter<>).MakeGenericType(itemType).GetMethod("WriteVar", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(collectionType), mi);
+			return Delegate.CreateDelegate(typeof(WriteManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
-		private static void WriteVarBytes(IWriter writer, byte[] items, Action completed, Action<Exception> excepted)
+		private static void WriteVarBytes(IWriter writer, byte[] items, uint max, Action completed, Action<Exception> excepted)
 		{
-			writer.WriteVarOpaque(items, completed, excepted);
+			writer.WriteVarOpaque(items, max, completed, excepted);
+		}
+		
+		private static void WriteString(IWriter writer, string item, uint max, Action completed, Action<Exception> excepted)
+		{
+			writer.WriteString(item, max, completed, excepted);
 		}
 	}
 }

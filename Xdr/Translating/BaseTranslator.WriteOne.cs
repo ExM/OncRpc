@@ -23,14 +23,6 @@ namespace Xdr
 				result = CreateNullableWriter(targetType);
 				if (result != null)
 					return result;
-				
-				result = CreateFixArrayWriter(targetType);
-				if (result != null)
-					return result;
-				
-				result = CreateFixListWriter(targetType);
-				if (result != null)
-					return result;
 
 				if (targetType == typeof(Int32))
 					return (Delegate)(WriteOneDelegate<Int32>)WriteInt32;
@@ -46,39 +38,15 @@ namespace Xdr
 					return (Delegate)(WriteOneDelegate<Double>)WriteDouble;
 				if (targetType == typeof(bool))
 					return (Delegate)(WriteOneDelegate<bool>)WriteBool;
-				if (targetType == typeof(string))
-					return (Delegate)(WriteOneDelegate<string>)WriteString;
-				if (targetType == typeof(byte[]))
-					return (Delegate)(WriteOneDelegate<byte[]>)WriteFixBytes;
-
+				
 				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
 			}
 			catch (Exception ex)
 			{
-				return CreateStubDelegate(ex, "Write", targetType, typeof(WriteOneDelegate<>));
+				return ErrorStub.WriteOneDelegate(targetType, ex);
 			}
 		}
 		
-		public static Delegate CreateFixListWriter(Type collectionType)
-		{
-			Type itemType = collectionType.ListSubType();
-			if(itemType == null)
-				return null;
-
-			MethodInfo mi = typeof(ListWriter<>).MakeGenericType(itemType).GetMethod("WriteFix", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(collectionType), mi);
-		}
-		
-		public static Delegate CreateFixArrayWriter(Type collectionType)
-		{
-			Type itemType = collectionType.ArraySubType();
-			if (itemType == null)
-				return null;
-
-			MethodInfo mi = typeof(ArrayWriter<>).MakeGenericType(itemType).GetMethod("WriteFix", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(collectionType), mi);
-		}
-
 		public static Delegate CreateEnumWriter(Type targetType)
 		{
 			if (!targetType.IsEnum)
@@ -142,16 +110,6 @@ namespace Xdr
 				writer.WriteUInt32(1, completed, excepted);
 			else
 				writer.WriteUInt32(0, completed, excepted);
-		}
-
-		private static void WriteString(IWriter writer, string item, Action completed, Action<Exception> excepted)
-		{
-			writer.WriteString(item, completed, excepted);
-		}
-		
-		private static void WriteFixBytes(IWriter writer, byte[] items, Action completed, Action<Exception> excepted)
-		{
-			writer.WriteFixOpaque(items, completed, excepted);
 		}
 	}
 }

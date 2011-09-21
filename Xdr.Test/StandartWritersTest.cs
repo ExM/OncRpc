@@ -22,7 +22,7 @@ namespace Xdr.Test
 			SyncStream ss = new SyncStream(s);
 			IWriter w = t.CreateWriter(ss);
 
-			w.Write<string>(text,
+			w.WriteVar<string>(text, 5,
 				() => {},
 				(ex) => Assert.Fail("unexpected exception: {0}", ex));
 			
@@ -42,7 +42,7 @@ namespace Xdr.Test
 			SyncStream ss = new SyncStream(s);
 			IWriter w = t.CreateWriter(ss);
 
-			w.WriteVar<int[]>(array,
+			w.WriteVar<int[]>(array, 5,
 				() => {},
 				(ex) => Assert.Fail("unexpected exception: {0}", ex));
 			

@@ -34,16 +34,26 @@ namespace Xdr.WriteContexts
 
 		}
 		
-		public static void WriteFix(IWriter writer, T[] items, Action completed, Action<Exception> excepted)
+		public static void WriteFix(IWriter writer, T[] items, uint len, Action completed, Action<Exception> excepted)
 		{
-			var context = new ArrayWriter<T>(writer, items, completed, excepted);
-			context.WriteNextItem();
+			if(items.LongLength == len)
+			{
+				var context = new ArrayWriter<T>(writer, items, completed, excepted);
+				context.WriteNextItem();
+			}
+			else
+				excepted(new InvalidOperationException("unexpected length"));
 		}
 		
-		public static void WriteVar(IWriter writer, T[] items, Action completed, Action<Exception> excepted)
+		public static void WriteVar(IWriter writer, T[] items, uint max, Action completed, Action<Exception> excepted)
 		{
-			var context = new ArrayWriter<T>(writer, items, completed, excepted);
-			writer.WriteUInt32((uint)items.LongLength, context.WriteNextItem, excepted);
+			if(items.LongLength <= max)
+			{
+				var context = new ArrayWriter<T>(writer, items, completed, excepted);
+				writer.WriteUInt32((uint)items.LongLength, context.WriteNextItem, excepted);
+			}
+			else
+				excepted(new InvalidOperationException("unexpected length"));
 		}
 	}
 }
