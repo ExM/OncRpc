@@ -42,7 +42,7 @@ namespace Xdr.WriteContexts
 				context.WriteNextItem();
 			}
 			else
-				excepted(new InvalidOperationException("unexpected length"));
+				writer.Throw(new InvalidOperationException("unexpected length"), excepted);
 		}
 		
 		public static void WriteVar(IWriter writer, T[] items, uint max, Action completed, Action<Exception> excepted)
@@ -53,7 +53,7 @@ namespace Xdr.WriteContexts
 				writer.WriteUInt32((uint)items.LongLength, context.WriteNextItem, excepted);
 			}
 			else
-				excepted(new InvalidOperationException("unexpected length"));
+				writer.Throw(new InvalidOperationException("unexpected length"), excepted);
 		}
 	}
 }
