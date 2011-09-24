@@ -2,7 +2,7 @@ using System;
 
 namespace Xdr.TestDtos
 {
-	public class AllVariantOrder
+	public class ListItem
 	{
 		[Order(0)]
 		public int Field1;
@@ -11,7 +11,7 @@ namespace Xdr.TestDtos
 		public uint? Field2;
 		
 		[Order(2), Option]
-		public AllVariantOrder Field3;
+		public ListItem Field3;
 	}
 }
 

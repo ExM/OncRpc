@@ -46,7 +46,7 @@ namespace Xdr
 			SyncStream ss = new SyncStream(s);
 			Reader r = t.CreateReader(ss);
 			
-			r.Read<AllVariantOrder>((val) =>
+			r.Read<ListItem>((val) =>
 			{
 				Assert.AreEqual(1, val.Field1);
 				Assert.AreEqual(null, val.Field2);
@@ -72,7 +72,7 @@ namespace Xdr
 			SyncStream ss = new SyncStream(s);
 			Reader r = t.CreateReader(ss);
 			
-			r.Read<AllVariantOrder>((val) =>
+			r.Read<ListItem>((val) =>
 			{
 				Assert.AreEqual(1, val.Field1);
 				Assert.AreEqual(3, val.Field2);
@@ -101,7 +101,7 @@ namespace Xdr
 			SyncStream ss = new SyncStream(s);
 			Reader r = t.CreateReader(ss);
 			
-			r.Read<AllVariantOrder>((val) =>
+			r.Read<ListItem>((val) =>
 			{
 				Assert.AreEqual(1, val.Field1);
 				Assert.AreEqual(null, val.Field2);
@@ -113,6 +113,35 @@ namespace Xdr
 			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
 
 			Assert.AreEqual(7*4, s.Position);
+		}
+		
+		[Test]
+		public void Read_InternalFixArray()
+		{
+			MemoryStream s = new MemoryStream();
+			s.Write(
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x02,
+				0x00, 0x00, 0x00, 0x03,
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00);
+			s.Position = 0;
+			
+			ITranslator t = Translator.Create().Build();
+			
+			SyncStream ss = new SyncStream(s);
+			Reader r = t.CreateReader(ss);
+			
+			r.Read<ListContainer>((val) =>
+			{
+				Assert.AreEqual(1, val.Field1[0]);
+				Assert.AreEqual(2, val.Field1[1]);
+				Assert.AreEqual(3, val.Field1[2]);
+				Assert.AreEqual(0, val.Field2.Count);
+				Assert.AreEqual("", val.Field3);
+			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+
+			Assert.AreEqual(5*4, s.Position);
 		}
 	}
 }

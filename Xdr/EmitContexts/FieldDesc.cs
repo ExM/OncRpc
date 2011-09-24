@@ -12,7 +12,11 @@ namespace Xdr.EmitContexts
 		private Type _fieldType;
 		
 		private bool _isOption = false;
-
+		
+		private bool _isMany = false;
+		private bool _isFix = false;
+		private uint _len = 0;
+		
 		public FieldDesc(Type ft, MemberInfo mi)
 		{
 			_fieldType = ft;
@@ -26,7 +30,28 @@ namespace Xdr.EmitContexts
 				_isOption = true;
 			}
 			
-			//TODO: check attribute combination errors
+			var fixAttr = _mi.GetAttr<FixAttribute>();
+			var varAttr = _mi.GetAttr<VarAttribute>();
+			
+			if(fixAttr != null && varAttr != null)
+				throw new InvalidOperationException("can not use Fix and Var attributes both");
+			
+			if(fixAttr != null)
+			{
+				_isMany = true;
+				_isFix = true;
+				_len = fixAttr.Length;
+			}
+			
+			if(varAttr != null)
+			{
+				_isMany = true;
+				_isFix = false;
+				_len = varAttr.MaxLength;
+			}
+			
+			if(_isOption && _isMany)
+				throw new InvalidOperationException("can not use Fix and Option attributes both or Var and Option attributes both");
 		}
 		
 		public MethodBuilder CreateReaded(TypeBuilder typeBuilder, FieldBuilder targetField, out ILGenerator il)
@@ -42,14 +67,29 @@ namespace Xdr.EmitContexts
 
 		public void AppendCall(ILGenerator il, FieldBuilder readerField, MethodBuilder nextMethod, FieldBuilder exceptedField)
 		{
-			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Ldfld, readerField);
-			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Ldftn, nextMethod);
-			il.Emit(OpCodes.Newobj, typeof(Action<>).MakeGenericType(_fieldType).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
-			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Ldfld, exceptedField);
-			il.Emit(OpCodes.Callvirt, typeof(Reader).GetMethod(_isOption?"ReadOption":"Read").MakeGenericMethod(_fieldType));
+			if(_isMany)
+			{
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Ldfld, readerField);
+				il.Emit(OpCodes.Ldc_I4, (int)_len);
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Ldftn, nextMethod);
+				il.Emit(OpCodes.Newobj, typeof(Action<>).MakeGenericType(_fieldType).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Ldfld, exceptedField);
+				il.Emit(OpCodes.Callvirt, typeof(Reader).GetMethod(_isFix?"ReadFix":"ReadVar").MakeGenericMethod(_fieldType));
+			}
+			else
+			{
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Ldfld, readerField);
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Ldftn, nextMethod);
+				il.Emit(OpCodes.Newobj, typeof(Action<>).MakeGenericType(_fieldType).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Ldfld, exceptedField);
+				il.Emit(OpCodes.Callvirt, typeof(Reader).GetMethod(_isOption?"ReadOption":"Read").MakeGenericMethod(_fieldType));
+			}
 			il.Emit(OpCodes.Ret);
 		}
 		
