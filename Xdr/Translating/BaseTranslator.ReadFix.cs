@@ -16,9 +16,6 @@ namespace Xdr
 			{
 				Delegate result = null;
 
-				if (targetType == typeof(byte[]))
-					return (Delegate)(ReadManyDelegate<byte[]>)ReadFixBytes;
-
 				result = CreateFixArrayReader(targetType);
 				if (result != null)
 					return result;

@@ -15,11 +15,6 @@ namespace Xdr
 			try
 			{
 				Delegate result = null;
-				
-				if (targetType == typeof(string))
-					return (Delegate)(WriteManyDelegate<string>)WriteString;
-				if (targetType == typeof(byte[]))
-					return (Delegate)(WriteManyDelegate<byte[]>)WriteVarBytes;
 
 				result = CreateVarArrayWriter(targetType);
 				if (result != null)

@@ -50,7 +50,10 @@ namespace Xdr
 			EmitInitField(ilCtor, fb_writeFixCacheType, _writeFixCacheDescription.Result);
 			EmitInitField(ilCtor, fb_writeVarCacheType, _writeVarCacheDescription.Result);
 			
-			//	IL_0057: ret
+			// run init
+			ilCtor.Emit(OpCodes.Ldarg_0);
+			ilCtor.Emit(OpCodes.Call, typeof(BaseTranslator).GetMethod("Init", BindingFlags.Instance | BindingFlags.NonPublic));
+
 			ilCtor.Emit(OpCodes.Ret);
 
 			EmitOverride_GetCacheType(typeBuilder, "GetReadOneCacheType", fb_readOneCacheType);

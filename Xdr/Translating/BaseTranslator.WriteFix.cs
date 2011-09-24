@@ -15,9 +15,6 @@ namespace Xdr
 			try
 			{
 				Delegate result = null;
-				
-				if (targetType == typeof(byte[]))
-					return (Delegate)(WriteManyDelegate<byte[]>)WriteFixBytes;
 
 				result = CreateFixArrayWriter(targetType);
 				if (result != null)

@@ -24,21 +24,6 @@ namespace Xdr
 				if (result != null)
 					return result;
 
-				if (targetType == typeof(Int32))
-					return (Delegate)(ReadOneDelegate<Int32>)ReadInt32;
-				if (targetType == typeof(UInt32))
-					return (Delegate)(ReadOneDelegate<UInt32>)ReadUInt32;
-				if (targetType == typeof(Int64))
-					return (Delegate)(ReadOneDelegate<Int64>)ReadInt64;
-				if (targetType == typeof(UInt64))
-					return (Delegate)(ReadOneDelegate<UInt64>)ReadUInt64;
-				if (targetType == typeof(Single))
-					return (Delegate)(ReadOneDelegate<Single>)ReadSingle;
-				if (targetType == typeof(Double))
-					return (Delegate)(ReadOneDelegate<Double>)ReadDouble;
-				if (targetType == typeof(bool))
-					return (Delegate)(ReadOneDelegate<bool>)ReadBool;
-
 				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
 			}
 			catch (Exception ex)

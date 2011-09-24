@@ -16,11 +16,6 @@ namespace Xdr
 			{
 				Delegate result = null;
 
-				if (targetType == typeof(byte[]))
-					return (Delegate)(ReadManyDelegate<byte[]>)ReadVarBytes;
-				if (targetType == typeof(string))
-					return (Delegate)(ReadManyDelegate<string>)ReadString;
-
 				result = CreateVarArrayReader(targetType);
 				if (result != null)
 					return result;

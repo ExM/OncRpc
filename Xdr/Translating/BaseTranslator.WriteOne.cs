@@ -23,21 +23,6 @@ namespace Xdr
 				result = CreateNullableWriter(targetType);
 				if (result != null)
 					return result;
-
-				if (targetType == typeof(Int32))
-					return (Delegate)(WriteOneDelegate<Int32>)WriteInt32;
-				if (targetType == typeof(UInt32))
-					return (Delegate)(WriteOneDelegate<UInt32>)WriteUInt32;
-				if (targetType == typeof(Int64))
-					return (Delegate)(WriteOneDelegate<Int64>)WriteInt64;
-				if (targetType == typeof(UInt64))
-					return (Delegate)(WriteOneDelegate<UInt64>)WriteUInt64;
-				if (targetType == typeof(Single))
-					return (Delegate)(WriteOneDelegate<Single>)WriteSingle;
-				if (targetType == typeof(Double))
-					return (Delegate)(WriteOneDelegate<Double>)WriteDouble;
-				if (targetType == typeof(bool))
-					return (Delegate)(WriteOneDelegate<bool>)WriteBool;
 				
 				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
 			}
