@@ -63,48 +63,5 @@ namespace Xdr
 					excepted(new InvalidOperationException(string.Format("unexpected value {0}", val)));
 			}, excepted);
 		}
-		
-		private static void ReadBool(Reader reader, Action<bool> completed, Action<Exception> excepted)
-		{
-			reader.ReadInt32((val) =>
-			{
-				if (val == 0)
-					completed(false);
-				else if(val == 1)
-					completed(true);
-				else
-					excepted(new InvalidCastException(string.Format("no boolean value `{0}'", val)));
-			}, excepted);
-		}
-		
-		private static void ReadInt32(Reader reader, Action<int> completed, Action<Exception> excepted)
-		{
-			reader.ReadInt32(completed, excepted);
-		}
-		
-		private static void ReadUInt32(Reader reader, Action<uint> completed, Action<Exception> excepted)
-		{
-			reader.ReadUInt32(completed, excepted);
-		}
-
-		private static void ReadInt64(Reader reader, Action<long> completed, Action<Exception> excepted)
-		{
-			reader.ReadInt64(completed, excepted);
-		}
-
-		private static void ReadUInt64(Reader reader, Action<ulong> completed, Action<Exception> excepted)
-		{
-			reader.ReadUInt64(completed, excepted);
-		}
-
-		private static void ReadSingle(Reader reader, Action<float> completed, Action<Exception> excepted)
-		{
-			reader.ReadSingle(completed, excepted);
-		}
-
-		private static void ReadDouble(Reader reader, Action<double> completed, Action<Exception> excepted)
-		{
-			reader.ReadDouble(completed, excepted);
-		}
 	}
 }

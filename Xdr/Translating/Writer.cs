@@ -8,47 +8,47 @@ namespace Xdr
 	public sealed class Writer
 	{
 		private BaseTranslator _translator;
-		private IByteWriter _writer;
+		internal IByteWriter Source;
 
 		internal Writer(BaseTranslator translator, IByteWriter writer)
 		{
 			_translator = translator;
-			_writer = writer;
+			Source = writer;
 		}
 		
 		public void Throw(Exception ex, Action<Exception> excepted)
 		{
-			_writer.Throw(ex, excepted);
+			Source.Throw(ex, excepted);
 		}
 
-		public void WriteInt32(int item, Action completed, Action<Exception> excepted)
+		internal void WriteInt32(int item, Action completed, Action<Exception> excepted)
 		{
-			_writer.Write(XdrEncoding.EncodeInt32(item), completed, excepted);
+			Source.Write(XdrEncoding.EncodeInt32(item), completed, excepted);
 		}
 
-		public void WriteUInt32(uint item, Action completed, Action<Exception> excepted)
+		internal void WriteUInt32(uint item, Action completed, Action<Exception> excepted)
 		{
-			_writer.Write(XdrEncoding.EncodeUInt32(item), completed, excepted);
+			Source.Write(XdrEncoding.EncodeUInt32(item), completed, excepted);
 		}
 
-		public void WriteInt64(long item, Action completed, Action<Exception> excepted)
+		internal void WriteInt64(long item, Action completed, Action<Exception> excepted)
 		{
-			_writer.Write(XdrEncoding.EncodeInt64(item), completed, excepted);
+			Source.Write(XdrEncoding.EncodeInt64(item), completed, excepted);
 		}
 
-		public void WriteUInt64(ulong item, Action completed, Action<Exception> excepted)
+		internal void WriteUInt64(ulong item, Action completed, Action<Exception> excepted)
 		{
-			_writer.Write(XdrEncoding.EncodeUInt64(item), completed, excepted);
+			Source.Write(XdrEncoding.EncodeUInt64(item), completed, excepted);
 		}
 
-		public void WriteSingle(float item, Action completed, Action<Exception> excepted)
+		internal void WriteSingle(float item, Action completed, Action<Exception> excepted)
 		{
-			_writer.Write(XdrEncoding.EncodeSingle(item), completed, excepted);
+			Source.Write(XdrEncoding.EncodeSingle(item), completed, excepted);
 		}
 
-		public void WriteDouble(double item, Action completed, Action<Exception> excepted)
+		internal void WriteDouble(double item, Action completed, Action<Exception> excepted)
 		{
-			_writer.Write(XdrEncoding.EncodeDouble(item), completed, excepted);
+			Source.Write(XdrEncoding.EncodeDouble(item), completed, excepted);
 		}
 
 		private static byte[][] _tail = new byte[][]
@@ -59,13 +59,13 @@ namespace Xdr
 			new byte[] { 0x00, 0x00, 0x00}
 		};
 
-		public void WriteString(string item, uint max, Action completed, Action<Exception> excepted)
+		internal void WriteString(string item, uint max, Action completed, Action<Exception> excepted)
 		{
 			byte[] bytes = Encoding.ASCII.GetBytes(item);
 			WriteVarOpaque(bytes, max, completed, excepted);
 		}
 
-		public void WriteFixOpaque(byte[] item, uint len, Action completed, Action<Exception> excepted)
+		internal void WriteFixOpaque(byte[] item, uint len, Action completed, Action<Exception> excepted)
 		{
 			if(item.LongLength == len)
 				WriteFixOpaqueInternal(item, completed, excepted);
@@ -73,7 +73,7 @@ namespace Xdr
 				excepted(new InvalidOperationException("unexpected length"));
 		}
 
-		public void WriteVarOpaque(byte[] item, uint max, Action completed, Action<Exception> excepted)
+		internal void WriteVarOpaque(byte[] item, uint max, Action completed, Action<Exception> excepted)
 		{
 			if(item.LongLength <= max)
 				WriteUInt32((uint)item.LongLength,
@@ -85,13 +85,13 @@ namespace Xdr
 		
 		private void WriteFixOpaqueInternal(byte[] item, Action completed, Action<Exception> excepted)
 		{
-			_writer.Write(item, () =>
+			Source.Write(item, () =>
 			{
 				uint tailLen = 4 - (uint)item.LongLength % 4;
 				if (tailLen == 4)
 					completed();
 				else
-					_writer.Write(_tail[tailLen], completed, excepted);
+					Source.Write(_tail[tailLen], completed, excepted);
 			}, excepted);
 		}
 

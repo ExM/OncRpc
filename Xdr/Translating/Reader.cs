@@ -8,80 +8,80 @@ namespace Xdr
 	public sealed class Reader
 	{
 		private BaseTranslator _translator;
-		private IByteReader _reader;
+		internal IByteReader Source;
 
 		internal Reader(BaseTranslator translator, IByteReader reader)
 		{
 			_translator = translator;
-			_reader = reader;
+			Source = reader;
 		}
 		
 		public void Throw(Exception ex, Action<Exception> excepted)
 		{
-			_reader.Throw(ex, excepted);
+			Source.Throw(ex, excepted);
 		}
 
-		public void ReadInt32(Action<int> completed, Action<Exception> excepted)
+		internal void ReadInt32(Action<int> completed, Action<Exception> excepted)
 		{
-			_reader.Read(4,
+			Source.Read(4,
 				(bytes) => completed(XdrEncoding.DecodeInt32(bytes)),
 				excepted);
 		}
 
-		public void ReadUInt32(Action<uint> completed, Action<Exception> excepted)
+		internal void ReadUInt32(Action<uint> completed, Action<Exception> excepted)
 		{
-			_reader.Read(4,
+			Source.Read(4,
 				(bytes) => completed(XdrEncoding.DecodeUInt32(bytes)),
 				excepted);
 		}
 
-		public void ReadInt64(Action<long> completed, Action<Exception> excepted)
+		internal void ReadInt64(Action<long> completed, Action<Exception> excepted)
 		{
-			_reader.Read(8,
+			Source.Read(8,
 				(bytes) => completed(XdrEncoding.DecodeInt64(bytes)),
 				excepted);
 		}
 
-		public void ReadUInt64(Action<ulong> completed, Action<Exception> excepted)
+		internal void ReadUInt64(Action<ulong> completed, Action<Exception> excepted)
 		{
-			_reader.Read(8,
+			Source.Read(8,
 				(bytes) => completed(XdrEncoding.DecodeUInt64(bytes)),
 				excepted);
 		}
 
-		public void ReadSingle(Action<float> completed, Action<Exception> excepted)
+		internal void ReadSingle(Action<float> completed, Action<Exception> excepted)
 		{
-			_reader.Read(4,
+			Source.Read(4,
 				(bytes) => completed(XdrEncoding.DecodeSingle(bytes)),
 				excepted);
 		}
 
-		public void ReadDouble(Action<double> completed, Action<Exception> excepted)
+		internal void ReadDouble(Action<double> completed, Action<Exception> excepted)
 		{
-			_reader.Read(8,
+			Source.Read(8,
 				(bytes) => completed(XdrEncoding.DecodeDouble(bytes)),
 				excepted);
 		}
 
-		public void ReadString(uint max, Action<string> completed, Action<Exception> excepted)
+		internal void ReadString(uint max, Action<string> completed, Action<Exception> excepted)
 		{
 			ReadVarOpaque(max,
 				(bytes) => completed(Encoding.ASCII.GetString(bytes)),
 				excepted);
 		}
 
-		public void ReadFixOpaque(uint len, Action<byte[]> completed, Action<Exception> excepted)
+		internal void ReadFixOpaque(uint len, Action<byte[]> completed, Action<Exception> excepted)
 		{
-			_reader.Read(len, (bytes) =>
+			Source.Read(len, (bytes) =>
 			{
 				if (len % 4u == 0)
 					completed(bytes);
 				else
-					_reader.Read(4u - len % 4u, (tail) => completed(bytes), excepted);
+					Source.Read(4u - len % 4u, (tail) => completed(bytes), excepted);
 			}, excepted);
 		}
 
-		public void ReadVarOpaque(uint max, Action<byte[]> completed, Action<Exception> excepted)
+		internal void ReadVarOpaque(uint max, Action<byte[]> completed, Action<Exception> excepted)
 		{
 			ReadUInt32((len) =>
 			{

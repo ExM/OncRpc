@@ -51,10 +51,5 @@ namespace Xdr
 			MethodInfo mi = typeof(ArrayWriter<>).MakeGenericType(itemType).GetMethod("WriteFix", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(WriteManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
-
-		private static void WriteFixBytes(Writer writer, byte[] items, uint len, Action completed, Action<Exception> excepted)
-		{
-			writer.WriteFixOpaque(items, len, completed, excepted);
-		}
 	}
 }

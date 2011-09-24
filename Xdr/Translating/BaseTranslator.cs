@@ -21,27 +21,37 @@ namespace Xdr
 		
 		protected void Init()
 		{
-			SetReadOne<int>(ReadInt32);
-			SetReadOne<uint>(ReadUInt32);
-			SetReadOne<long>(ReadInt64);
-			SetReadOne<ulong>(ReadUInt64);
-			SetReadOne<float>(ReadSingle);
-			SetReadOne<double>(ReadDouble);
-			SetReadOne<bool>(ReadBool);
-			SetReadFix<byte[]>(ReadFixBytes);
-			SetReadVar<byte[]>(ReadVarBytes);
-			SetReadVar<string>(ReadString);
+			SetReadOne<int>((r, c, e) => r.ReadInt32(c, e));
+			SetReadOne<uint>((r, c, e) => r.ReadUInt32(c, e));
+			SetReadOne<long>((r, c, e) => r.ReadInt64(c, e));
+			SetReadOne<ulong>((r, c, e) => r.ReadUInt64(c, e));
+			SetReadOne<float>((r, c, e) => r.ReadSingle(c, e));
+			SetReadOne<double>((r, c, e) => r.ReadDouble(c, e));
+			SetReadOne<bool>((r, c, e) => r.ReadInt32((val) => IntToBool(val, c, e), e));
+			SetReadFix<byte[]>((r, l, c, e) => r.ReadFixOpaque(l, c, e));
+			SetReadVar<byte[]>((r, l, c, e) => r.ReadVarOpaque(l, c, e));
+			SetReadVar<string>((r, l, c, e) => r.ReadString(l, c, e));
 			
-			SetWriteOne<int>(WriteInt32);
-			SetWriteOne<uint>(WriteUInt32);
-			SetWriteOne<long>(WriteInt64);
-			SetWriteOne<ulong>(WriteUInt64);
-			SetWriteOne<float>(WriteSingle);
-			SetWriteOne<double>(WriteDouble);
-			SetWriteOne<bool>(WriteBool);
-			SetWriteFix<byte[]>(WriteFixBytes);
-			SetWriteVar<byte[]>(WriteVarBytes);
-			SetWriteVar<string>(WriteString);
+			SetWriteOne<int>((w, i, c, e) => w.WriteInt32(i, c, e));
+			SetWriteOne<uint>((w, i, c, e) => w.WriteUInt32(i, c, e));
+			SetWriteOne<long>((w, i, c, e) => w.WriteInt64(i, c, e));
+			SetWriteOne<ulong>((w, i, c, e) => w.WriteUInt64(i, c, e));
+			SetWriteOne<float>((w, i, c, e) => w.WriteSingle(i, c, e));
+			SetWriteOne<double>((w, i, c, e) => w.WriteDouble(i, c, e));
+			SetWriteOne<bool>((w, i, c, e) => w.WriteInt32(i?1:0, c, e));
+			SetWriteFix<byte[]>((w, i, l, c, e) => w.WriteFixOpaque(i, l, c, e));
+			SetWriteVar<byte[]>((w, i, l, c, e) => w.WriteVarOpaque(i, l, c, e));
+			SetWriteVar<string>((w, i, l, c, e) => w.WriteString(i, l, c, e));
+		}
+		
+		private static void IntToBool(int val, Action<bool> completed, Action<Exception> excepted)
+		{
+			if (val == 0)
+				completed(false);
+			else if(val == 1)
+				completed(true);
+			else
+				excepted(new InvalidCastException(string.Format("no boolean value `{0}'", val)));
 		}
 		
 		protected void SetReadOne<T>(ReadOneDelegate<T> method)

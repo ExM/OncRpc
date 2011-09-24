@@ -57,10 +57,5 @@ namespace Xdr
 			MethodInfo mi = typeof(ListReader<>).MakeGenericType(itemType).GetMethod("ReadFix", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
-
-		private static void ReadFixBytes(Reader reader, uint len, Action<byte[]> completed, Action<Exception> excepted)
-		{
-			reader.ReadFixOpaque(len, completed, excepted);
-		}
 	}
 }

@@ -17,13 +17,13 @@ namespace Xdr.TestDtos
 				_reader = reader;
 				_completed = completed;
 				_excepted = excepted;
-				_reader.ReadInt32(Field1_Readed, _excepted);
+				_reader.Read<int>(Field1_Readed, _excepted);
 			}
 	
 			private void Field1_Readed(int val)
 			{
 				_target.Field1 = -val;
-				_reader.ReadUInt32(Field2_Readed, _excepted);
+				_reader.Read<uint>(Field2_Readed, _excepted);
 			}
 	
 			private void Field2_Readed(uint val)
