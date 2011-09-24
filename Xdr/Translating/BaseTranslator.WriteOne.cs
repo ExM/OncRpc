@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using Xdr.Translating;
 using Xdr.WriteContexts;
+using Xdr.EmitContexts;
 
 namespace Xdr
 {
@@ -21,6 +22,10 @@ namespace Xdr
 					return result;
 
 				result = CreateNullableWriter(targetType);
+				if (result != null)
+					return result;
+				
+				result = EmitContext.GetWriter(targetType);
 				if (result != null)
 					return result;
 				

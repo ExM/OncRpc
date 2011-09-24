@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using Xdr.Translating;
 using Xdr.ReadContexts;
+using Xdr.EmitContexts;
 
 namespace Xdr
 {
@@ -21,6 +22,10 @@ namespace Xdr
 					return result;
 
 				result = CreateNullableReader(targetType);
+				if (result != null)
+					return result;
+				
+				result = EmitContext.GetReader(targetType);
 				if (result != null)
 					return result;
 

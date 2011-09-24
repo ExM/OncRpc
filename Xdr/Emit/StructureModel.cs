@@ -16,7 +16,7 @@ namespace Xdr.Emit
 			
 			foreach(var fi in TargetType.GetFields().Where((fi) => fi.IsPublic && !fi.IsStatic))
 			{
-				FieldAttribute fAttr = GetAttr<FieldAttribute>(fi);
+				OrderAttribute fAttr = GetAttr<OrderAttribute>(fi);
 				if(fAttr == null)
 					continue;
 				
@@ -28,7 +28,7 @@ namespace Xdr.Emit
 
 			foreach (var pi in TargetType.GetProperties().Where((pi) => pi.CanWrite && pi.CanRead))
 			{
-				FieldAttribute fAttr = GetAttr<FieldAttribute>(pi);
+				OrderAttribute fAttr = GetAttr<OrderAttribute>(pi);
 				if (fAttr == null)
 					continue;
 

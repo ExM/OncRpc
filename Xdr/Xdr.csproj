@@ -36,7 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Attributes\SwitchAttribute.cs" />
     <Compile Include="Attributes\CaseAttribute.cs" />
     <Compile Include="Emit\FieldDescriptions\BaseFieldDesc.cs" />
@@ -83,13 +82,22 @@
     <Compile Include="ReadContexts\ArrayReader_1.cs" />
     <Compile Include="ReadContexts\ListReader_1.cs" />
     <Compile Include="Attributes\OptionAttribute.cs" />
-    <Compile Include="Emit\OrderModel.cs" />
-    <Compile Include="Emit\FieldDescriptions\OrderFieldDesc.cs" />
     <Compile Include="Translating\Emit\WriteFixCacheDescription.cs" />
     <Compile Include="Translating\BaseTranslator.WriteFix.cs" />
     <Compile Include="Translating\ErrorStub_1.cs" />
+    <Compile Include="EmitContexts\OrderModel.cs" />
+    <Compile Include="EmitContexts\FieldDesc.cs" />
+    <Compile Include="EmitContexts\EmitContext.cs" />
+    <Compile Include="EmitContexts\ReadContextBuilder.cs" />
+    <Compile Include="Attributes\OrderAttribute.cs" />
+    <Compile Include="EmitContexts\EmitResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="EmitContexts\" />
+    <Folder Include="Emit\" />
+    <Folder Include="Emit\FieldDescriptions\" />
+  </ItemGroup>
 </Project>

@@ -26,25 +26,25 @@ namespace Xdr.Example
 		/// <summary>
 		/// name of file
 		/// </summary>
-		[Field(0), Var(MaxNameLen)]
+		[Order(0), Var(MaxNameLen)]
 		public string FileName {get; set;}
 		
 		/// <summary>
 		/// info about file
 		/// </summary>
-		[Field(1)]
+		[Order(1)]
 		public FileType Type {get; set;}
 		
 		/// <summary>
 		/// owner of file
 		/// </summary>
-		[Field(2), Var(MaxUserName)]
+		[Order(2), Var(MaxUserName)]
 		public string Owner {get; set;}
 		
 		/// <summary>
 		/// file data
 		/// </summary>
-		[Field(3), Var(MaxFileLen)]
+		[Order(3), Var(MaxFileLen)]
 		public byte[] Data {get; set;}
 		
 		public static void Read(Reader reader, Action<CompleteFile> completed, Action<Exception> excepted)

@@ -46,9 +46,6 @@
     <Compile Include="XdrReaderExample.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Xdr\Xdr.csproj">
       <Project>{E9D7D0A1-F900-44B1-A649-98D88846610C}</Project>
       <Name>Xdr</Name>

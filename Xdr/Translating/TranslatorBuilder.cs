@@ -24,7 +24,7 @@ namespace Xdr
 		
 		internal TranslatorBuilder()
 		{
-			string name = "DynamicXdr";
+			string name = "DynamicXdrTranslator";
 			AssemblyName asmName = new AssemblyName(name);
 			AssemblyBuilder asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.RunAndSave);
 			_modBuilder = asmBuilder.DefineDynamicModule(name + ".dll", name + ".dll");

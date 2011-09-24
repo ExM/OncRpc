@@ -40,11 +40,7 @@ namespace EmitTest
 		public static Type CreateTypeCache()
 		{
 			AssemblyName asmName = new AssemblyName("DynamicAssembly");
-
-			// To generate a persistable assembly, specify AssemblyBuilderAccess.RunAndSave.
 			AssemblyBuilder asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.RunAndSave);
-
-			// Generate a persistable single-module assembly.
 			ModuleBuilder modBuilder = asmBuilder.DefineDynamicModule("TypeCache.dll", "TypeCache.dll");
 
 			TypeBuilder typeBuilder = modBuilder.DefineType("TypeCache", TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Abstract | TypeAttributes.Sealed);

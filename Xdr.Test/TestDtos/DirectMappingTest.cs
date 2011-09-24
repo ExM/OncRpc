@@ -13,11 +13,13 @@ namespace Xdr
 		public void Read()
 		{
 			MemoryStream s = new MemoryStream();
-			s.Write(0x12, 0x34, 0xAB, 0xCD, 0xCD, 0xEF, 0x98, 0x76);
+			s.Write(
+				0x00, 0x00, 0x00, 0x03,
+				0x00, 0x00, 0x00, 0x04);
 			s.Position = 0;
 			
 			ITranslator t = Translator.Create()
-				.Map<SimplyInt>(SimplyInt.Read)
+				.Map<SimplyInt>(SimplyInt.Read2)
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
@@ -25,8 +27,8 @@ namespace Xdr
 			
 			r.Read<SimplyInt>((val) =>
 			{
-				Assert.AreEqual(0x1234ABCD, val.Field1);
-				Assert.AreEqual(0xCDEF9876, val.Field2);
+				Assert.AreEqual(-3, val.Field1);
+				Assert.AreEqual(4u, val.Field2);
 			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
 
 			Assert.AreEqual(8, s.Position);
@@ -44,7 +46,7 @@ namespace Xdr
 			s.Position = 0;
 
 			ITranslator t = Translator.Create()
-				.Map<SimplyInt>(SimplyInt.Read)
+				.Map<SimplyInt>(SimplyInt.Read2)
 				.Build();
 
 			SyncStream ss = new SyncStream(s);
@@ -53,9 +55,9 @@ namespace Xdr
 			r.ReadFix<List<SimplyInt>>(2, (val) =>
 			{
 				Assert.AreEqual(2, val.Count);
-				Assert.AreEqual(1, val[0].Field1);
+				Assert.AreEqual(-1, val[0].Field1);
 				Assert.AreEqual(2, val[0].Field2);
-				Assert.AreEqual(3, val[1].Field1);
+				Assert.AreEqual(-3, val[1].Field1);
 				Assert.AreEqual(4, val[1].Field2);
 			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
 
