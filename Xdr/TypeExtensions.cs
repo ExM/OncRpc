@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 
 namespace Xdr
 {
@@ -31,6 +32,13 @@ namespace Xdr
 			}
 
 			return null;
+		}
+		
+		public static T GetAttr<T>(this MemberInfo mi) where T : Attribute
+		{
+			return mi
+				.GetCustomAttributes(typeof(T), true)
+				.FirstOrDefault() as T;
 		}
 		
 		public static Type NullableSubType(this Type type)

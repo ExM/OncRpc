@@ -29,7 +29,7 @@ namespace Xdr.EmitContexts
 		
 		private static void AppendField(SortedList<uint, FieldDesc> fields, Type fieldType, MemberInfo mi)
 		{
-			OrderAttribute fAttr = GetAttr<OrderAttribute>(mi);
+			OrderAttribute fAttr = mi.GetAttr<OrderAttribute>();
 			if (fAttr == null)
 				return;
 
@@ -37,13 +37,6 @@ namespace Xdr.EmitContexts
 				throw new InvalidOperationException("duplicate order " + fAttr.Order);
 			
 			fields.Add(fAttr.Order, new FieldDesc(fieldType, mi));
-		}
-
-		private static T GetAttr<T>(MemberInfo mi) where T : Attribute
-		{
-			return mi
-				.GetCustomAttributes(typeof(T), true)
-				.FirstOrDefault() as T;
 		}
 	}
 }

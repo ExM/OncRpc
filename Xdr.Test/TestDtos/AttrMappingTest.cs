@@ -30,6 +30,90 @@ namespace Xdr
 
 			Assert.AreEqual(8, s.Position);
 		}
+		
+		[Test]
+		public void Read_Short()
+		{
+			MemoryStream s = new MemoryStream();
+			s.Write(
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00);
+			s.Position = 0;
+			
+			ITranslator t = Translator.Create().Build();
+			
+			SyncStream ss = new SyncStream(s);
+			Reader r = t.CreateReader(ss);
+			
+			r.Read<AllVariantOrder>((val) =>
+			{
+				Assert.AreEqual(1, val.Field1);
+				Assert.AreEqual(null, val.Field2);
+				Assert.AreEqual(null, val.Field3);
+			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+
+			Assert.AreEqual(12, s.Position);
+		}
+		
+		[Test]
+		public void Read_OneItem()
+		{
+			MemoryStream s = new MemoryStream();
+			s.Write(
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x03,
+				0x00, 0x00, 0x00, 0x00);
+			s.Position = 0;
+			
+			ITranslator t = Translator.Create().Build();
+			
+			SyncStream ss = new SyncStream(s);
+			Reader r = t.CreateReader(ss);
+			
+			r.Read<AllVariantOrder>((val) =>
+			{
+				Assert.AreEqual(1, val.Field1);
+				Assert.AreEqual(3, val.Field2);
+				Assert.AreEqual(null, val.Field3);
+			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+
+			Assert.AreEqual(16, s.Position);
+		}
+		
+		[Test]
+		public void Read_TwoItem()
+		{
+			MemoryStream s = new MemoryStream();
+			s.Write(
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x03,
+				0x00, 0x00, 0x00, 0x00);
+			s.Position = 0;
+			
+			ITranslator t = Translator.Create().Build();
+			
+			SyncStream ss = new SyncStream(s);
+			Reader r = t.CreateReader(ss);
+			
+			r.Read<AllVariantOrder>((val) =>
+			{
+				Assert.AreEqual(1, val.Field1);
+				Assert.AreEqual(null, val.Field2);
+				Assert.IsNotNull(val.Field3);
+				
+				Assert.AreEqual(1, val.Field3.Field1);
+				Assert.AreEqual(3, val.Field3.Field2);
+				Assert.AreEqual(null, val.Field3.Field3);
+			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+
+			Assert.AreEqual(7*4, s.Position);
+		}
 	}
 }
 

@@ -61,6 +61,7 @@
     <Compile Include="Example\FileType.WriteContext.cs" />
     <Compile Include="StandartWritersTest.cs" />
     <Compile Include="TestDtos\AttrMappingTest.cs" />
+    <Compile Include="TestDtos\AllVariantOrder.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
