@@ -20,7 +20,7 @@ namespace Xdr.Test
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
-			IWriter w = t.CreateWriter(ss);
+			Writer w = t.CreateWriter(ss);
 
 			w.WriteVar<string>(text, 5,
 				() => {},
@@ -40,7 +40,7 @@ namespace Xdr.Test
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
-			IWriter w = t.CreateWriter(ss);
+			Writer w = t.CreateWriter(ss);
 
 			w.WriteVar<int[]>(array, 5,
 				() => {},

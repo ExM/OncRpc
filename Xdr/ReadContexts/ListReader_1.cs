@@ -8,13 +8,13 @@ namespace Xdr.ReadContexts
 	public class ListReader<T>
 	{
 		private List<T> _target;
-		private IReader _reader;
+		private Reader _reader;
 		private uint _length = 0;
 		private uint _maxlength = 0;
 		private Action<List<T>> _completed;
 		private Action<Exception> _excepted;
 
-		private ListReader(IReader reader, Action<List<T>> completed, Action<Exception> excepted)
+		private ListReader(Reader reader, Action<List<T>> completed, Action<Exception> excepted)
 		{
 			_reader = reader;
 			_completed = completed;
@@ -46,14 +46,14 @@ namespace Xdr.ReadContexts
 			ReadNextItem();
 		}
 		
-		public static void ReadFix(IReader reader, uint len, Action<List<T>> completed, Action<Exception> excepted)
+		public static void ReadFix(Reader reader, uint len, Action<List<T>> completed, Action<Exception> excepted)
 		{
 			var context = new ListReader<T>(reader, completed, excepted);
 			context._length = len;
 			context.ReadNextItem();
 		}
 		
-		public static void ReadVar(IReader reader, uint len, Action<List<T>> completed, Action<Exception> excepted)
+		public static void ReadVar(Reader reader, uint len, Action<List<T>> completed, Action<Exception> excepted)
 		{
 			var context = new ListReader<T>(reader, completed, excepted);
 			context._maxlength = len;

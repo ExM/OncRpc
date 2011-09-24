@@ -8,11 +8,11 @@ namespace Xdr.Example
 		public class WriteContext
 		{
 			private FileType _item;
-			private IWriter _writer;
+			private Writer _writer;
 			private Action _completed;
 			private Action<Exception> _excepted;
 	
-			public WriteContext(IWriter writer, FileType item, Action completed, Action<Exception> excepted)
+			public WriteContext(Writer writer, FileType item, Action completed, Action<Exception> excepted)
 			{
 				_writer = writer;
 				_item = item;

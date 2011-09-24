@@ -22,7 +22,7 @@ namespace Xdr
 				.Build();
 
 
-			IReader r1 = t1.CreateReader(ss);
+			Reader r1 = t1.CreateReader(ss);
 
 			s.Position = 0;
 			r1.Read<SimplyInt>((val) =>
@@ -36,7 +36,7 @@ namespace Xdr
 				.Map<SimplyInt>(SimplyInt.Read)
 				.Build();
 
-			IReader r2 = t2.CreateReader(ss);
+			Reader r2 = t2.CreateReader(ss);
 
 			s.Position = 0;
 			r2.Read<SimplyInt>((val) =>

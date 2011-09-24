@@ -32,7 +32,7 @@ namespace Xdr.WriteContexts
 				_enumMap.Add((T)item, conv(item));
 		}
 
-		public static void Write(IWriter writer, T item, Action completed, Action<Exception> excepted)
+		public static void Write(Writer writer, T item, Action completed, Action<Exception> excepted)
 		{
 			int val;
 			if (_enumMap.TryGetValue(item, out val))

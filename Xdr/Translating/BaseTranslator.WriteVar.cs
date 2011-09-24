@@ -52,12 +52,12 @@ namespace Xdr
 			return Delegate.CreateDelegate(typeof(WriteManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
-		private static void WriteVarBytes(IWriter writer, byte[] items, uint max, Action completed, Action<Exception> excepted)
+		private static void WriteVarBytes(Writer writer, byte[] items, uint max, Action completed, Action<Exception> excepted)
 		{
 			writer.WriteVarOpaque(items, max, completed, excepted);
 		}
 		
-		private static void WriteString(IWriter writer, string item, uint max, Action completed, Action<Exception> excepted)
+		private static void WriteString(Writer writer, string item, uint max, Action completed, Action<Exception> excepted)
 		{
 			writer.WriteString(item, max, completed, excepted);
 		}

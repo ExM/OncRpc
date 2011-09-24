@@ -51,7 +51,7 @@ namespace Xdr
 			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 
-		private static void WriteNullable<T>(IWriter writer, T? item, Action completed, Action<Exception> excepted) where T: struct
+		private static void WriteNullable<T>(Writer writer, T? item, Action completed, Action<Exception> excepted) where T: struct
 		{
 			if (item.HasValue)
 				writer.WriteUInt32(1, () => writer.Write<T>(item.Value, completed, excepted), excepted);
@@ -59,37 +59,37 @@ namespace Xdr
 				writer.WriteUInt32(0, completed, excepted);
 		}
 
-		private static void WriteInt32(IWriter writer, int item, Action completed, Action<Exception> excepted)
+		private static void WriteInt32(Writer writer, int item, Action completed, Action<Exception> excepted)
 		{
 			writer.WriteInt32(item, completed, excepted);
 		}
 
-		private static void WriteUInt32(IWriter writer, uint item, Action completed, Action<Exception> excepted)
+		private static void WriteUInt32(Writer writer, uint item, Action completed, Action<Exception> excepted)
 		{
 			writer.WriteUInt32(item, completed, excepted);
 		}
 
-		private static void WriteInt64(IWriter writer, long item, Action completed, Action<Exception> excepted)
+		private static void WriteInt64(Writer writer, long item, Action completed, Action<Exception> excepted)
 		{
 			writer.WriteInt64(item, completed, excepted);
 		}
 
-		private static void WriteUInt64(IWriter writer, ulong item, Action completed, Action<Exception> excepted)
+		private static void WriteUInt64(Writer writer, ulong item, Action completed, Action<Exception> excepted)
 		{
 			writer.WriteUInt64(item, completed, excepted);
 		}
 
-		private static void WriteSingle(IWriter writer, float item, Action completed, Action<Exception> excepted)
+		private static void WriteSingle(Writer writer, float item, Action completed, Action<Exception> excepted)
 		{
 			writer.WriteSingle(item, completed, excepted);
 		}
 
-		private static void WriteDouble(IWriter writer, double item, Action completed, Action<Exception> excepted)
+		private static void WriteDouble(Writer writer, double item, Action completed, Action<Exception> excepted)
 		{
 			writer.WriteDouble(item, completed, excepted);
 		}
 
-		private static void WriteBool(IWriter writer, bool item, Action completed, Action<Exception> excepted)
+		private static void WriteBool(Writer writer, bool item, Action completed, Action<Exception> excepted)
 		{
 			if(item)
 				writer.WriteUInt32(1, completed, excepted);

@@ -93,22 +93,22 @@ namespace Xdr
 		}
 		
 		protected abstract Type GetReadOneCacheType();
-		public abstract void Read<T>(IReader reader, Action<T> completed, Action<Exception> excepted);
+		public abstract void Read<T>(Reader reader, Action<T> completed, Action<Exception> excepted);
 		
 		protected abstract Type GetReadFixCacheType();
-		public abstract void ReadFix<T>(IReader reader, uint len, Action<T> completed, Action<Exception> excepted);
+		public abstract void ReadFix<T>(Reader reader, uint len, Action<T> completed, Action<Exception> excepted);
 
 		protected abstract Type GetReadVarCacheType();
-		public abstract void ReadVar<T>(IReader reader, uint max, Action<T> completed, Action<Exception> excepted);
+		public abstract void ReadVar<T>(Reader reader, uint max, Action<T> completed, Action<Exception> excepted);
 		
 		protected abstract Type GetWriteOneCacheType();
-		public abstract void Write<T>(IWriter writer, T item, Action completed, Action<Exception> excepted);
+		public abstract void Write<T>(Writer writer, T item, Action completed, Action<Exception> excepted);
 		
 		protected abstract Type GetWriteFixCacheType();
-		public abstract void WriteFix<T>(IWriter writer, T items, uint len, Action completed, Action<Exception> excepted);
+		public abstract void WriteFix<T>(Writer writer, T items, uint len, Action completed, Action<Exception> excepted);
 		
 		protected abstract Type GetWriteVarCacheType();
-		public abstract void WriteVar<T>(IWriter writer, T items, uint max, Action completed, Action<Exception> excepted);
+		public abstract void WriteVar<T>(Writer writer, T items, uint max, Action completed, Action<Exception> excepted);
 
 		protected void BuildCaches()
 		{
@@ -210,12 +210,12 @@ namespace Xdr
 				_dependency.Enqueue(new BuildRequest { TargetType = targetType, Method = methodType });
 		}
 
-		public IReader CreateReader(IByteReader reader)
+		public Reader CreateReader(IByteReader reader)
 		{
 			return new Reader(this, reader);
 		}
 
-		public IWriter CreateWriter(IByteWriter writer)
+		public Writer CreateWriter(IByteWriter writer)
 		{
 			return new Writer(this, writer);
 		}

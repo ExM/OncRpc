@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Xdr.Translating
+namespace Xdr
 {
-	internal sealed class Writer : IWriter
+	public sealed class Writer
 	{
 		private BaseTranslator _translator;
 		private IByteWriter _writer;

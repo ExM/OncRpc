@@ -20,7 +20,7 @@ namespace Xdr
 			ITranslator t = Translator.Create().Build();
 			
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 
 			r.Read<IntEnum>((val) =>
 			{
@@ -40,7 +40,7 @@ namespace Xdr
 			ITranslator t = Translator.Create().Build();
 
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 
 			r.Read<IntEnum>((val) =>
 			{
@@ -60,7 +60,7 @@ namespace Xdr
 			ITranslator t = Translator.Create().Build();
 
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 
 			r.Read<IntEnum>((val) =>
 			{
@@ -80,7 +80,7 @@ namespace Xdr
 			ITranslator t = Translator.Create().Build();
 
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 
 			r.Read<ByteEnum>((val) =>
 			{

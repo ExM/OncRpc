@@ -21,7 +21,7 @@ namespace Xdr
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 			
 			r.Read<SimplyInt>((val) =>
 			{
@@ -48,7 +48,7 @@ namespace Xdr
 				.Build();
 
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 
 			r.ReadFix<List<SimplyInt>>(2, (val) =>
 			{

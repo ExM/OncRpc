@@ -15,22 +15,22 @@ namespace Xdr.Translating
 			Error = ex;
 		}
 
-		public void ReadOne(IReader reader, Action<T> completed, Action<Exception> excepted)
+		public void ReadOne(Reader reader, Action<T> completed, Action<Exception> excepted)
 		{
 			reader.Throw(Error, excepted);
 		}
 		
-		public void ReadMany(IReader reader, uint len, Action<T> completed, Action<Exception> excepted)
+		public void ReadMany(Reader reader, uint len, Action<T> completed, Action<Exception> excepted)
 		{
 			reader.Throw(Error, excepted);
 		}
 		
-		public void WriteOne(IWriter writer, T item, Action completed, Action<Exception> excepted)
+		public void WriteOne(Writer writer, T item, Action completed, Action<Exception> excepted)
 		{
 			writer.Throw(Error, excepted);
 		}
 		
-		public void WriteMany(IWriter writer, T items, uint len, Action completed, Action<Exception> excepted)
+		public void WriteMany(Writer writer, T items, uint len, Action completed, Action<Exception> excepted)
 		{
 			writer.Throw(Error, excepted);
 		}

@@ -8,11 +8,11 @@ namespace Xdr.TestDtos
 		private class ReadContext2
 		{
 			private SimplyInt _target = new SimplyInt();
-			private IReader _reader;
+			private Reader _reader;
 			private Action<SimplyInt> _completed;
 			private Action<Exception> _excepted;
 	
-			public ReadContext2(IReader reader, Action<SimplyInt> completed, Action<Exception> excepted)
+			public ReadContext2(Reader reader, Action<SimplyInt> completed, Action<Exception> excepted)
 			{
 				_reader = reader;
 				_completed = completed;

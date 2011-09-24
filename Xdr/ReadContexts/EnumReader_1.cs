@@ -40,7 +40,7 @@ namespace Xdr.ReadContexts
 			}
 		}
 
-		public EnumReader(IReader reader, Action<T> completed, Action<Exception> excepted)
+		public EnumReader(Reader reader, Action<T> completed, Action<Exception> excepted)
 		{
 			_completed = completed;
 			_excepted = excepted;
@@ -56,7 +56,7 @@ namespace Xdr.ReadContexts
 				_excepted(new InvalidCastException(string.Format("type `{0}' not contain {1}", typeof(T).FullName, val)));
 		}
 
-		public static void Read(IReader reader, Action<T> completed, Action<Exception> excepted)
+		public static void Read(Reader reader, Action<T> completed, Action<Exception> excepted)
 		{
 			new EnumReader<T>(reader, completed, excepted);
 		}

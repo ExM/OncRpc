@@ -58,12 +58,12 @@ namespace Xdr
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
-		private static void ReadVarBytes(IReader reader, uint len, Action<byte[]> completed, Action<Exception> excepted)
+		private static void ReadVarBytes(Reader reader, uint len, Action<byte[]> completed, Action<Exception> excepted)
 		{
 			reader.ReadVarOpaque(len, completed, excepted);
 		}
 		
-		private static void ReadString(IReader reader, uint len, Action<string> completed, Action<Exception> excepted)
+		private static void ReadString(Reader reader, uint len, Action<string> completed, Action<Exception> excepted)
 		{
 			reader.ReadString(len, completed, excepted);
 		}

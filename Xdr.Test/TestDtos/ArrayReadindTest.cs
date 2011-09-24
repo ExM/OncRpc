@@ -24,7 +24,7 @@ namespace Xdr
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 			
 			r.ReadFix<List<int>>(3, (val) =>
 			{
@@ -52,7 +52,7 @@ namespace Xdr
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 			
 			r.ReadVar<List<int>>(4, (val) =>
 			{
@@ -80,7 +80,7 @@ namespace Xdr
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 			
 			r.ReadFix<int[]>(3, (val) =>
 			{
@@ -108,7 +108,7 @@ namespace Xdr
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 			
 			r.ReadVar<int[]>(4, (val) =>
 			{

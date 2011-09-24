@@ -8,12 +8,12 @@ namespace Xdr.WriteContexts
 	public class ListWriter<T>
 	{
 		private List<T> _items;
-		private IWriter _writer;
+		private Writer _writer;
 		private int _index = 0;
 		private Action _completed;
 		private Action<Exception> _excepted;
 
-		private ListWriter(IWriter writer, List<T> items, Action completed, Action<Exception> excepted)
+		private ListWriter(Writer writer, List<T> items, Action completed, Action<Exception> excepted)
 		{
 			_writer = writer;
 			_items = items;
@@ -34,7 +34,7 @@ namespace Xdr.WriteContexts
 
 		}
 
-		public static void WriteFix(IWriter writer, List<T> items, uint len, Action completed, Action<Exception> excepted)
+		public static void WriteFix(Writer writer, List<T> items, uint len, Action completed, Action<Exception> excepted)
 		{
 			if(items.Count == len)
 			{
@@ -45,7 +45,7 @@ namespace Xdr.WriteContexts
 				writer.Throw(new InvalidOperationException("unexpected length"), excepted);
 		}
 		
-		public static void WriteVar(IWriter writer, List<T> items, uint max, Action completed, Action<Exception> excepted)
+		public static void WriteVar(Writer writer, List<T> items, uint max, Action completed, Action<Exception> excepted)
 		{
 			if(items.Count <= max)
 			{

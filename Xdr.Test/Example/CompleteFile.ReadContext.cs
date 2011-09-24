@@ -8,11 +8,11 @@ namespace Xdr.Example
 		private class ReadContext
 		{
 			private CompleteFile _target;
-			private IReader _reader;
+			private Reader _reader;
 			private Action<CompleteFile> _completed;
 			private Action<Exception> _excepted;
 	
-			public ReadContext(IReader reader, Action<CompleteFile> completed, Action<Exception> excepted)
+			public ReadContext(Reader reader, Action<CompleteFile> completed, Action<Exception> excepted)
 			{
 				_reader = reader;
 				_completed = completed;

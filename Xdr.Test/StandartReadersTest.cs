@@ -29,7 +29,7 @@ namespace Xdr.Test
 				.Build();
 
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 
 			string result = null;
 
@@ -56,7 +56,7 @@ namespace Xdr.Test
 				.Build();
 
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 
 			bool? result = null;
 
@@ -84,7 +84,7 @@ namespace Xdr.Test
 				.Build();
 
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 
 			int? result = null;
 

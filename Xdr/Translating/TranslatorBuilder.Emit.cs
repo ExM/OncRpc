@@ -115,7 +115,7 @@ namespace Xdr
 			MethodBuilder mb = tb.DefineMethod(name, MethodAttributes.Public | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
 			mb.SetReturnType(null);
-			mb.SetParameters(typeof(IReader), typeof(uint), typeof(Action<>).MakeGenericType(genTypeParam), typeof(Action<Exception>));
+			mb.SetParameters(typeof(Reader), typeof(uint), typeof(Action<>).MakeGenericType(genTypeParam), typeof(Action<Exception>));
 			tb.DefineMethodOverride(mb, miDeclaration);
 
 
@@ -157,7 +157,7 @@ namespace Xdr
 			MethodBuilder mb = typeBuilder.DefineMethod("Read", MethodAttributes.Public | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
 			mb.SetReturnType(null);
-			mb.SetParameters(typeof(IReader), typeof(Action<>).MakeGenericType(genTypeParam), typeof(Action<Exception>));
+			mb.SetParameters(typeof(Reader), typeof(Action<>).MakeGenericType(genTypeParam), typeof(Action<Exception>));
 			typeBuilder.DefineMethodOverride(mb, miDeclaration);
 
 			FieldInfo fi = TypeBuilder.GetField(_readOneCacheDescription.Result.MakeGenericType(genTypeParam),
@@ -200,7 +200,7 @@ namespace Xdr
 			MethodBuilder mb = typeBuilder.DefineMethod("Write", MethodAttributes.Public | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
 			mb.SetReturnType(null);
-			mb.SetParameters(typeof(IWriter), genTypeParam, typeof(Action), typeof(Action<Exception>));
+			mb.SetParameters(typeof(Writer), genTypeParam, typeof(Action), typeof(Action<Exception>));
 			typeBuilder.DefineMethodOverride(mb, miDeclaration);
 
 
@@ -233,7 +233,7 @@ namespace Xdr
 			MethodBuilder mb = typeBuilder.DefineMethod(name, MethodAttributes.Public | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
 			mb.SetReturnType(null);
-			mb.SetParameters(typeof(IWriter), genTypeParam, typeof(uint), typeof(Action), typeof(Action<Exception>));
+			mb.SetParameters(typeof(Writer), genTypeParam, typeof(uint), typeof(Action), typeof(Action<Exception>));
 			typeBuilder.DefineMethodOverride(mb, miDeclaration);
 
 			FieldInfo fi = writeManyCacheDesc.Instance(genTypeParam);

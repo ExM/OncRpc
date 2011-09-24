@@ -50,7 +50,7 @@ namespace Xdr
 			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 		
-		private static void ReadNullable<T>(IReader reader, Action<T?> completed, Action<Exception> excepted)
+		private static void ReadNullable<T>(Reader reader, Action<T?> completed, Action<Exception> excepted)
 			where T: struct
 		{
 			reader.ReadUInt32((val) => 
@@ -64,7 +64,7 @@ namespace Xdr
 			}, excepted);
 		}
 		
-		private static void ReadBool(IReader reader, Action<bool> completed, Action<Exception> excepted)
+		private static void ReadBool(Reader reader, Action<bool> completed, Action<Exception> excepted)
 		{
 			reader.ReadInt32((val) =>
 			{
@@ -77,32 +77,32 @@ namespace Xdr
 			}, excepted);
 		}
 		
-		private static void ReadInt32(IReader reader, Action<int> completed, Action<Exception> excepted)
+		private static void ReadInt32(Reader reader, Action<int> completed, Action<Exception> excepted)
 		{
 			reader.ReadInt32(completed, excepted);
 		}
 		
-		private static void ReadUInt32(IReader reader, Action<uint> completed, Action<Exception> excepted)
+		private static void ReadUInt32(Reader reader, Action<uint> completed, Action<Exception> excepted)
 		{
 			reader.ReadUInt32(completed, excepted);
 		}
 
-		private static void ReadInt64(IReader reader, Action<long> completed, Action<Exception> excepted)
+		private static void ReadInt64(Reader reader, Action<long> completed, Action<Exception> excepted)
 		{
 			reader.ReadInt64(completed, excepted);
 		}
 
-		private static void ReadUInt64(IReader reader, Action<ulong> completed, Action<Exception> excepted)
+		private static void ReadUInt64(Reader reader, Action<ulong> completed, Action<Exception> excepted)
 		{
 			reader.ReadUInt64(completed, excepted);
 		}
 
-		private static void ReadSingle(IReader reader, Action<float> completed, Action<Exception> excepted)
+		private static void ReadSingle(Reader reader, Action<float> completed, Action<Exception> excepted)
 		{
 			reader.ReadSingle(completed, excepted);
 		}
 
-		private static void ReadDouble(IReader reader, Action<double> completed, Action<Exception> excepted)
+		private static void ReadDouble(Reader reader, Action<double> completed, Action<Exception> excepted)
 		{
 			reader.ReadDouble(completed, excepted);
 		}

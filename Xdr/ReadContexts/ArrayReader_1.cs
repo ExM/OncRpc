@@ -8,13 +8,13 @@ namespace Xdr.ReadContexts
 	public class ArrayReader<T>
 	{
 		private T[] _target = null;
-		private IReader _reader;
+		private Reader _reader;
 		private uint _index = 0;
 		private uint _maxlength = 0;
 		private Action<T[]> _completed;
 		private Action<Exception> _excepted;
 
-		private ArrayReader(IReader reader, Action<T[]> completed, Action<Exception> excepted)
+		private ArrayReader(Reader reader, Action<T[]> completed, Action<Exception> excepted)
 		{
 			_reader = reader;
 			_completed = completed;
@@ -47,14 +47,14 @@ namespace Xdr.ReadContexts
 			ReadNextItem();
 		}
 		
-		public static void ReadFix(IReader reader, uint len, Action<T[]> completed, Action<Exception> excepted)
+		public static void ReadFix(Reader reader, uint len, Action<T[]> completed, Action<Exception> excepted)
 		{
 			var context = new ArrayReader<T>(reader, completed, excepted);
 			context._target = new T[len];
 			context.ReadNextItem();
 		}
 		
-		public static void ReadVar(IReader reader, uint len, Action<T[]> completed, Action<Exception> excepted)
+		public static void ReadVar(Reader reader, uint len, Action<T[]> completed, Action<Exception> excepted)
 		{
 			var context = new ArrayReader<T>(reader, completed, excepted);
 			context._maxlength = len;

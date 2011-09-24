@@ -58,7 +58,7 @@ namespace Xdr
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
-		private static void ReadFixBytes(IReader reader, uint len, Action<byte[]> completed, Action<Exception> excepted)
+		private static void ReadFixBytes(Reader reader, uint len, Action<byte[]> completed, Action<Exception> excepted)
 		{
 			reader.ReadFixOpaque(len, completed, excepted);
 		}

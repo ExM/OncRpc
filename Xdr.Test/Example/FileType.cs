@@ -32,12 +32,12 @@ namespace Xdr.Example
 		[Case(FileKind.Exec), Var(MaxNameLen)]
 		public string Interpretor {get; set;}
 		
-		public static void Read(IReader reader, Action<FileType> completed, Action<Exception> excepted)
+		public static void Read(Reader reader, Action<FileType> completed, Action<Exception> excepted)
 		{
 			new ReadContext(reader, completed, excepted);
 		}
 		
-		public static void Write(IWriter writer, FileType item, Action completed, Action<Exception> excepted)
+		public static void Write(Writer writer, FileType item, Action completed, Action<Exception> excepted)
 		{
 			new WriteContext(writer, item, completed, excepted);
 		}

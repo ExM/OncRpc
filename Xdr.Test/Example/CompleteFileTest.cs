@@ -39,7 +39,7 @@ namespace Xdr
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
-			IReader r = t.CreateReader(ss);
+			Reader r = t.CreateReader(ss);
 
 			CompleteFile result = null;
 
@@ -95,7 +95,7 @@ namespace Xdr
 				.Build();
 			
 			SyncStream ss = new SyncStream(s);
-			IWriter w = t.CreateWriter(ss);
+			Writer w = t.CreateWriter(ss);
 
 			w.Write<CompleteFile>(cf,
 				() => {},

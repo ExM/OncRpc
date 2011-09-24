@@ -47,12 +47,12 @@ namespace Xdr.Example
 		[Field(3), Var(MaxFileLen)]
 		public byte[] Data {get; set;}
 		
-		public static void Read(IReader reader, Action<CompleteFile> completed, Action<Exception> excepted)
+		public static void Read(Reader reader, Action<CompleteFile> completed, Action<Exception> excepted)
 		{
 			new ReadContext(reader, completed, excepted);
 		}
 		
-		public static void Write(IWriter writer, CompleteFile item, Action completed, Action<Exception> excepted)
+		public static void Write(Writer writer, CompleteFile item, Action completed, Action<Exception> excepted)
 		{
 			new WriteContext(writer, item, completed, excepted);
 		}

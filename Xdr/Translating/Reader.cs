@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Xdr.Translating
+namespace Xdr
 {
-	internal sealed class Reader : IReader
+	public sealed class Reader
 	{
 		private BaseTranslator _translator;
 		private IByteReader _reader;
