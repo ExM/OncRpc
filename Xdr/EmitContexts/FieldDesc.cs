@@ -86,10 +86,8 @@ namespace Xdr.EmitContexts
 			// newobj System.Action(System.Object,System.IntPtr)
 			il.Emit(OpCodes.Ldarg_0); // ldarg.0
 			il.Emit(OpCodes.Ldfld, exceptedField); // ldfld System.Action`1System.Exception Xdr.TestDtos.SimplyInt/WriteContext._excepted
-			il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod("Write").MakeGenericMethod(_fieldType));
+			il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod(_isOption?"WriteOption":"Write").MakeGenericMethod(_fieldType));
 			// callvirt Xdr.Writer.Write(!!0,System.Action,System.Action`1System.Exception)
-			
-			
 			
 			il.Emit(OpCodes.Ret);
 		}
@@ -108,7 +106,7 @@ namespace Xdr.EmitContexts
 			il.Emit(OpCodes.Ldfld, completedField); // ldfld System.Action Xdr.TestDtos.SimplyInt/WriteContext._completed
 			il.Emit(OpCodes.Ldarg_0); //ldarg.0
 			il.Emit(OpCodes.Ldfld, exceptedField); // ldfld System.Action`1System.Exception Xdr.TestDtos.SimplyInt/WriteContext._excepted
-			il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod("Write").MakeGenericMethod(_fieldType));
+			il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod(_isOption?"WriteOption":"Write").MakeGenericMethod(_fieldType));
 			// callvirt Xdr.Writer.Write(!!0,System.Action,System.Action`1System.Exception)
 			
 			il.Emit(OpCodes.Ret);
