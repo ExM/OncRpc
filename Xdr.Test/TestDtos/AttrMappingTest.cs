@@ -32,6 +32,27 @@ namespace Xdr
 		}
 		
 		[Test]
+		public void Write()
+		{
+			MemoryStream s = new MemoryStream();
+			ITranslator t = Translator.Create().Build();
+			
+			SyncStream ss = new SyncStream(s);
+			Writer w = t.CreateWriter(ss);
+			
+			SimplyInt val = new SimplyInt();
+			val.Field1 = 0x1234ABCD;
+			val.Field2 = 0xCDEF9876;
+			
+			w.Write<SimplyInt>(val,
+				() => {},
+				(ex) => Assert.Fail("unexpected exception: {0}", ex));
+			
+			s.Position = 0;
+			Assert.AreEqual(new byte[]{0x12, 0x34, 0xAB, 0xCD, 0xCD, 0xEF, 0x98, 0x76}, s.ToArray());
+		}
+		
+		[Test]
 		public void Read_Short()
 		{
 			MemoryStream s = new MemoryStream();

@@ -100,7 +100,7 @@ namespace Xdr.EmitContexts
 		private void CreateFields()
 		{
 			_targetField = _typeBuilder.DefineField("_target", _targetType, FieldAttributes.Private);
-			_readerField = _typeBuilder.DefineField("_reader", typeof(IByteReader), FieldAttributes.Private);
+			_readerField = _typeBuilder.DefineField("_reader", typeof(Reader), FieldAttributes.Private);
 			_completedField = _typeBuilder.DefineField("_completed", typeof(Action<>).MakeGenericType(_targetType), FieldAttributes.Private);
 			_exceptedField = _typeBuilder.DefineField("_excepted", typeof(Action<Exception>), FieldAttributes.Private);
 		}

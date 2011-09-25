@@ -83,8 +83,13 @@ namespace Xdr.EmitContexts
 		
 		public static Delegate EmitWriter(ModuleBuilder mb, Type targetType)
 		{
+			List<FieldDesc> fields = OrderModel.GetFields(targetType);
+			if(fields.Count <= 0)
+				return null;
 			
-			return null;
+			Type contextType = OrderModel.BuildWriteContext(mb, targetType, fields);
+			MethodInfo mi = contextType.GetMethod("Write", BindingFlags.Static | BindingFlags.Public);
+			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 	}
 }

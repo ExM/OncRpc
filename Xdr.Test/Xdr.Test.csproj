@@ -63,6 +63,7 @@
     <Compile Include="TestDtos\AttrMappingTest.cs" />
     <Compile Include="TestDtos\ListItem.cs" />
     <Compile Include="TestDtos\ListContainer.cs" />
+    <Compile Include="TestDtos\SimplyInt.WriteContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

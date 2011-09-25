@@ -14,6 +14,12 @@ namespace Xdr.EmitContexts
 			return builder.Build(fields);
 		}
 		
+		public static Type BuildWriteContext(ModuleBuilder mb, Type targetType, List<FieldDesc> fields)
+		{
+			WriteContextBuilder builder = new WriteContextBuilder(mb, targetType);
+			return builder.Build(fields);
+		}
+		
 		public static List<FieldDesc> GetFields(Type t)
 		{
 			SortedList<uint, FieldDesc> fields = new SortedList<uint, FieldDesc>();

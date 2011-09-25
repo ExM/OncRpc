@@ -91,6 +91,7 @@
     <Compile Include="EmitContexts\ReadContextBuilder.cs" />
     <Compile Include="Attributes\OrderAttribute.cs" />
     <Compile Include="EmitContexts\EmitResult.cs" />
+    <Compile Include="EmitContexts\WriteContextBuilder.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
