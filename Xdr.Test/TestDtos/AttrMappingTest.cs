@@ -129,6 +129,32 @@ namespace Xdr
 		}
 		
 		[Test]
+		public void Write_OneItem()
+		{
+			MemoryStream s = new MemoryStream();
+			ITranslator t = Translator.Create().Build();
+			
+			SyncStream ss = new SyncStream(s);
+			Writer w = t.CreateWriter(ss);
+			
+			ListItem val = new ListItem();
+			val.Field1 = 1;
+			val.Field2 = 3;
+			val.Field3 = null;
+			
+			w.Write<ListItem>(val,
+				() => {},
+				(ex) => Assert.Fail("unexpected exception: {0}", ex));
+			
+			s.Position = 0;
+			Assert.AreEqual(new byte[]{
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x03,
+				0x00, 0x00, 0x00, 0x00}, s.ToArray());
+		}
+		
+		[Test]
 		public void Read_TwoItem()
 		{
 			MemoryStream s = new MemoryStream();
@@ -159,6 +185,38 @@ namespace Xdr
 			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
 
 			Assert.AreEqual(7*4, s.Position);
+		}
+		
+		[Test]
+		public void Write_TwoItem()
+		{
+			MemoryStream s = new MemoryStream();
+			ITranslator t = Translator.Create().Build();
+			
+			SyncStream ss = new SyncStream(s);
+			Writer w = t.CreateWriter(ss);
+			
+			ListItem val = new ListItem();
+			val.Field1 = 1;
+			val.Field2 = null;
+			val.Field3 = new ListItem();
+			val.Field3.Field1 = 1;
+			val.Field3.Field2 = 3;
+			val.Field3.Field3 = null;
+			
+			w.Write<ListItem>(val,
+				() => {},
+				(ex) => Assert.Fail("unexpected exception: {0}", ex));
+			
+			s.Position = 0;
+			Assert.AreEqual(new byte[]{
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x03,
+				0x00, 0x00, 0x00, 0x00}, s.ToArray());
 		}
 		
 		[Test]
