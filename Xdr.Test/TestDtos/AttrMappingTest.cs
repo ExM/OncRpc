@@ -247,6 +247,36 @@ namespace Xdr
 
 			Assert.AreEqual(5*4, s.Position);
 		}
+		
+		[Test]
+		public void Write_InternalFixArray()
+		{
+			MemoryStream s = new MemoryStream();
+			ITranslator t = Translator.Create().Build();
+			
+			SyncStream ss = new SyncStream(s);
+			Writer w = t.CreateWriter(ss);
+			
+			ListContainer val = new ListContainer();
+			val.Field1 = new int[3];
+			val.Field1[0] = 1;
+			val.Field1[1] = 2;
+			val.Field1[2] = 3;
+			val.Field2 = new List<uint>();
+			val.Field3 = "";
+			
+			w.Write<ListContainer>(val,
+				() => {},
+				(ex) => Assert.Fail("unexpected exception: {0}", ex));
+			
+			s.Position = 0;
+			Assert.AreEqual(new byte[]{
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x02,
+				0x00, 0x00, 0x00, 0x03,
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00}, s.ToArray());
+		}
 	}
 }
 
