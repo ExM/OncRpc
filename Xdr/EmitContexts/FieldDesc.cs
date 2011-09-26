@@ -54,6 +54,14 @@ namespace Xdr.EmitContexts
 				throw new InvalidOperationException("can not use Fix and Option attributes both or Var and Option attributes both");
 		}
 		
+		public Type FieldType
+		{
+			get
+			{
+				return _fieldType;
+			}
+		}
+		
 		public MethodBuilder CreateWrited(TypeBuilder typeBuilder)
 		{
 			return typeBuilder.DefineMethod(_mi.Name + "_Writed", MethodAttributes.Private, null, new Type[0]);

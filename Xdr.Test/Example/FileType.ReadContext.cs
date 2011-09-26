@@ -55,24 +55,23 @@ namespace Xdr.Example
 			
 			private void Switch_Converted(int sw)
 			{
-				switch(sw)
+				if(sw == 1)
 				{
-					case 1:
-						_reader.ReadVar<string>(CompleteFile.MaxNameLen, Creator_Readed, _excepted);
-						break;
-	
-					case 2:
-						_reader.ReadVar<string>(CompleteFile.MaxNameLen, Interpretor_Readed, _excepted);
-						break;
-	
-					case 0:
-						_completed(_target);
-						break;
-	
-					default:
-						_excepted(new InvalidCastException(string.Format("unexpected value: `{0}'", sw)));
-						break;
+					_reader.ReadVar<string>(CompleteFile.MaxNameLen, Creator_Readed, _excepted);
+					return;
 				}
+				if(sw == 2)
+				{
+					_reader.ReadVar<string>(CompleteFile.MaxNameLen, Interpretor_Readed, _excepted);
+					return;
+				}
+				if(sw == 0)
+				{
+					_completed(_target);
+					return;
+				}
+				
+				_excepted(new InvalidCastException(string.Format("unexpected value: `{0}'", sw)));
 			}
 	
 			private void Creator_Readed(string val)
