@@ -9,7 +9,7 @@ namespace Xdr.EmitContexts
 	public class SwitchModel
 	{
 		public FieldDesc SwitchField {get; private set;}
-		public Dictionary<object, FieldDesc> Branches {get; private set;}
+		public Dictionary<int, FieldDesc> Branches {get; private set;}
 		
 		public Type BuildReadContext(ModuleBuilder mb, Type targetType)
 		{
@@ -20,7 +20,7 @@ namespace Xdr.EmitContexts
 		public static SwitchModel Create(Type t)
 		{
 			SwitchModel model = new SwitchModel();
-			model.Branches = new Dictionary<object, FieldDesc>();
+			model.Branches = new Dictionary<int, FieldDesc>();
 			
 			foreach(var fi in t.GetFields().Where((fi) => fi.IsPublic && !fi.IsStatic))
 				AppendField(model, fi.FieldType, fi);
