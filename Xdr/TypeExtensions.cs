@@ -41,6 +41,13 @@ namespace Xdr
 				.FirstOrDefault() as T;
 		}
 		
+		public static IEnumerable<T> GetAttrs<T>(this MemberInfo mi) where T : Attribute
+		{
+			return mi
+				.GetCustomAttributes(typeof(T), true)
+				.Cast<T>();
+		}
+		
 		public static Type NullableSubType(this Type type)
 		{
 			if (!type.IsGenericType)

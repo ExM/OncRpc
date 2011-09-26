@@ -73,10 +73,23 @@ namespace Xdr.EmitContexts
 		public static Delegate EmitReader(ModuleBuilder mb, Type targetType)
 		{
 			List<FieldDesc> fields = OrderModel.GetFields(targetType);
-			if(fields.Count <= 0)
-				return null;
+			SwitchModel swModel = SwitchModel.Create(targetType);
 			
-			Type contextType = OrderModel.BuildReadContext(mb, targetType, fields);
+			Type contextType;
+			
+			if(fields == null)
+			{
+				if(swModel == null)
+					return null;
+				contextType = swModel.BuildReadContext(mb, targetType);
+			}
+			else
+			{
+				if(swModel != null)
+					throw new InvalidOperationException("unknown way to convert");
+				contextType = OrderModel.BuildReadContext(mb, targetType, fields);
+			}
+			
 			MethodInfo mi = contextType.GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
 			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
 		}
@@ -84,7 +97,7 @@ namespace Xdr.EmitContexts
 		public static Delegate EmitWriter(ModuleBuilder mb, Type targetType)
 		{
 			List<FieldDesc> fields = OrderModel.GetFields(targetType);
-			if(fields.Count <= 0)
+			if(fields == null)
 				return null;
 			
 			Type contextType = OrderModel.BuildWriteContext(mb, targetType, fields);

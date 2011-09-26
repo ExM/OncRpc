@@ -21,7 +21,8 @@ namespace Xdr.Example
 				_target = new FileType();
 				_reader.Read<FileKind>(Type_Readed, _excepted);
 			}
-	
+			
+			/*
 			private void Type_Readed(FileKind val)
 			{
 				_target.Type = val;
@@ -41,6 +42,35 @@ namespace Xdr.Example
 	
 					default:
 						_excepted(new InvalidCastException(string.Format("unexpected value: `{0}'", val)));
+						break;
+				}
+			}
+			*/
+			
+			private void Type_Readed(FileKind val)
+			{
+				_target.Type = val;
+				EnumHelper<FileKind>.EnumToInt(val, Switch_Converted, _excepted);
+			}
+			
+			private void Switch_Converted(int sw)
+			{
+				switch(sw)
+				{
+					case 1:
+						_reader.ReadVar<string>(CompleteFile.MaxNameLen, Creator_Readed, _excepted);
+						break;
+	
+					case 2:
+						_reader.ReadVar<string>(CompleteFile.MaxNameLen, Interpretor_Readed, _excepted);
+						break;
+	
+					case 0:
+						_completed(_target);
+						break;
+	
+					default:
+						_excepted(new InvalidCastException(string.Format("unexpected value: `{0}'", sw)));
 						break;
 				}
 			}

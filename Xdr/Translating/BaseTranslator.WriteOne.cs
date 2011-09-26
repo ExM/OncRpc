@@ -41,9 +41,14 @@ namespace Xdr
 		{
 			if (!targetType.IsEnum)
 				return null;
-
-			MethodInfo mi = typeof(EnumWriter<>).MakeGenericType(targetType).GetMethod("Write", BindingFlags.Static | BindingFlags.Public);
+			
+			MethodInfo mi = typeof(BaseTranslator).GetMethod("EnumWrite", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(targetType);
 			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(targetType), mi);
+		}
+		
+		private static void EnumWrite<T>(Writer writer, T item, Action completed, Action<Exception> excepted) where T: struct
+		{
+			EnumHelper<T>.EnumToInt(item, (val) => writer.WriteInt32(val, completed, excepted), excepted);
 		}
 
 		public static Delegate CreateNullableWriter(Type targetType)

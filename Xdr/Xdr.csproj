@@ -43,7 +43,6 @@
     <Compile Include="Emit\FieldDescriptions\UInt32FieldDesc.cs" />
     <Compile Include="Emit\CustomContextBuilder.cs" />
     <Compile Include="ITranslator.cs" />
-    <Compile Include="ReadContexts\EnumReader_1.cs" />
     <Compile Include="Translating\Emit\DelegateCacheDescription.cs" />
     <Compile Include="Translating\Emit\ReadOneCacheDescription.cs" />
     <Compile Include="Translating\Translator.cs" />
@@ -60,7 +59,6 @@
     <Compile Include="SyncStream.cs" />
     <Compile Include="AsyncStream.cs" />
     <Compile Include="WriteContexts\ListWriter_1.cs" />
-    <Compile Include="WriteContexts\EnumWriter_1.cs" />
     <Compile Include="XdrEncoding.cs" />
     <Compile Include="Emit\StructureModel.cs" />
     <Compile Include="Attributes\VarAttribute.cs" />
@@ -92,6 +90,9 @@
     <Compile Include="Attributes\OrderAttribute.cs" />
     <Compile Include="EmitContexts\EmitResult.cs" />
     <Compile Include="EmitContexts\WriteContextBuilder.cs" />
+    <Compile Include="EmitContexts\SwitchModel.cs" />
+    <Compile Include="EmitContexts\SwitchReadContextBuilder.cs" />
+    <Compile Include="EnumHelper_1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

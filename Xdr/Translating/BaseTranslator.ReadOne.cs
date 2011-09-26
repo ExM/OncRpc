@@ -37,6 +37,19 @@ namespace Xdr
 			}
 		}
 
+		public static Delegate CreateEnumDelegate(Type targetType)
+		{
+			if (!targetType.IsEnum)
+				return null;
+			MethodInfo mi = typeof(BaseTranslator).GetMethod("EnumRead", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(targetType);
+			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
+		}
+		
+		private static void EnumRead<T>(Reader reader, Action<T> completed, Action<Exception> excepted) where T: struct
+		{
+			reader.ReadInt32((val) => EnumHelper<T>.IntToEnum(val, completed, excepted), excepted);
+		}
+		
 		public static Delegate CreateNullableReader(Type targetType)
 		{
 			Type itemType = targetType.NullableSubType();
@@ -47,14 +60,6 @@ namespace Xdr
 			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 
-		public static Delegate CreateEnumDelegate(Type targetType)
-		{
-			if (!targetType.IsEnum)
-				return null;
-			MethodInfo mi = typeof(EnumReader<>).MakeGenericType(targetType).GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
-		}
-		
 		private static void ReadNullable<T>(Reader reader, Action<T?> completed, Action<Exception> excepted)
 			where T: struct
 		{

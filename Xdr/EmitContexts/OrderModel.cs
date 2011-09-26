@@ -30,6 +30,9 @@ namespace Xdr.EmitContexts
 			foreach (var pi in t.GetProperties().Where((pi) => pi.CanWrite && pi.CanRead))
 				AppendField(fields, pi.PropertyType, pi);
 		
+			if(fields.Count == 0)
+				return null;
+			
 			return fields.Values.ToList();
 		}
 		
