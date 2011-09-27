@@ -39,10 +39,6 @@
     <Compile Include="Attributes\SwitchAttribute.cs" />
     <Compile Include="Attributes\CaseAttribute.cs" />
     <Compile Include="EmitContexts\SwitchWriteContextBuilder.cs" />
-    <Compile Include="Emit\FieldDescriptions\BaseFieldDesc.cs" />
-    <Compile Include="Emit\FieldDescriptions\StringFieldDesc.cs" />
-    <Compile Include="Emit\FieldDescriptions\UInt32FieldDesc.cs" />
-    <Compile Include="Emit\CustomContextBuilder.cs" />
     <Compile Include="ITranslator.cs" />
     <Compile Include="Translating\Emit\DelegateCacheDescription.cs" />
     <Compile Include="Translating\Emit\ReadOneCacheDescription.cs" />
@@ -61,10 +57,8 @@
     <Compile Include="AsyncStream.cs" />
     <Compile Include="WriteContexts\ListWriter_1.cs" />
     <Compile Include="XdrEncoding.cs" />
-    <Compile Include="Emit\StructureModel.cs" />
     <Compile Include="Attributes\VarAttribute.cs" />
     <Compile Include="Attributes\FixAttribute.cs" />
-    <Compile Include="Emit\FieldDescriptions\Int32FieldDesc.cs" />
     <Compile Include="Translating\BaseTranslator.cs" />
     <Compile Include="Translating\Emit\GenCacheDescription.cs" />
     <Compile Include="Translating\Emit\WriteOneCacheDescription.cs" />

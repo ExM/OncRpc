@@ -2,7 +2,6 @@ using System;
 using NUnit.Framework;
 using System.IO;
 using Xdr.Example;
-using Xdr.Emit;
 using System.Reflection;
 using System.Reflection.Emit;
 
