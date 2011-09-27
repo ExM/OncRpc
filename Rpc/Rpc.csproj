@@ -20,6 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -33,8 +34,29 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MessageProtocol\reply_stat.cs" />
+    <Compile Include="MessageProtocol\msg_type.cs" />
+    <Compile Include="MessageProtocol\reject_stat.cs" />
+    <Compile Include="MessageProtocol\accept_stat.cs" />
+    <Compile Include="MessageProtocol\auth_stat.cs" />
+    <Compile Include="MessageProtocol\rpc_msg.cs" />
+    <Compile Include="MessageProtocol\call_body.cs" />
+    <Compile Include="MessageProtocol\reply_body.cs" />
+    <Compile Include="MessageProtocol\accepted_reply.cs" />
+    <Compile Include="MessageProtocol\rejected_reply.cs" />
+    <Compile Include="MessageProtocol\mismatch_info.cs" />
+    <Compile Include="MessageProtocol\auth_flavor.cs" />
+    <Compile Include="MessageProtocol\opaque_auth.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Xdr\Xdr.csproj">
+      <Project>{E9D7D0A1-F900-44B1-A649-98D88846610C}</Project>
+      <Name>Xdr</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MessageProtocol\" />
+  </ItemGroup>
 </Project>
