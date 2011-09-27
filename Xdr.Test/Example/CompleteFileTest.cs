@@ -4,6 +4,7 @@ using System.IO;
 using Xdr.TestDtos;
 using System.Collections.Generic;
 using Xdr.Example;
+using Xdr.EmitContexts;
 
 namespace Xdr
 {
@@ -14,6 +15,12 @@ namespace Xdr
 	/// </summary>
 	public class CompleteFileTest
 	{
+		[TestFixtureTearDown]
+		public void SaveDynamicAssembly()
+		{
+			EmitContext.SaveDynamicAssembly();
+		}
+
 		[Test]
 		public void Read()
 		{
@@ -72,6 +79,7 @@ namespace Xdr
 			Assert.AreEqual(6, result.Data.Length);
 			Assert.AreEqual(0x28, result.Data[0]);
 			Assert.AreEqual(0x29, result.Data[5]);
+
 		}
 		
 		[Test]

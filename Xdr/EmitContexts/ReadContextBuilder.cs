@@ -20,7 +20,7 @@ namespace Xdr.EmitContexts
 		public ReadContextBuilder(ModuleBuilder mb, Type targetType)
 		{
 			_targetType = targetType;
-			_typeBuilder = mb.DefineType(_targetType.FullName + ".ReadContext", TypeAttributes.Public | TypeAttributes.Class);
+			_typeBuilder = mb.DefineType(_targetType.FullName + "_ReadContext", TypeAttributes.Public | TypeAttributes.Class);
 			CreateFields();
 		}
 		

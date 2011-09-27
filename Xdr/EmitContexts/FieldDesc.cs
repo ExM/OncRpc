@@ -66,6 +66,11 @@ namespace Xdr.EmitContexts
 		{
 			return typeBuilder.DefineMethod(_mi.Name + "_Writed", MethodAttributes.Private, null, new Type[0]);
 		}
+
+		public MethodBuilder CreateWrited(TypeBuilder typeBuilder, int val)
+		{
+			return typeBuilder.DefineMethod(_mi.Name + "_" + val.ToString() + "_Writed", MethodAttributes.Private, null, new Type[0]);
+		}
 		
 		public MethodBuilder CreateReaded(TypeBuilder typeBuilder, FieldBuilder targetField, out ILGenerator il)
 		{
@@ -155,7 +160,7 @@ namespace Xdr.EmitContexts
 			il.Emit(OpCodes.Ret);
 		}
 		
-		private void EmitGet(ILGenerator il)
+		public void EmitGet(ILGenerator il)
 		{
 			FieldInfo fi = _mi as FieldInfo;
 			if (fi != null)

@@ -16,6 +16,12 @@ namespace Xdr.EmitContexts
 			SwitchReadContextBuilder builder = new SwitchReadContextBuilder(mb, targetType, this);
 			return builder.Build();
 		}
+
+		public Type BuildWriteContext(ModuleBuilder mb, Type targetType)
+		{
+			SwitchWriteContextBuilder builder = new SwitchWriteContextBuilder(mb, targetType, this);
+			return builder.Build();
+		}
 		
 		public static SwitchModel Create(Type t)
 		{

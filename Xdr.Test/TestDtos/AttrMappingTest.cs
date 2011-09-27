@@ -3,12 +3,19 @@ using NUnit.Framework;
 using System.IO;
 using Xdr.TestDtos;
 using System.Collections.Generic;
+using Xdr.EmitContexts;
 
 namespace Xdr
 {
 	[TestFixture]
 	public class AttrMappingTest
 	{
+		[TestFixtureTearDown]
+		public void SaveDynamicAssembly()
+		{
+			EmitContext.SaveDynamicAssembly();
+		}
+
 		[Test]
 		public void Read()
 		{

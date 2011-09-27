@@ -25,7 +25,7 @@ namespace Xdr.EmitContexts
 		{
 			_targetType = targetType;
 			_model = model;
-			_typeBuilder = mb.DefineType(_targetType.FullName + ".ReadContext", TypeAttributes.Public | TypeAttributes.Class);
+			_typeBuilder = mb.DefineType(_targetType.FullName + "_ReadContext", TypeAttributes.Public | TypeAttributes.Class);
 			CreateFields();
 		}
 		
@@ -95,6 +95,7 @@ namespace Xdr.EmitContexts
 		private void AppendSwitchConvertedCall(ILGenerator il)
 		{
 			il.Emit(OpCodes.Ldarg_1);
+
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldftn, _switchConvertedMethod);
 			il.Emit(OpCodes.Newobj, typeof(Action<int>).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));

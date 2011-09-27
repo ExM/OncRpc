@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -38,6 +38,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Attributes\SwitchAttribute.cs" />
     <Compile Include="Attributes\CaseAttribute.cs" />
+    <Compile Include="EmitContexts\SwitchWriteContextBuilder.cs" />
     <Compile Include="Emit\FieldDescriptions\BaseFieldDesc.cs" />
     <Compile Include="Emit\FieldDescriptions\StringFieldDesc.cs" />
     <Compile Include="Emit\FieldDescriptions\UInt32FieldDesc.cs" />
@@ -97,9 +98,5 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="EmitContexts\" />
-    <Folder Include="Emit\" />
-    <Folder Include="Emit\FieldDescriptions\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
