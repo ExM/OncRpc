@@ -38,7 +38,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Attributes\SwitchAttribute.cs" />
     <Compile Include="Attributes\CaseAttribute.cs" />
-    <Compile Include="EmitContexts\SwitchWriteContextBuilder.cs" />
+    <Compile Include="EmitContexts\Switch\SwitchWriteContextBuilder.cs" />
     <Compile Include="ITranslator.cs" />
     <Compile Include="Translating\Emit\DelegateCacheDescription.cs" />
     <Compile Include="Translating\Emit\ReadOneCacheDescription.cs" />
@@ -78,15 +78,15 @@
     <Compile Include="Translating\Emit\WriteFixCacheDescription.cs" />
     <Compile Include="Translating\BaseTranslator.WriteFix.cs" />
     <Compile Include="Translating\ErrorStub_1.cs" />
-    <Compile Include="EmitContexts\OrderModel.cs" />
+    <Compile Include="EmitContexts\Order\OrderModel.cs" />
     <Compile Include="EmitContexts\FieldDesc.cs" />
     <Compile Include="EmitContexts\EmitContext.cs" />
-    <Compile Include="EmitContexts\ReadContextBuilder.cs" />
+    <Compile Include="EmitContexts\Order\OrderReadContextBuilder.cs" />
     <Compile Include="Attributes\OrderAttribute.cs" />
     <Compile Include="EmitContexts\EmitResult.cs" />
-    <Compile Include="EmitContexts\WriteContextBuilder.cs" />
-    <Compile Include="EmitContexts\SwitchModel.cs" />
-    <Compile Include="EmitContexts\SwitchReadContextBuilder.cs" />
+    <Compile Include="EmitContexts\Order\OrderWriteContextBuilder.cs" />
+    <Compile Include="EmitContexts\Switch\SwitchModel.cs" />
+    <Compile Include="EmitContexts\Switch\SwitchReadContextBuilder.cs" />
     <Compile Include="EnumHelper_1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

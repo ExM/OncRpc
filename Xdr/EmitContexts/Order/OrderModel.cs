@@ -8,19 +8,21 @@ namespace Xdr.EmitContexts
 {
 	public class OrderModel
 	{
-		public static Type BuildReadContext(ModuleBuilder mb, Type targetType, List<FieldDesc> fields)
+		public List<FieldDesc> Fields {get; private set;}
+
+		public Type BuildReadContext(ModuleBuilder mb, Type targetType)
 		{
-			ReadContextBuilder builder = new ReadContextBuilder(mb, targetType);
-			return builder.Build(fields);
+			OrderReadContextBuilder builder = new OrderReadContextBuilder(mb, targetType, this);
+			return builder.Build();
 		}
 		
-		public static Type BuildWriteContext(ModuleBuilder mb, Type targetType, List<FieldDesc> fields)
+		public Type BuildWriteContext(ModuleBuilder mb, Type targetType)
 		{
-			WriteContextBuilder builder = new WriteContextBuilder(mb, targetType);
-			return builder.Build(fields);
+			OrderWriteContextBuilder builder = new OrderWriteContextBuilder(mb, targetType, this);
+			return builder.Build();
 		}
-		
-		public static List<FieldDesc> GetFields(Type t)
+
+		public static OrderModel Create(Type t)
 		{
 			SortedList<uint, FieldDesc> fields = new SortedList<uint, FieldDesc>();
 			
@@ -32,8 +34,10 @@ namespace Xdr.EmitContexts
 		
 			if(fields.Count == 0)
 				return null;
-			
-			return fields.Values.ToList();
+
+			OrderModel result = new OrderModel();
+			result.Fields = fields.Values.ToList();
+			return result;
 		}
 		
 		private static void AppendField(SortedList<uint, FieldDesc> fields, Type fieldType, MemberInfo mi)

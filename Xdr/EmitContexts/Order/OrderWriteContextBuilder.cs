@@ -6,8 +6,10 @@ using System.Collections.Generic;
 
 namespace Xdr.EmitContexts
 {
-	public class WriteContextBuilder
+	public class OrderWriteContextBuilder
 	{
+		private OrderModel _model;
+
 		private Type _itemType;
 		
 		private TypeBuilder _typeBuilder;
@@ -16,29 +18,30 @@ namespace Xdr.EmitContexts
 		private FieldBuilder _completedField;
 		private FieldBuilder _exceptedField;
 		private ConstructorBuilder _constructor;
-		
-		public WriteContextBuilder(ModuleBuilder mb, Type itemType)
+
+		public OrderWriteContextBuilder(ModuleBuilder mb, Type itemType, OrderModel model)
 		{
+			_model = model;
 			_itemType = itemType;
 			_typeBuilder = mb.DefineType(_itemType.FullName + "_WriteContext", TypeAttributes.Public | TypeAttributes.Class);
 			CreateFields();
 		}
 		
-		public Type Build(List<FieldDesc> fields)
+		public Type Build()
 		{
 			List<MethodBuilder> methods = new List<MethodBuilder>();
-			for(int i = 0; i<fields.Count-1; i++)
-				methods.Add(fields[i].CreateWrited(_typeBuilder));
+			for (int i = 0; i < _model.Fields.Count - 1; i++)
+				methods.Add(_model.Fields[i].CreateWrited(_typeBuilder));
 			
 			ILGenerator il = CreateConstructor();
-			
-			for(int i = 0; i<fields.Count-1; i++)
+
+			for (int i = 0; i < _model.Fields.Count - 1; i++)
 			{
-				fields[i].AppendWriteRequest(il, _writerField, _itemField, methods[i], _exceptedField);
+				_model.Fields[i].AppendWriteRequest(il, _writerField, _itemField, methods[i], _exceptedField);
 				il = methods[i].GetILGenerator();
 			}
-			
-			fields[fields.Count-1].AppendWriteRequest(il, _writerField, _itemField, _completedField, _exceptedField);
+
+			_model.Fields[_model.Fields.Count - 1].AppendWriteRequest(il, _writerField, _itemField, _completedField, _exceptedField);
 			
 			CreateStaticWriter();
 			return _typeBuilder.CreateType();

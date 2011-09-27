@@ -6,8 +6,10 @@ using System.Collections.Generic;
 
 namespace Xdr.EmitContexts
 {
-	public class ReadContextBuilder
+	public class OrderReadContextBuilder
 	{
+		private OrderModel _model;
+
 		private Type _targetType;
 		
 		private TypeBuilder _typeBuilder;
@@ -16,34 +18,35 @@ namespace Xdr.EmitContexts
 		private FieldBuilder _completedField;
 		private FieldBuilder _exceptedField;
 		private ConstructorBuilder _constructor;
-		
-		public ReadContextBuilder(ModuleBuilder mb, Type targetType)
+
+		public OrderReadContextBuilder(ModuleBuilder mb, Type targetType, OrderModel model)
 		{
+			_model = model;
 			_targetType = targetType;
 			_typeBuilder = mb.DefineType(_targetType.FullName + "_ReadContext", TypeAttributes.Public | TypeAttributes.Class);
 			CreateFields();
 		}
 		
-		public Type Build(List<FieldDesc> fields)
+		public Type Build()
 		{
 			ILGenerator il;
 			MethodBuilder nextMethod;
-			
-			FieldDesc lastField = fields[fields.Count - 1];
+
+			FieldDesc lastField = _model.Fields[_model.Fields.Count - 1];
 			nextMethod = lastField.CreateReaded(_typeBuilder, _targetField, out il);
 			AppendReturn(il);
-			
-			for(int i = fields.Count-2; i >= 0; i--)
+
+			for (int i = _model.Fields.Count - 2; i >= 0; i--)
 			{
-				var curField = fields[i];
-				var nextField = fields[i+1];
+				var curField = _model.Fields[i];
+				var nextField = _model.Fields[i + 1];
 				
 				MethodBuilder curMethod = curField.CreateReaded(_typeBuilder, _targetField, out il);
 				nextField.AppendCall(il, _readerField, nextMethod, _exceptedField);
 				nextMethod = curMethod;
 			}
-			
-			FieldDesc firstField = fields[0];
+
+			FieldDesc firstField = _model.Fields[0];
 			il = CreateConstructor();
 			firstField.AppendCall(il, _readerField, nextMethod, _exceptedField);
 			
