@@ -3,35 +3,48 @@ using System.Linq;
 using System.Reflection;
 using System.Collections;
 using System.Reflection.Emit;
+using Xdr.EmitContexts.Fields;
 
 namespace Xdr.EmitContexts
 {
-	public class FieldDesc
+	public abstract class FieldDesc
 	{
-		private MemberInfo _mi;
-		private Type _fieldType;
+		protected bool _isOption = false;
 		
-		private bool _isOption = false;
+		protected bool _isMany = false;
+		protected bool _isFix = false;
+		protected uint _len = 0;
 		
-		private bool _isMany = false;
-		private bool _isFix = false;
-		private uint _len = 0;
-		
-		public FieldDesc(Type ft, MemberInfo mi)
+
+		public static FieldDesc Create(Type ft, MemberInfo mi)
 		{
-			_fieldType = ft;
-			_mi = mi;
+			FieldInfo fi = mi as FieldInfo;
+			if (fi != null)
+				return new Field(fi);
 			
-			var optAttr = _mi.GetAttr<OptionAttribute>();
+			PropertyInfo pi = mi as PropertyInfo;
+			if (pi != null)
+				return new Property(pi);
+
+			throw new NotImplementedException("only PropertyInfo or FieldInfo");
+		}
+		
+		protected FieldDesc()
+		{
+		}
+		
+		protected void ExtractAttributes()
+		{
+			var optAttr = MInfo.GetAttr<OptionAttribute>();
 			if(optAttr != null)
 			{
-				if(_fieldType.IsValueType)
+				if(FieldType.IsValueType)
 					throw new InvalidOperationException("ValueType not supported Option attribute (use Nullable<> type)");
 				_isOption = true;
 			}
 			
-			var fixAttr = _mi.GetAttr<FixAttribute>();
-			var varAttr = _mi.GetAttr<VarAttribute>();
+			var fixAttr = MInfo.GetAttr<FixAttribute>();
+			var varAttr = MInfo.GetAttr<VarAttribute>();
 			
 			if(fixAttr != null && varAttr != null)
 				throw new InvalidOperationException("can not use Fix and Var attributes both");
@@ -51,35 +64,28 @@ namespace Xdr.EmitContexts
 			}
 			
 			if(_isOption && _isMany)
-				throw new InvalidOperationException("can not use Fix and Option attributes both or Var and Option attributes both");
+				throw new InvalidOperationException("can not use Fix and Option attributes both or Var and Option attributes both");			
 		}
 		
-		public Type FieldType
-		{
-			get
-			{
-				return _fieldType;
-			}
-		}
+		public abstract MemberInfo MInfo { get;}
+		
+		public abstract Type FieldType { get;}
 		
 		public MethodBuilder CreateWrited(TypeBuilder typeBuilder)
 		{
-			return typeBuilder.DefineMethod(_mi.Name + "_Writed", MethodAttributes.Private, null, new Type[0]);
+			return typeBuilder.DefineMethod(MInfo.Name + "_Writed", MethodAttributes.Private, null, new Type[0]);
 		}
 
 		public MethodBuilder CreateWrited(TypeBuilder typeBuilder, int val)
 		{
-			return typeBuilder.DefineMethod(_mi.Name + "_" + val.ToString() + "_Writed", MethodAttributes.Private, null, new Type[0]);
+			return typeBuilder.DefineMethod(MInfo.Name + "_" + val.ToString() + "_Writed", MethodAttributes.Private, null, new Type[0]);
 		}
 		
 		public MethodBuilder CreateReaded(TypeBuilder typeBuilder, FieldBuilder targetField, out ILGenerator il)
 		{
-			MethodBuilder mb = typeBuilder.DefineMethod(_mi.Name + "_Readed", MethodAttributes.Private, null, new Type[] { _fieldType });
+			MethodBuilder mb = typeBuilder.DefineMethod(MInfo.Name + "_Readed", MethodAttributes.Private, null, new Type[] { FieldType });
 			il = mb.GetILGenerator();
-			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Ldfld, targetField);
-			il.Emit(OpCodes.Ldarg_1);
-			EmitSet(il);
+			EmitSet(il, targetField);
 			return mb;
 		}
 		
@@ -101,9 +107,9 @@ namespace Xdr.EmitContexts
 			il.Emit(OpCodes.Ldfld, exceptedField);
 			
 			if(_isMany)
-				il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod(_isFix?"WriteFix":"WriteVar").MakeGenericMethod(_fieldType));
+				il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod(_isFix?"WriteFix":"WriteVar").MakeGenericMethod(FieldType));
 			else
-				il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod(_isOption?"WriteOption":"Write").MakeGenericMethod(_fieldType));
+				il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod(_isOption?"WriteOption":"Write").MakeGenericMethod(FieldType));
 			
 			il.Emit(OpCodes.Ret);
 		}
@@ -125,9 +131,9 @@ namespace Xdr.EmitContexts
 			il.Emit(OpCodes.Ldfld, exceptedField);
 			
 			if(_isMany)
-				il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod(_isFix?"WriteFix":"WriteVar").MakeGenericMethod(_fieldType));
+				il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod(_isFix?"WriteFix":"WriteVar").MakeGenericMethod(FieldType));
 			else
-				il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod(_isOption?"WriteOption":"Write").MakeGenericMethod(_fieldType));
+				il.Emit(OpCodes.Callvirt, typeof(Writer).GetMethod(_isOption?"WriteOption":"Write").MakeGenericMethod(FieldType));
 
 			il.Emit(OpCodes.Ret);
 		}
@@ -141,10 +147,10 @@ namespace Xdr.EmitContexts
 				il.Emit(OpCodes.Ldc_I4, (int)_len);
 				il.Emit(OpCodes.Ldarg_0);
 				il.Emit(OpCodes.Ldftn, nextMethod);
-				il.Emit(OpCodes.Newobj, typeof(Action<>).MakeGenericType(_fieldType).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
+				il.Emit(OpCodes.Newobj, typeof(Action<>).MakeGenericType(FieldType).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
 				il.Emit(OpCodes.Ldarg_0);
 				il.Emit(OpCodes.Ldfld, exceptedField);
-				il.Emit(OpCodes.Callvirt, typeof(Reader).GetMethod(_isFix?"ReadFix":"ReadVar").MakeGenericMethod(_fieldType));
+				il.Emit(OpCodes.Callvirt, typeof(Reader).GetMethod(_isFix?"ReadFix":"ReadVar").MakeGenericMethod(FieldType));
 			}
 			else
 			{
@@ -152,51 +158,17 @@ namespace Xdr.EmitContexts
 				il.Emit(OpCodes.Ldfld, readerField);
 				il.Emit(OpCodes.Ldarg_0);
 				il.Emit(OpCodes.Ldftn, nextMethod);
-				il.Emit(OpCodes.Newobj, typeof(Action<>).MakeGenericType(_fieldType).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
+				il.Emit(OpCodes.Newobj, typeof(Action<>).MakeGenericType(FieldType).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
 				il.Emit(OpCodes.Ldarg_0);
 				il.Emit(OpCodes.Ldfld, exceptedField);
-				il.Emit(OpCodes.Callvirt, typeof(Reader).GetMethod(_isOption?"ReadOption":"Read").MakeGenericMethod(_fieldType));
+				il.Emit(OpCodes.Callvirt, typeof(Reader).GetMethod(_isOption?"ReadOption":"Read").MakeGenericMethod(FieldType));
 			}
 			il.Emit(OpCodes.Ret);
 		}
 		
-		public void EmitGet(ILGenerator il)
-		{
-			FieldInfo fi = _mi as FieldInfo;
-			if (fi != null)
-			{
-				il.Emit(OpCodes.Ldfld, fi);
-				return;
-			}
-
-			PropertyInfo pi = _mi as PropertyInfo;
-			if (pi != null)
-			{
-				il.Emit(OpCodes.Callvirt, pi.GetGetMethod());
-				return;
-			}
-
-			throw new NotImplementedException("only PropertyInfo or FieldInfo");
-		}
+		public abstract void EmitGet(ILGenerator il);
 		
-		private void EmitSet(ILGenerator il)
-		{
-			FieldInfo fi = _mi as FieldInfo;
-			if (fi != null)
-			{
-				il.Emit(OpCodes.Stfld, fi);
-				return;
-			}
-
-			PropertyInfo pi = _mi as PropertyInfo;
-			if (pi != null)
-			{
-				il.Emit(OpCodes.Callvirt, pi.GetSetMethod());
-				return;
-			}
-
-			throw new NotImplementedException("only PropertyInfo or FieldInfo");
-		}
+		protected abstract void EmitSet(ILGenerator il, FieldBuilder targetField);
 	}
 }
 

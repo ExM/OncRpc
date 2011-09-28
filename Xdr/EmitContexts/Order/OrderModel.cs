@@ -49,7 +49,7 @@ namespace Xdr.EmitContexts
 			if (fields.ContainsKey(fAttr.Order))
 				throw new InvalidOperationException("duplicate order " + fAttr.Order);
 			
-			fields.Add(fAttr.Order, new FieldDesc(fieldType, mi));
+			fields.Add(fAttr.Order, FieldDesc.Create(fieldType, mi));
 		}
 	}
 }

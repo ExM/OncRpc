@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -79,7 +79,6 @@
     <Compile Include="Translating\BaseTranslator.WriteFix.cs" />
     <Compile Include="Translating\ErrorStub_1.cs" />
     <Compile Include="EmitContexts\Order\OrderModel.cs" />
-    <Compile Include="EmitContexts\FieldDesc.cs" />
     <Compile Include="EmitContexts\EmitContext.cs" />
     <Compile Include="EmitContexts\Order\OrderReadContextBuilder.cs" />
     <Compile Include="Attributes\OrderAttribute.cs" />
@@ -88,9 +87,16 @@
     <Compile Include="EmitContexts\Switch\SwitchModel.cs" />
     <Compile Include="EmitContexts\Switch\SwitchReadContextBuilder.cs" />
     <Compile Include="EnumHelper_1.cs" />
+    <Compile Include="EmitContexts\FieldDesc\Field.cs" />
+    <Compile Include="EmitContexts\FieldDesc\FieldDesc.cs" />
+    <Compile Include="EmitContexts\FieldDesc\Property.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
   <ItemGroup />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="EmitContexts\FieldDesc\" />
+    <Folder Include="EmitContexts\" />
+  </ItemGroup>
 </Project>

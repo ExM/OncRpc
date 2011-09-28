@@ -2,7 +2,7 @@ using System;
 
 namespace Xdr.TestDtos
 {
-	public struct StructInt
+	public partial struct StructInt
 	{
 		[Order(0)]
 		public int Field1;

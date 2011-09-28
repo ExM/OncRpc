@@ -126,9 +126,29 @@ namespace Xdr.EmitContexts
 			ILGenerator il = _constructor.GetILGenerator();
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Call, typeof(object).GetConstructor(new Type[] { }));
-			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Newobj, _targetType.GetConstructor(new Type[] { }));
-			il.Emit(OpCodes.Stfld, _targetField);
+			
+			if(_targetType.IsValueType)
+			{
+//IL_001B: ldarg.0
+//IL_001C: ldloca.s V_0
+//IL_001E: initobj Xdr.TestDtos.StructInt
+//IL_0024: ldloc.0
+//IL_0025: stfld Xdr.TestDtos.StructInt Xdr.TestDtos.StructInt/ReadContext._target
+				LocalBuilder v0 = il.DeclareLocal(_targetType);
+				
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Ldloca_S, v0);
+				il.Emit(OpCodes.Initobj,_targetType );
+				il.Emit(OpCodes.Ldloc_0);
+				il.Emit(OpCodes.Stfld, _targetField);
+			}
+			else
+			{
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Newobj, _targetType.GetConstructor(new Type[] { }));
+				il.Emit(OpCodes.Stfld, _targetField);
+			}
+			
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldarg_1);
 			il.Emit(OpCodes.Stfld, _readerField);

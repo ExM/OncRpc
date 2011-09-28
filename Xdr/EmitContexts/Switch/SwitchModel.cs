@@ -56,7 +56,7 @@ namespace Xdr.EmitContexts
 				if(model.SwitchField != null)
 					throw new InvalidOperationException("duplicate switch attribute");
 				
-				model.SwitchField = new FieldDesc(fieldType, mi);
+				model.SwitchField = FieldDesc.Create(fieldType, mi);
 				
 				foreach(var cAttr in mi.GetAttrs<CaseAttribute>())
 				{
@@ -71,7 +71,7 @@ namespace Xdr.EmitContexts
 				{
 					if(model.Branches.ContainsKey(cAttr.Value))
 						throw new InvalidOperationException("duplicate case value " + cAttr.Value.ToString());
-					model.Branches.Add(cAttr.Value, new FieldDesc(fieldType, mi));
+					model.Branches.Add(cAttr.Value, FieldDesc.Create(fieldType, mi));
 				}
 			}
 		}
