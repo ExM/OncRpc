@@ -13,7 +13,7 @@ namespace Rpc.MessageProtocol
 		/// MUST be equal to 2
 		/// </summary>
 		[Order(0)]
-		public uint rpcvers;       /* must be equal to two (2) */
+		public uint rpcvers;
 		
 		/// <summary>
 		/// the remote program

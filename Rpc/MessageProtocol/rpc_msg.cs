@@ -4,7 +4,7 @@ using Xdr;
 namespace Rpc.MessageProtocol
 {
 	/// <summary>
-	/// 
+	/// RPC message
 	/// http://tools.ietf.org/html/rfc5531#section-9
 	/// </summary>
 	public class rpc_msg

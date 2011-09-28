@@ -75,9 +75,11 @@ namespace Xdr.EmitContexts
 			ILGenerator il = _constructor.GetILGenerator();
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Call, typeof(object).GetConstructor(new Type[] { }));
+			
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Newobj, _targetType.GetConstructor(new Type[] { }));
 			il.Emit(OpCodes.Stfld, _targetField);
+			
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldarg_1);
 			il.Emit(OpCodes.Stfld, _readerField);

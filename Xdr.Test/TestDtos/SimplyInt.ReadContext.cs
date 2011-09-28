@@ -7,7 +7,7 @@ namespace Xdr.TestDtos
 	{
 		private class ReadContext
 		{
-			private SimplyInt _target = new SimplyInt();
+			private SimplyInt _target;
 			private Reader _reader;
 			private Action<SimplyInt> _completed;
 			private Action<Exception> _excepted;
@@ -17,6 +17,7 @@ namespace Xdr.TestDtos
 				_reader = reader;
 				_completed = completed;
 				_excepted = excepted;
+				_target = new SimplyInt();
 				_reader.Read<int>(Field1_Readed, _excepted);
 			}
 	

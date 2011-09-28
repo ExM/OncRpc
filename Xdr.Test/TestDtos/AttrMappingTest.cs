@@ -39,6 +39,28 @@ namespace Xdr
 		}
 		
 		[Test]
+		public void ReadStruct()
+		{
+			MemoryStream s = new MemoryStream();
+			s.Write(0x12, 0x34, 0xAB, 0xCD, 0xCD, 0xEF, 0x98, 0x76);
+			s.Position = 0;
+			
+			ITranslator t = Translator.Create()
+				.Build();
+			
+			SyncStream ss = new SyncStream(s);
+			Reader r = t.CreateReader(ss);
+			
+			r.Read<StructInt>((val) =>
+			{
+				Assert.AreEqual(0x1234ABCD, val.Field1);
+				Assert.AreEqual(0xCDEF9876, val.Field2);
+			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+
+			Assert.AreEqual(8, s.Position);
+		}
+		
+		[Test]
 		public void Write()
 		{
 			MemoryStream s = new MemoryStream();
@@ -52,6 +74,27 @@ namespace Xdr
 			val.Field2 = 0xCDEF9876;
 			
 			w.Write<SimplyInt>(val,
+				() => {},
+				(ex) => Assert.Fail("unexpected exception: {0}", ex));
+			
+			s.Position = 0;
+			Assert.AreEqual(new byte[]{0x12, 0x34, 0xAB, 0xCD, 0xCD, 0xEF, 0x98, 0x76}, s.ToArray());
+		}
+		
+		[Test]
+		public void WriteStruct()
+		{
+			MemoryStream s = new MemoryStream();
+			ITranslator t = Translator.Create().Build();
+			
+			SyncStream ss = new SyncStream(s);
+			Writer w = t.CreateWriter(ss);
+			
+			StructInt val = new StructInt();
+			val.Field1 = 0x1234ABCD;
+			val.Field2 = 0xCDEF9876;
+			
+			w.Write<StructInt>(val,
 				() => {},
 				(ex) => Assert.Fail("unexpected exception: {0}", ex));
 			
