@@ -33,8 +33,15 @@ namespace Xdr.EmitContexts.Fields
 			}
 		}
 		
-		public override void EmitGet(ILGenerator il)
+		public override void EmitGet(ILGenerator il, FieldBuilder itemField)
 		{
+			il.Emit(OpCodes.Ldarg_0);
+			
+			if(MInfo.DeclaringType.IsValueType)
+				il.Emit(OpCodes.Ldflda, itemField);
+			else
+				il.Emit(OpCodes.Ldfld, itemField);
+			
 			il.Emit(OpCodes.Ldfld, _fi);
 		}
 		

@@ -93,9 +93,8 @@ namespace Xdr.EmitContexts
 		{
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldfld, writerField);
-			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Ldfld, itemField);
-			EmitGet(il); 
+
+			EmitGet(il, itemField); 
 			
 			if(_isMany)
 				il.Emit(OpCodes.Ldc_I4, (int)_len);
@@ -118,9 +117,8 @@ namespace Xdr.EmitContexts
 		{
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldfld, writerField);
-			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Ldfld, itemField);
-			EmitGet(il);
+			
+			EmitGet(il, itemField);
 			
 			if(_isMany)
 				il.Emit(OpCodes.Ldc_I4, (int)_len);
@@ -166,7 +164,7 @@ namespace Xdr.EmitContexts
 			il.Emit(OpCodes.Ret);
 		}
 		
-		public abstract void EmitGet(ILGenerator il);
+		public abstract void EmitGet(ILGenerator il, FieldBuilder itemField);
 		
 		protected abstract void EmitSet(ILGenerator il, FieldBuilder targetField);
 	}

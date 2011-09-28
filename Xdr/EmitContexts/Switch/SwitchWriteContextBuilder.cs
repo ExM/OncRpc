@@ -80,9 +80,7 @@ namespace Xdr.EmitContexts
 
 		private void AppendSwitchConvertedCall(ILGenerator il)
 		{
-			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Ldfld, _itemField);
-			_model.SwitchField.EmitGet(il);
+			_model.SwitchField.EmitGet(il, _itemField);
 
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldftn, _switchConvertedMethod);

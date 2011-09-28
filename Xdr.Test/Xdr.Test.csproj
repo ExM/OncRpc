@@ -66,6 +66,7 @@
     <Compile Include="TestDtos\SimplyInt.WriteContext.cs" />
     <Compile Include="TestDtos\StructInt.cs" />
     <Compile Include="TestDtos\StructInt.ReadContext.cs" />
+    <Compile Include="TestDtos\StructInt.WriteContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
