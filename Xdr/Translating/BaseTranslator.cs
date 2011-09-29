@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using Xdr.Translating;
 using Xdr.ReadContexts;
+using Xdr.EmitContexts;
 
 namespace Xdr
 {
@@ -14,7 +15,9 @@ namespace Xdr
 
 		private object _dependencySync = new object();
 		private Queue<BuildRequest> _dependency = new Queue<BuildRequest>();
-		
+
+		private Dictionary<MethodType, Func<Type, Delegate>[]> _builders = new Dictionary<MethodType, Func<Type, Delegate>[]>();
+
 		protected BaseTranslator()
 		{
 		}
@@ -42,6 +45,59 @@ namespace Xdr
 			SetWriteFix<byte[]>((w, i, l, c, e) => w.WriteFixOpaque(i, l, c, e));
 			SetWriteVar<byte[]>((w, i, l, c, e) => w.WriteVarOpaque(i, l, c, e));
 			SetWriteVar<string>((w, i, l, c, e) => w.WriteString(i, l, c, e));
+
+			_builders.Add(MethodType.ReadOne,
+				new Func<Type, Delegate>[] { CreateEnumDelegate, CreateNullableReader, EmitContext.GetReader });
+			_builders.Add(MethodType.ReadFix,
+				new Func<Type, Delegate>[] { CreateFixArrayReader, CreateFixListReader });
+			_builders.Add(MethodType.ReadVar,
+				new Func<Type, Delegate>[] { CreateVarArrayReader, CreateVarListReader });
+
+			_builders.Add(MethodType.WriteOne,
+				new Func<Type, Delegate>[] { CreateEnumWriter, CreateNullableWriter, EmitContext.GetWriter });
+			_builders.Add(MethodType.WriteFix,
+				new Func<Type, Delegate>[] { CreateFixArrayWriter, CreateFixListWriter });
+			_builders.Add(MethodType.WriteVar,
+				new Func<Type, Delegate>[] { CreateVarArrayWriter, CreateVarListWriter });
+		}
+
+		private Delegate BuildDelegate(MethodType methodType, Type targetType)
+		{
+			Exception wrap = null;
+
+			try
+			{
+				foreach (var build in _builders[methodType])
+				{
+					Delegate result = build(targetType);
+					if (result != null)
+						return result;
+				}
+			}
+			catch (Exception ex)
+			{
+				wrap = new InvalidOperationException(
+					string.Format("impossible to create a {0} method type for `{1}'", methodType, targetType.FullName), ex);
+			}
+
+			if(wrap == null)
+				wrap = new NotImplementedException(string.Format("unknown type `{0}' in {1} method type", targetType.FullName, methodType));
+
+			switch (methodType)
+			{
+				case MethodType.ReadOne:
+					return ErrorStub.ReadOneDelegate(targetType, wrap);
+				case MethodType.ReadFix:
+				case MethodType.ReadVar:
+					return ErrorStub.ReadManyDelegate(targetType, wrap);
+
+				case MethodType.WriteOne:
+					return ErrorStub.WriteOneDelegate(targetType, wrap);
+				case MethodType.WriteFix:
+				case MethodType.WriteVar:
+				default:
+					return ErrorStub.WriteManyDelegate(targetType, wrap);
+			}
 		}
 		
 		private static void IntToBool(int val, Action<bool> completed, Action<Exception> excepted)
@@ -101,6 +157,21 @@ namespace Xdr
 				.GetField("Instance")
 				.SetValue(null, method);
 		}
+
+		private Type GetCacheType(MethodType methodType)
+		{
+			switch (methodType)
+			{
+				case MethodType.ReadOne: return GetReadOneCacheType();
+				case MethodType.ReadFix: return GetReadFixCacheType();
+				case MethodType.ReadVar: return GetReadVarCacheType();
+				case MethodType.WriteOne: return GetWriteOneCacheType();
+				case MethodType.WriteFix: return GetWriteFixCacheType();
+				case MethodType.WriteVar: return GetWriteVarCacheType();
+				default:
+					throw new NotImplementedException("unknown method type");
+			}
+		}
 		
 		protected abstract Type GetReadOneCacheType();
 		public abstract void Read<T>(Reader reader, Action<T> completed, Action<Exception> excepted);
@@ -132,8 +203,10 @@ namespace Xdr
 							bReq = _dependency.Dequeue();
 					if (bReq == null)
 						return;
-					
-					BuildMethod(bReq.TargetType, bReq.Method);
+
+					FieldInfo fi = GetCacheType(bReq.Method).MakeGenericType(bReq.TargetType).GetField("Instance");
+					if (fi.GetValue(null) == null)
+						fi.SetValue(null, BuildDelegate(bReq.Method, bReq.TargetType));
 				}
 			}
 		}
@@ -146,72 +219,11 @@ namespace Xdr
 		
 		private void LockedAppendMethod(Type targetType, MethodType methodType, Delegate method)
 		{
-			switch(methodType)
-			{
-			case MethodType.ReadOne:
-				TypedAppendMethod(GetReadOneCacheType, ReadOneBuild, targetType, method);
-				break;
-			case MethodType.ReadFix:
-				TypedAppendMethod(GetReadFixCacheType, ReadFixBuild, targetType, method);
-				break;
-			case MethodType.ReadVar:
-				TypedAppendMethod(GetReadVarCacheType, ReadVarBuild, targetType, method);
-				break;
-			case MethodType.WriteOne:
-				TypedAppendMethod(GetWriteOneCacheType, WriteOneBuild, targetType, method);
-				break;
-			case MethodType.WriteFix: 
-				TypedAppendMethod(GetWriteFixCacheType, WriteFixBuild, targetType, method);
-				break;
-			case MethodType.WriteVar:
-				TypedAppendMethod(GetWriteVarCacheType, WriteVarBuild, targetType, method);
-				break;
-			default:
-				throw new NotImplementedException("unknown method type");
-			}
-		}
-		
-		private static void TypedAppendMethod(Func<Type> getType, Func<Type, Delegate> build, Type targetType, Delegate method)
-		{
-			FieldInfo fi = getType().MakeGenericType(targetType).GetField("Instance");
-			if(fi.GetValue(null) != null)
+			FieldInfo fi = GetCacheType(methodType).MakeGenericType(targetType).GetField("Instance");
+			if (fi.GetValue(null) != null)
 				throw new InvalidOperationException("type already mapped");
-			
+
 			fi.SetValue(null, method);
-		}
-		
-		private void BuildMethod(Type targetType, MethodType methodType)
-		{
-			switch(methodType)
-			{
-			case MethodType.ReadOne:
-				TypedBuildMethod(GetReadOneCacheType, ReadOneBuild, targetType);
-				break;
-			case MethodType.ReadFix:
-				TypedBuildMethod(GetReadFixCacheType, ReadFixBuild, targetType);
-				break;
-			case MethodType.ReadVar:
-				TypedBuildMethod(GetReadVarCacheType, ReadVarBuild, targetType);
-				break;
-			case MethodType.WriteOne:
-				TypedBuildMethod(GetWriteOneCacheType, WriteOneBuild, targetType);
-				break;
-			case MethodType.WriteFix: 
-				TypedBuildMethod(GetWriteFixCacheType, WriteFixBuild, targetType);
-				break;
-			case MethodType.WriteVar:
-				TypedBuildMethod(GetWriteVarCacheType, WriteVarBuild, targetType);
-				break;
-			default:
-				throw new NotImplementedException("unknown method type");
-			}
-		}
-		
-		private static void TypedBuildMethod(Func<Type> getType, Func<Type, Delegate> build, Type targetType)
-		{
-			FieldInfo fi = getType().MakeGenericType(targetType).GetField("Instance");
-			if(fi.GetValue(null) == null)
-				fi.SetValue(null, build(targetType));
 		}
 
 		protected void AppendBuildRequest(Type targetType, MethodType methodType)

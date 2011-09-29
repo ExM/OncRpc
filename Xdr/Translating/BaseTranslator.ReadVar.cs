@@ -10,28 +10,6 @@ namespace Xdr
 {
 	public abstract partial class BaseTranslator: ITranslator
 	{
-		private Delegate ReadVarBuild(Type targetType)
-		{
-			try
-			{
-				Delegate result = null;
-
-				result = CreateVarArrayReader(targetType);
-				if (result != null)
-					return result;
-
-				result = CreateVarListReader(targetType);
-				if (result != null)
-					return result;
-
-				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
-			}
-			catch (Exception ex)
-			{
-				return ErrorStub.ReadManyDelegate(targetType, ex);
-			}
-		}
-
 		public static Delegate CreateVarArrayReader(Type collectionType)
 		{
 			if (!collectionType.HasElementType)

@@ -10,28 +10,6 @@ namespace Xdr
 {
 	public abstract partial class BaseTranslator: ITranslator
 	{
-		private Delegate ReadFixBuild(Type targetType)
-		{
-			try
-			{
-				Delegate result = null;
-
-				result = CreateFixArrayReader(targetType);
-				if (result != null)
-					return result;
-
-				result = CreateFixListReader(targetType);
-				if (result != null)
-					return result;
-
-				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
-			}
-			catch (Exception ex)
-			{
-				return ErrorStub.ReadManyDelegate(targetType, ex);
-			}
-		}
-
 		public static Delegate CreateFixArrayReader(Type collectionType)
 		{
 			if (!collectionType.HasElementType)

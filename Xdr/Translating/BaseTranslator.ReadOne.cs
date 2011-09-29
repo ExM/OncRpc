@@ -11,32 +11,6 @@ namespace Xdr
 {
 	public abstract partial class BaseTranslator: ITranslator
 	{
-		private Delegate ReadOneBuild(Type targetType)
-		{
-			try
-			{
-				Delegate result = null;
-
-				result = CreateEnumDelegate(targetType);
-				if (result != null)
-					return result;
-
-				result = CreateNullableReader(targetType);
-				if (result != null)
-					return result;
-				
-				result = EmitContext.GetReader(targetType);
-				if (result != null)
-					return result;
-
-				throw new NotImplementedException(string.Format("unknown type {0}", targetType.FullName));
-			}
-			catch (Exception ex)
-			{
-				return ErrorStub.ReadOneDelegate(targetType, ex);
-			}
-		}
-
 		public static Delegate CreateEnumDelegate(Type targetType)
 		{
 			if (!targetType.IsEnum)
