@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -55,7 +55,7 @@
     <Compile Include="IByteWriter.cs" />
     <Compile Include="SyncStream.cs" />
     <Compile Include="AsyncStream.cs" />
-    <Compile Include="WriteContexts\ListWriter_1.cs" />
+    <Compile Include="Contexts\ListWriter_1.cs" />
     <Compile Include="XdrEncoding.cs" />
     <Compile Include="Attributes\VarAttribute.cs" />
     <Compile Include="Attributes\FixAttribute.cs" />
@@ -63,20 +63,14 @@
     <Compile Include="Translating\Emit\GenCacheDescription.cs" />
     <Compile Include="Translating\Emit\WriteOneCacheDescription.cs" />
     <Compile Include="Translating\Writer.cs" />
-    <Compile Include="Translating\BaseTranslator.ReadOne.cs" />
-    <Compile Include="Translating\BaseTranslator.WriteOne.cs" />
     <Compile Include="Translating\Emit\ReadFixCacheDescription.cs" />
     <Compile Include="Translating\Emit\ReadVarCacheDescription.cs" />
-    <Compile Include="Translating\BaseTranslator.ReadFix.cs" />
-    <Compile Include="Translating\BaseTranslator.ReadVar.cs" />
     <Compile Include="Translating\Emit\WriteVarCacheDescription.cs" />
-    <Compile Include="Translating\BaseTranslator.WriteVar.cs" />
-    <Compile Include="WriteContexts\ArrayWriter_1.cs" />
-    <Compile Include="ReadContexts\ArrayReader_1.cs" />
-    <Compile Include="ReadContexts\ListReader_1.cs" />
+    <Compile Include="Contexts\ArrayWriter_1.cs" />
+    <Compile Include="Contexts\ArrayReader_1.cs" />
+    <Compile Include="Contexts\ListReader_1.cs" />
     <Compile Include="Attributes\OptionAttribute.cs" />
     <Compile Include="Translating\Emit\WriteFixCacheDescription.cs" />
-    <Compile Include="Translating\BaseTranslator.WriteFix.cs" />
     <Compile Include="Translating\ErrorStub_1.cs" />
     <Compile Include="EmitContexts\Order\OrderModel.cs" />
     <Compile Include="EmitContexts\EmitContext.cs" />
@@ -95,8 +89,5 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="EmitContexts\FieldDesc\" />
-    <Folder Include="EmitContexts\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

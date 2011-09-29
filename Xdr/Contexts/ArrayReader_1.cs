@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Xdr.ReadContexts
+namespace Xdr.Contexts
 {
 	public class ArrayReader<T>
 	{
