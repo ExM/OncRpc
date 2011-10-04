@@ -47,10 +47,13 @@
     <Compile Include="Attributes\OrderAttribute.cs" />
     <Compile Include="Reading\ReadBuilder.cs" />
     <Compile Include="Reading\Reader.cs" />
-    <Compile Include="SplitType.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="Writing\Writer.cs" />
     <Compile Include="Reading\ReadMapper.cs" />
+    <Compile Include="OpaqueType.cs" />
+    <Compile Include="Emit\BuildRequest.cs" />
+    <Compile Include="Emit\ErrorStub.cs" />
+    <Compile Include="Emit\ErrorStub_1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -60,5 +63,6 @@
   <ItemGroup>
     <Folder Include="Reading\" />
     <Folder Include="Writing\" />
+    <Folder Include="Emit\" />
   </ItemGroup>
 </Project>

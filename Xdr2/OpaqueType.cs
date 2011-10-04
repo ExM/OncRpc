@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Xdr2
 {
-	public enum SplitType
+	public enum OpaqueType
 	{
 		One = 0,
 		Fix = 1,

@@ -16,7 +16,7 @@ namespace Xdr2
 		private object _dependencySync = new object();
 		private Queue<BuildRequest> _dependency = new Queue<BuildRequest>();
 
-		private Dictionary<MethodType, Func<Type, Delegate>[]> _builders = new Dictionary<MethodType, Func<Type, Delegate>[]>();
+		private Dictionary<OpaqueType, Func<Type, Delegate>[]> _builders = new Dictionary<OpaqueType, Func<Type, Delegate>[]>();
 
 		protected ReadMapper()
 		{
@@ -24,44 +24,27 @@ namespace Xdr2
 		
 		protected void Init()
 		{
-			SetReadOne<int>((r, c, e) => r.ReadInt32(c, e));
-			SetReadOne<uint>((r, c, e) => r.ReadUInt32(c, e));
-			SetReadOne<long>((r, c, e) => r.ReadInt64(c, e));
-			SetReadOne<ulong>((r, c, e) => r.ReadUInt64(c, e));
-			SetReadOne<float>((r, c, e) => r.ReadSingle(c, e));
-			SetReadOne<double>((r, c, e) => r.ReadDouble(c, e));
-			SetReadOne<bool>((r, c, e) => r.ReadInt32((val) => IntToBool(val, c, e), e));
-			SetReadFix<byte[]>((r, l, c, e) => r.ReadFixOpaque(l, c, e));
-			SetReadVar<byte[]>((r, l, c, e) => r.ReadVarOpaque(l, c, e));
-			SetReadVar<string>((r, l, c, e) => r.ReadString(l, c, e));
-			
-			SetWriteOne<int>((w, i, c, e) => w.WriteInt32(i, c, e));
-			SetWriteOne<uint>((w, i, c, e) => w.WriteUInt32(i, c, e));
-			SetWriteOne<long>((w, i, c, e) => w.WriteInt64(i, c, e));
-			SetWriteOne<ulong>((w, i, c, e) => w.WriteUInt64(i, c, e));
-			SetWriteOne<float>((w, i, c, e) => w.WriteSingle(i, c, e));
-			SetWriteOne<double>((w, i, c, e) => w.WriteDouble(i, c, e));
-			SetWriteOne<bool>((w, i, c, e) => w.WriteInt32(i?1:0, c, e));
-			SetWriteFix<byte[]>((w, i, l, c, e) => w.WriteFixOpaque(i, l, c, e));
-			SetWriteVar<byte[]>((w, i, l, c, e) => w.WriteVarOpaque(i, l, c, e));
-			SetWriteVar<string>((w, i, l, c, e) => w.WriteString(i, l, c, e));
+			SetOne<int>((r) => XdrEncoding.DecodeInt32(r.ByteReader.Read(4)));
+			SetOne<uint>((r, c, e) => r.ReadUInt32(c, e));
+			SetOne<long>((r, c, e) => r.ReadInt64(c, e));
+			SetOne<ulong>((r, c, e) => r.ReadUInt64(c, e));
+			SetOne<float>((r, c, e) => r.ReadSingle(c, e));
+			SetOne<double>((r, c, e) => r.ReadDouble(c, e));
+			SetOne<bool>((r, c, e) => r.ReadInt32((val) => IntToBool(val, c, e), e));
+			SetFix<byte[]>((r, l, c, e) => r.ReadFixOpaque(l, c, e));
+			SetVar<byte[]>((r, l, c, e) => r.ReadVarOpaque(l, c, e));
 
-			_builders.Add(MethodType.ReadOne,
+			_builders.Add(OpaqueType.One,
 				new Func<Type, Delegate>[] { CreateEnumReader, CreateNullableReader, EmitContext.GetReader });
-			_builders.Add(MethodType.ReadFix,
+			_builders.Add(OpaqueType.Fix,
 				new Func<Type, Delegate>[] { CreateFixArrayReader, CreateFixListReader });
-			_builders.Add(MethodType.ReadVar,
+			_builders.Add(OpaqueType.Var,
 				new Func<Type, Delegate>[] { CreateVarArrayReader, CreateVarListReader });
-
-			_builders.Add(MethodType.WriteOne,
-				new Func<Type, Delegate>[] { CreateEnumWriter, CreateNullableWriter, EmitContext.GetWriter });
-			_builders.Add(MethodType.WriteFix,
-				new Func<Type, Delegate>[] { CreateFixArrayWriter, CreateFixListWriter });
-			_builders.Add(MethodType.WriteVar,
-				new Func<Type, Delegate>[] { CreateVarArrayWriter, CreateVarListWriter });
 		}
+		
+		
 
-		private Delegate BuildDelegate(MethodType methodType, Type targetType)
+		private Delegate BuildDelegate(OpaqueType methodType, Type targetType)
 		{
 			Exception wrap = null;
 
@@ -82,114 +65,54 @@ namespace Xdr2
 
 			if(wrap == null)
 				wrap = new NotImplementedException(string.Format("unknown type `{0}' in {1} method type", targetType.FullName, methodType));
-
-			switch (methodType)
-			{
-				case MethodType.ReadOne:
-					return ErrorStub.ReadOneDelegate(targetType, wrap);
-				case MethodType.ReadFix:
-				case MethodType.ReadVar:
-					return ErrorStub.ReadManyDelegate(targetType, wrap);
-
-				case MethodType.WriteOne:
-					return ErrorStub.WriteOneDelegate(targetType, wrap);
-				case MethodType.WriteFix:
-				case MethodType.WriteVar:
-				default:
-					return ErrorStub.WriteManyDelegate(targetType, wrap);
-			}
-		}
-		
-		private static void IntToBool(int val, Action<bool> completed, Action<Exception> excepted)
-		{
-			if (val == 0)
-				completed(false);
-			else if(val == 1)
-				completed(true);
+			
+			if(methodType == OpaqueType.One)
+				return ErrorStub.ReadOneDelegate(targetType, wrap);
 			else
-				excepted(new InvalidCastException(string.Format("no boolean value `{0}'", val)));
+				return ErrorStub.ReadManyDelegate(targetType, wrap);
 		}
 		
-		protected void SetReadOne<T>(ReadOneDelegate<T> method)
+		protected void SetOne<T>(ReadOneDelegate<T> method)
 		{
-			GetReadOneCacheType()
+			GetOneCacheType()
 				.MakeGenericType(typeof(T))
 				.GetField("Instance")
 				.SetValue(null, method);
 		}
 		
-		protected void SetReadFix<T>(ReadManyDelegate<T> method)
+		protected void SetFix<T>(ReadManyDelegate<T> method)
 		{
-			GetReadFixCacheType()
+			GetFixCacheType()
 				.MakeGenericType(typeof(T))
 				.GetField("Instance")
 				.SetValue(null, method);
 		}
 
-		protected void SetReadVar<T>(ReadManyDelegate<T> method)
+		protected void SetVar<T>(ReadManyDelegate<T> method)
 		{
-			GetReadVarCacheType()
+			GetVarCacheType()
 				.MakeGenericType(typeof(T))
 				.GetField("Instance")
 				.SetValue(null, method);
 		}
 		
-		protected void SetWriteOne<T>(WriteOneDelegate<T> method)
-		{
-			GetWriteOneCacheType()
-				.MakeGenericType(typeof(T))
-				.GetField("Instance")
-				.SetValue(null, method);
-		}
-		
-		protected void SetWriteFix<T>(WriteManyDelegate<T> method)
-		{
-			GetWriteFixCacheType()
-				.MakeGenericType(typeof(T))
-				.GetField("Instance")
-				.SetValue(null, method);
-		}
-
-		protected void SetWriteVar<T>(WriteManyDelegate<T> method)
-		{
-			GetWriteVarCacheType()
-				.MakeGenericType(typeof(T))
-				.GetField("Instance")
-				.SetValue(null, method);
-		}
-
 		private Type GetCacheType(MethodType methodType)
 		{
 			switch (methodType)
 			{
-				case MethodType.ReadOne: return GetReadOneCacheType();
-				case MethodType.ReadFix: return GetReadFixCacheType();
-				case MethodType.ReadVar: return GetReadVarCacheType();
-				case MethodType.WriteOne: return GetWriteOneCacheType();
-				case MethodType.WriteFix: return GetWriteFixCacheType();
-				case MethodType.WriteVar: return GetWriteVarCacheType();
+				case MethodType.ReadOne: return GetOneCacheType();
+				case MethodType.ReadFix: return GetFixCacheType();
+				case MethodType.ReadVar: return GetVarCacheType();
 				default:
 					throw new NotImplementedException("unknown method type");
 			}
 		}
 		
-		protected abstract Type GetReadOneCacheType();
-		public abstract void Read<T>(Reader reader, Action<T> completed, Action<Exception> excepted);
+		protected abstract Type GetOneCacheType();
 		
-		protected abstract Type GetReadFixCacheType();
-		public abstract void ReadFix<T>(Reader reader, uint len, Action<T> completed, Action<Exception> excepted);
+		protected abstract Type GetFixCacheType();
 
-		protected abstract Type GetReadVarCacheType();
-		public abstract void ReadVar<T>(Reader reader, uint max, Action<T> completed, Action<Exception> excepted);
-		
-		protected abstract Type GetWriteOneCacheType();
-		public abstract void Write<T>(Writer writer, T item, Action completed, Action<Exception> excepted);
-		
-		protected abstract Type GetWriteFixCacheType();
-		public abstract void WriteFix<T>(Writer writer, T items, uint len, Action completed, Action<Exception> excepted);
-		
-		protected abstract Type GetWriteVarCacheType();
-		public abstract void WriteVar<T>(Writer writer, T items, uint max, Action completed, Action<Exception> excepted);
+		protected abstract Type GetVarCacheType();
 
 		protected void BuildCaches()
 		{
