@@ -65,9 +65,5 @@
       <Project>{E9D7D0A1-F900-44B1-A649-98D88846610C}</Project>
       <Name>Xdr</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xdr2\Xdr2.csproj">
-      <Project>{96E613C1-451F-4E4E-A891-7357DCCB560F}</Project>
-      <Name>Xdr2</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>

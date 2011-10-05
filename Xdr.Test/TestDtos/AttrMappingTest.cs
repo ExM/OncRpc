@@ -1,10 +1,10 @@
 using System;
 using NUnit.Framework;
 using System.IO;
-using Xdr2.TestDtos;
+using Xdr.TestDtos;
 using System.Collections.Generic;
 
-namespace Xdr2
+namespace Xdr
 {
 	[TestFixture]
 	public class AttrMappingTest

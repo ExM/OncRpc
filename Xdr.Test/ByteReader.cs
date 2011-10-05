@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Xdr2
+namespace Xdr
 {
 	public class ByteReader: IByteReader
 	{

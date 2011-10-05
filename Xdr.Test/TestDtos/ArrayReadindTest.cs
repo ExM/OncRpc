@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Collections.Generic;
 
-namespace Xdr2
+namespace Xdr
 {
 	[TestFixture]
 	public class ArrayReadingTest

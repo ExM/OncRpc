@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Xdr2.TestDtos
+namespace Xdr.TestDtos
 {
 	public class ListContainer
 	{

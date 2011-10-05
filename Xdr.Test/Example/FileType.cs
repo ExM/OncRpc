@@ -1,6 +1,6 @@
 using System;
 
-namespace Xdr2.Example
+namespace Xdr.Example
 {
 	/// <summary>
 	/// union types of files

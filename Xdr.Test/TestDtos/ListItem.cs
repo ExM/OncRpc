@@ -1,6 +1,6 @@
 using System;
 
-namespace Xdr2.TestDtos
+namespace Xdr.TestDtos
 {
 	public class ListItem
 	{

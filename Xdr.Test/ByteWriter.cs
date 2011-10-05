@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-namespace Xdr2
+namespace Xdr
 {
 	public class ByteWriter: IByteWriter
 	{

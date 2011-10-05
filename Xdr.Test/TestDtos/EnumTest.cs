@@ -4,7 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using Xdr.Test.TestDtos;
 
-namespace Xdr2
+namespace Xdr
 {
 	[TestFixture]
 	public class EnumTest

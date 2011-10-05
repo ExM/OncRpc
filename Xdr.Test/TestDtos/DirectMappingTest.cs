@@ -2,9 +2,9 @@ using System;
 using NUnit.Framework;
 using System.IO;
 using System.Collections.Generic;
-using Xdr2.TestDtos;
+using Xdr.TestDtos;
 
-namespace Xdr2
+namespace Xdr
 {
 	[TestFixture]
 	public class DirectMappingTest

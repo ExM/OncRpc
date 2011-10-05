@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -43,6 +43,12 @@
     <Compile Include="ReadMapperExample.cs" />
     <Compile Include="Caches.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xdr\Xdr.csproj">
+      <Project>{E9D7D0A1-F900-44B1-A649-98D88846610C}</Project>
+      <Name>Xdr</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -51,10 +57,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <ProjectReference Include="..\Xdr2\Xdr2.csproj">
-      <Project>{96E613C1-451F-4E4E-A891-7357DCCB560F}</Project>
-      <Name>Xdr2</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

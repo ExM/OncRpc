@@ -44,22 +44,21 @@ namespace Xdr
 			}
 		}
 
-		public static void IntToEnum(int val, Action<T> completed, Action<Exception> excepted)
+		public static T IntToEnum(int val)
 		{
 			T exist;
 			if (_intMap.TryGetValue(val, out exist))
-				completed(exist);
-			else
-				excepted(new InvalidCastException(string.Format("type `{0}' not contain {1}", typeof(T).FullName, val)));
+				return exist;
+			throw new InvalidCastException(string.Format("type `{0}' not contain {1}", typeof(T).FullName, val));
 		}
 		
-		public static void EnumToInt(T item, Action<int> completed, Action<Exception> excepted)
+		public static int EnumToInt(T item)
 		{
 			int val;
 			if (_enumMap.TryGetValue(item, out val))
-				completed(val);
-			else
-				excepted(new InvalidCastException(string.Format("enum {0} not contain value {1}", typeof(T).FullName, item)));
+				return val;
+			
+			throw new InvalidCastException(string.Format("enum {0} not contain value {1}", typeof(T).FullName, item));
 		}
 	}
 }

@@ -2,9 +2,9 @@ using System;
 using NUnit.Framework;
 using System.IO;
 using System.Collections.Generic;
-using Xdr2.Example;
+using Xdr.Example;
 
-namespace Xdr2
+namespace Xdr
 {
 	[TestFixture]
 	/// <summary>
