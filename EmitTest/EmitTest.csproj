@@ -35,21 +35,13 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="ByteReader.cs" />
-    <Compile Include="TypeCacheExample.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="TreeNode.cs" />
-    <Compile Include="XdrReaderExample.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Xdr\Xdr.csproj">
-      <Project>{E9D7D0A1-F900-44B1-A649-98D88846610C}</Project>
-      <Name>Xdr</Name>
-    </ProjectReference>
+    <Compile Include="ReaderExample.cs" />
+    <Compile Include="ReadMapperExample.cs" />
+    <Compile Include="Caches.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -59,4 +51,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <ProjectReference Include="..\Xdr2\Xdr2.csproj">
+      <Project>{96E613C1-451F-4E4E-A891-7357DCCB560F}</Project>
+      <Name>Xdr2</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

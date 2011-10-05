@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -66,6 +66,7 @@
     <Compile Include="TestDtos\StructInt.cs" />
     <Compile Include="TestDtos\StructInt.ReadContext.cs" />
     <Compile Include="TestDtos\StructInt.WriteContext.cs" />
+    <Compile Include="ByteReader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -73,6 +74,10 @@
     <ProjectReference Include="..\Xdr\Xdr.csproj">
       <Project>{E9D7D0A1-F900-44B1-A649-98D88846610C}</Project>
       <Name>Xdr</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xdr2\Xdr2.csproj">
+      <Project>{96E613C1-451F-4E4E-A891-7357DCCB560F}</Project>
+      <Name>Xdr2</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -57,8 +57,9 @@ namespace Xdr2
 			//il.Emit(OpCodes.Call, typeof().GetMethod("BuildCaches", BindingFlags.Public | BindingFlags.Instance));
 
 			il.MarkLabel(noBuild);
-			il.Emit(OpCodes.Ldsfld, fi); // reader
-
+			il.Emit(OpCodes.Ldsfld, fi); 
+			il.Emit(OpCodes.Ldarg_0); // this reader
+			
 			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(ReadOneDelegate<>).MakeGenericType(genTypeParam),
 				typeof(ReadOneDelegate<>).GetMethod("Invoke"));
 
@@ -91,7 +92,8 @@ namespace Xdr2
 			//il.Emit(OpCodes.Call, typeof(BaseTranslator).GetMethod("BuildCaches", BindingFlags.NonPublic | BindingFlags.Instance));
 
 			il.MarkLabel(noBuild);
-			il.Emit(OpCodes.Ldsfld, fi); // reader
+			il.Emit(OpCodes.Ldsfld, fi);
+			il.Emit(OpCodes.Ldarg_0);  // this reader
 			il.Emit(OpCodes.Ldarg_1); // len or max
 
 			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(ReadManyDelegate<>).MakeGenericType(genTypeParam),
