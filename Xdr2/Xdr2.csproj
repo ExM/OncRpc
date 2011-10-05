@@ -43,11 +43,6 @@
     <Compile Include="IByteReader.cs" />
     <Compile Include="IByteWriter.cs" />
     <Compile Include="Reading\ReadBuilder.EmitDynReader.cs" />
-    <Compile Include="Reading\Emit\DelegateCacheDescription.cs" />
-    <Compile Include="Reading\Emit\GenCacheDescription.cs" />
-    <Compile Include="Reading\Emit\FixCacheDescription.cs" />
-    <Compile Include="Reading\Emit\OneCacheDescription.cs" />
-    <Compile Include="Reading\Emit\VarCacheDescription.cs" />
     <Compile Include="Reading\ReadBuilder.EmitDynReadMapper.cs" />
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="XdrEncoding.cs" />
@@ -64,6 +59,8 @@
     <Compile Include="Emit\BuildRequest.cs" />
     <Compile Include="Emit\ErrorStub.cs" />
     <Compile Include="Emit\ErrorStub_1.cs" />
+    <Compile Include="Emit\DelegateCacheDescription.cs" />
+    <Compile Include="Emit\StaticCacheDescription.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

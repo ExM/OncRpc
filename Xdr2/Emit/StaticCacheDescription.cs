@@ -5,13 +5,13 @@ using System.Text;
 using System.Reflection.Emit;
 using System.Reflection;
 
-namespace Xdr2.Reading.Emit
+namespace Xdr2.Emit
 {
-	public class GenCacheDescription
+	public class StaticCacheDescription
 	{
 		public readonly Type Result;
 
-		public GenCacheDescription(ModuleBuilder modBuilder, DelegateCacheDescription delegCacheDesc, string name, OpaqueType mType)
+		public StaticCacheDescription(ModuleBuilder modBuilder, BuildBinderDescription delegCacheDesc, string name, bool read, OpaqueType mType)
 		{
 			TypeBuilder typeBuilder = modBuilder.DefineType(name,
 				TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Abstract | TypeAttributes.Sealed);
@@ -19,10 +19,20 @@ namespace Xdr2.Reading.Emit
 			GenericTypeParameterBuilder genTypeParam = typeBuilder.DefineGenericParameters("T")[0];
 			
 			Type instanceType;
-			if (mType == OpaqueType.One)
-				instanceType = typeof(ReadOneDelegate<>);
+			if(read)
+			{
+				if (mType == OpaqueType.One)
+					instanceType = typeof(ReadOneDelegate<>);
+				else
+					instanceType = typeof(ReadManyDelegate<>);
+			}
 			else
-				instanceType = typeof(ReadManyDelegate<>);
+			{
+				if (mType == OpaqueType.One)
+					instanceType = typeof(WriteOneDelegate<>);
+				else
+					instanceType = typeof(WriteManyDelegate<>);
+			}
 				
 			typeBuilder.DefineField("Instance",
 				instanceType.MakeGenericType(genTypeParam),

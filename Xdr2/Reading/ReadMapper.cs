@@ -30,6 +30,7 @@ namespace Xdr2
 			SetOne<bool>(ReadBool);
 			SetFix<byte[]>(ReadFixOpaque);
 			SetVar<byte[]>(ReadVarOpaque);
+			SetVar<string>(ReadString);
 
 			_builders.Add(OpaqueType.One,
 				new Func<Type, Delegate>[] { CreateEnumReader, CreateNullableReader /*, EmitContext.GetReader for attribute*/ });
@@ -66,6 +67,11 @@ namespace Xdr2
 				throw new InvalidOperationException("unexpected length");
 
 			return ReadFixOpaque(r, len);
+		}
+		
+		private static string ReadString(Reader r, uint max)
+		{
+			return Encoding.ASCII.GetString(ReadVarOpaque(r, max));
 		}
 
 		private Delegate BuildDelegate(OpaqueType methodType, Type targetType)

@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
 using System.IO;
-using Xdr2.Reading.Emit;
+using Xdr2.Emit;
 
 namespace Xdr2
 {
@@ -14,10 +14,10 @@ namespace Xdr2
 		private Type _dynReaderType;
 
 		private ModuleBuilder _modBuilder;
-		private DelegateCacheDescription _delegateCacheDescription;
-		private OneCacheDescription _oneCacheDescription;
-		private VarCacheDescription _varCacheDescription;
-		private FixCacheDescription _fixCacheDescription;
+		private BuildBinderDescription _buildBinderDescription;
+		private StaticCacheDescription _oneCacheDescription;
+		private StaticCacheDescription _varCacheDescription;
+		private StaticCacheDescription _fixCacheDescription;
 		
 		public ReadBuilder()
 		{
@@ -27,10 +27,10 @@ namespace Xdr2
 			AssemblyBuilder asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.RunAndSave);
 			_modBuilder = asmBuilder.DefineDynamicModule(name + ".dll", name + ".dll");
 
-			_delegateCacheDescription = new DelegateCacheDescription(_modBuilder);
-			_oneCacheDescription = new OneCacheDescription(_modBuilder, _delegateCacheDescription);
-			_fixCacheDescription = new FixCacheDescription(_modBuilder, _delegateCacheDescription);
-			_varCacheDescription = new VarCacheDescription(_modBuilder, _delegateCacheDescription);
+			_buildBinderDescription = new BuildBinderDescription(_modBuilder);
+			_oneCacheDescription = new StaticCacheDescription(_modBuilder, _buildBinderDescription, "OneCache", true, OpaqueType.One);
+			_fixCacheDescription = new StaticCacheDescription(_modBuilder, _buildBinderDescription, "FixCache", true, OpaqueType.Fix);
+			_varCacheDescription = new StaticCacheDescription(_modBuilder, _buildBinderDescription, "VarCache", true, OpaqueType.Var);
 
 
 			Type dynReadMapperType = EmitDynReadMapper();

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
-using Xdr2.Reading.Emit;
+using Xdr2.Emit;
 
 namespace Xdr2
 {
@@ -49,13 +49,8 @@ namespace Xdr2
 			Label noBuild = il.DefineLabel();
 			il.Emit(OpCodes.Ldsfld, fi);
 			il.Emit(OpCodes.Brtrue, noBuild);
-
-			// TODO: ??? run BuildCaches
 			il.Emit(OpCodes.Ldsfld, mapperInstance);
 			il.Emit(OpCodes.Call, typeof(ReadMapper).GetMethod("BuildCaches", BindingFlags.Public | BindingFlags.Instance));
-			//il.Emit(OpCodes.Ldarg_0);
-			//il.Emit(OpCodes.Call, typeof().GetMethod("BuildCaches", BindingFlags.Public | BindingFlags.Instance));
-
 			il.MarkLabel(noBuild);
 			il.Emit(OpCodes.Ldsfld, fi); 
 			il.Emit(OpCodes.Ldarg_0); // this reader
@@ -67,7 +62,7 @@ namespace Xdr2
 			il.Emit(OpCodes.Ret);
 		}
 
-		private static void EmitOverride_ReadTMany(TypeBuilder tb, string name, GenCacheDescription readManyCacheDesc, FieldInfo mapperInstance)
+		private static void EmitOverride_ReadTMany(TypeBuilder tb, string name, StaticCacheDescription readManyCacheDesc, FieldInfo mapperInstance)
 		{
 			MethodInfo miDeclaration = typeof(Reader).GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
 			
@@ -84,13 +79,8 @@ namespace Xdr2
 			Label noBuild = il.DefineLabel();
 			il.Emit(OpCodes.Ldsfld, fi);
 			il.Emit(OpCodes.Brtrue, noBuild);
-
-			// TODO: ??? run BuildCaches
 			il.Emit(OpCodes.Ldsfld, mapperInstance);
 			il.Emit(OpCodes.Call, typeof(ReadMapper).GetMethod("BuildCaches", BindingFlags.Public | BindingFlags.Instance));
-			//il.Emit(OpCodes.Ldarg_0);
-			//il.Emit(OpCodes.Call, typeof(BaseTranslator).GetMethod("BuildCaches", BindingFlags.NonPublic | BindingFlags.Instance));
-
 			il.MarkLabel(noBuild);
 			il.Emit(OpCodes.Ldsfld, fi);
 			il.Emit(OpCodes.Ldarg_0);  // this reader
