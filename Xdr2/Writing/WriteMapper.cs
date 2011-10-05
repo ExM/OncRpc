@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using Xdr2.EmitContexts;
 
 namespace Xdr2
 {
@@ -33,7 +34,7 @@ namespace Xdr2
 			SetVar<string>(WriteString);
 
 			_builders.Add(OpaqueType.One,
-				new Func<Type, Delegate>[] { CreateEnumWriter, CreateNullableWriter /*, EmitContext.GetWriter for attribute*/ });
+				new Func<Type, Delegate>[] { CreateEnumWriter, CreateNullableWriter , EmitContext.GetWriter });
 			_builders.Add(OpaqueType.Fix,
 				new Func<Type, Delegate>[] { CreateFixArrayWriter, CreateFixListWriter });
 			_builders.Add(OpaqueType.Var,

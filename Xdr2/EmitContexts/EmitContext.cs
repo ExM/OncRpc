@@ -10,37 +10,9 @@ namespace Xdr2.EmitContexts
 {
 	public static class EmitContext
 	{
-		public const string DynAssemblyName = "Xdr.EmitContexts.Dynamic";
-
 		private static object _sync = new object();
-		private static AssemblyBuilder _asmBuilder;
-		private static ModuleBuilder _modBuilder;
-		private static Dictionary<Type, EmitResult> _readerCache;
-		private static Dictionary<Type, EmitResult> _writerCache;
-		
-		static EmitContext()
-		{
-			Init();
-		}
-
-		private static void Init()
-		{
-			_readerCache = new Dictionary<Type, EmitResult>();
-			_writerCache = new Dictionary<Type, EmitResult>();
-
-			AssemblyName asmName = new AssemblyName(DynAssemblyName);
-			_asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.RunAndSave);
-			_modBuilder = _asmBuilder.DefineDynamicModule(DynAssemblyName + ".dll", DynAssemblyName + ".dll");
-		}
-
-		public static void SaveDynamicAssembly()
-		{
-			lock (_sync)
-			{
-				_asmBuilder.Save(DynAssemblyName + ".dll");
-				Init();
-			}
-		}
+		private static Dictionary<Type, EmitResult> _readerCache = new Dictionary<Type, EmitResult>();
+		private static Dictionary<Type, EmitResult> _writerCache = new Dictionary<Type, EmitResult>();
 		
 		public static Delegate GetReader(Type targetType)
 		{
@@ -52,7 +24,7 @@ namespace Xdr2.EmitContexts
 					result = new EmitResult();
 					try
 					{
-						result.Method = EmitReader(_modBuilder, targetType);
+						result.Method = EmitReader(targetType);
 					}
 					catch(Exception ex)
 					{
@@ -77,7 +49,7 @@ namespace Xdr2.EmitContexts
 					result = new EmitResult();
 					try
 					{
-						result.Method = EmitWriter(_modBuilder, targetType);
+						result.Method = EmitWriter(targetType);
 					}
 					catch(Exception ex)
 					{
@@ -92,52 +64,38 @@ namespace Xdr2.EmitContexts
 			}
 		}
 		
-		public static Delegate EmitReader(ModuleBuilder mb, Type targetType)
+		public static Delegate EmitReader(Type targetType)
 		{
 			OrderModel ordModel = OrderModel.Create(targetType);
 			SwitchModel swModel = SwitchModel.Create(targetType);
-			
-			Type contextType;
 
-			if (ordModel == null)
-			{
-				if(swModel == null)
-					return null;
-				contextType = swModel.BuildReadContext(mb, targetType);
-			}
-			else
-			{
-				if(swModel != null)
-					throw new InvalidOperationException("unknown way to convert");
-				contextType = ordModel.BuildReadContext(mb, targetType);
-			}
-			
-			MethodInfo mi = contextType.GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
+			if (swModel != null && ordModel != null)
+				throw new InvalidOperationException("unknown way to convert");
+
+			if (swModel != null)
+				return swModel.BuildReader(targetType);
+
+			if (ordModel != null)
+				return ordModel.BuildReader(targetType);
+
+			return null;
 		}
 		
-		public static Delegate EmitWriter(ModuleBuilder mb, Type targetType)
+		public static Delegate EmitWriter(Type targetType)
 		{
 			OrderModel ordModel = OrderModel.Create(targetType);
 			SwitchModel swModel = SwitchModel.Create(targetType);
 
-			Type contextType;
+			if (swModel != null && ordModel != null)
+				throw new InvalidOperationException("unknown way to convert");
 
-			if (ordModel == null)
-			{
-				if (swModel == null)
-					return null;
-				contextType = swModel.BuildWriteContext(mb, targetType);
-			}
-			else
-			{
-				if (swModel != null)
-					throw new InvalidOperationException("unknown way to convert");
-				contextType = ordModel.BuildWriteContext(mb, targetType);
-			}
-			
-			MethodInfo mi = contextType.GetMethod("Write", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(targetType), mi);
+			if (swModel != null)
+				return swModel.BuildWriter(targetType);
+
+			if (ordModel != null)
+				return ordModel.BuildWriter(targetType);
+
+			return null;
 		}
 	}
 }
