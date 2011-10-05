@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Collections.Generic;
 
-namespace Xdr.Test
+namespace Xdr2
 {
 	[TestFixture]
 	public class StandartWritersTest
@@ -15,18 +15,12 @@ namespace Xdr.Test
 		[TestCase("Hell", new byte[]{0x00, 0x00, 0x00, 0x04, 0x48, 0x65, 0x6C, 0x6C})]
 		public void WriteString(string text, byte[] expected)
 		{
-			MemoryStream s = new MemoryStream();
-			ITranslator t = Translator.Create()
-				.Build();
-			
-			SyncStream ss = new SyncStream(s);
-			Writer w = t.CreateWriter(ss);
+			ByteWriter s = new ByteWriter();
 
-			w.WriteVar<string>(text, 5,
-				() => {},
-				(ex) => Assert.Fail("unexpected exception: {0}", ex));
-			
-			s.Position = 0;
+			WriteBuilder b = new WriteBuilder();
+			Writer w = b.Create(s);
+
+			w.WriteVar<string>(5, text);
 			Assert.AreEqual(expected, s.ToArray());
 		}
 		
@@ -35,18 +29,12 @@ namespace Xdr.Test
 		[TestCase(new int[]{123, 213},   new byte[]{0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 123, 0x00, 0x00, 0x00, 213})]
 		public void WriteVarArray(int[] array, byte[] expected)
 		{
-			MemoryStream s = new MemoryStream();
-			ITranslator t = Translator.Create()
-				.Build();
-			
-			SyncStream ss = new SyncStream(s);
-			Writer w = t.CreateWriter(ss);
+			ByteWriter s = new ByteWriter();
 
-			w.WriteVar<int[]>(array, 5,
-				() => {},
-				(ex) => Assert.Fail("unexpected exception: {0}", ex));
-			
-			s.Position = 0;
+			WriteBuilder b = new WriteBuilder();
+			Writer w = b.Create(s);
+
+			w.WriteVar<int[]>(5, array);
 			Assert.AreEqual(expected, s.ToArray());
 		}
 	}

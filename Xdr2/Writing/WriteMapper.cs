@@ -65,6 +65,7 @@ namespace Xdr2
 			uint len = (uint)v.LongLength;
 			if(len > max)
 				throw new InvalidOperationException("unexpected length");
+			w.Write<uint>(len);
 			NoCheckWriteFixOpaque(w, len, v);
 		}
 		

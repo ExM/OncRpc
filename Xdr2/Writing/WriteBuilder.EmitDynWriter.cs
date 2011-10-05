@@ -11,36 +11,35 @@ namespace Xdr2
 	{
 		private Type EmitDynWriter()
 		{
-			//TODO: override Writer
-			TypeBuilder typeBuilder = _modBuilder.DefineType("DynReader",
-				TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed, typeof(Reader));
+			TypeBuilder typeBuilder = _modBuilder.DefineType("DynWriter",
+				TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed, typeof(Writer));
 
-			FieldBuilder fb_mapperInstance = typeBuilder.DefineField("Mapper", typeof(ReadMapper),
+			FieldBuilder fb_mapperInstance = typeBuilder.DefineField("Mapper", typeof(WriteMapper),
 				FieldAttributes.Public | FieldAttributes.Static);
-			
-			ConstructorBuilder ctor = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, new Type[] {typeof(IByteReader)});
+
+			ConstructorBuilder ctor = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, new Type[] { typeof(IByteWriter) });
 			ILGenerator ilCtor = ctor.GetILGenerator();
 
 			ilCtor.Emit(OpCodes.Ldarg_0);
 			ilCtor.Emit(OpCodes.Ldarg_1); // reader
-			ilCtor.Emit(OpCodes.Call, typeof(Reader).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { typeof(IByteReader) }, null));
+			ilCtor.Emit(OpCodes.Call, typeof(Writer).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { typeof(IByteWriter) }, null));
 			ilCtor.Emit(OpCodes.Ret);
 
-
-			EmitOverride_ReadTOne(typeBuilder, fb_mapperInstance);
-			EmitOverride_ReadTMany(typeBuilder, "ReadFix", _fixCacheDescription, fb_mapperInstance);
-			EmitOverride_ReadTMany(typeBuilder, "ReadVar", _varCacheDescription, fb_mapperInstance);
+			EmitOverride_WriteTOne(typeBuilder, fb_mapperInstance);
+			EmitOverride_WriteTMany(typeBuilder, "WriteFix", _fixCacheDescription, fb_mapperInstance);
+			EmitOverride_WriteTMany(typeBuilder, "WriteVar", _varCacheDescription, fb_mapperInstance);
 
 			return typeBuilder.CreateType();
 		}
 
-		private void EmitOverride_ReadTOne(TypeBuilder typeBuilder, FieldInfo mapperInstance)
+		private void EmitOverride_WriteTOne(TypeBuilder typeBuilder, FieldInfo mapperInstance)
 		{
-			MethodInfo miDeclaration = typeof(Reader).GetMethod("Read", BindingFlags.Public | BindingFlags.Instance);
+			MethodInfo miDeclaration = typeof(Writer).GetMethod("Write", BindingFlags.Public | BindingFlags.Instance);
 
-			MethodBuilder mb = typeBuilder.DefineMethod("Read", MethodAttributes.Public | MethodAttributes.Virtual);
+			MethodBuilder mb = typeBuilder.DefineMethod("Write", MethodAttributes.Public | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
-			mb.SetReturnType(genTypeParam);
+			mb.SetReturnType(null);
+			mb.SetParameters(genTypeParam);
 			typeBuilder.DefineMethodOverride(mb, miDeclaration);
 
 			FieldInfo fi = TypeBuilder.GetField(_oneCacheDescription.Result.MakeGenericType(genTypeParam),
@@ -51,44 +50,45 @@ namespace Xdr2
 			il.Emit(OpCodes.Ldsfld, fi);
 			il.Emit(OpCodes.Brtrue, noBuild);
 			il.Emit(OpCodes.Ldsfld, mapperInstance);
-			il.Emit(OpCodes.Call, typeof(ReadMapper).GetMethod("BuildCaches", BindingFlags.Public | BindingFlags.Instance));
+			il.Emit(OpCodes.Call, typeof(WriteMapper).GetMethod("BuildCaches", BindingFlags.Public | BindingFlags.Instance));
 			il.MarkLabel(noBuild);
 			il.Emit(OpCodes.Ldsfld, fi); 
-			il.Emit(OpCodes.Ldarg_0); // this reader
-			
-			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(ReadOneDelegate<>).MakeGenericType(genTypeParam),
-				typeof(ReadOneDelegate<>).GetMethod("Invoke"));
+			il.Emit(OpCodes.Ldarg_0); // this writer
+			il.Emit(OpCodes.Ldarg_1); // item
+
+			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(WriteOneDelegate<>).MakeGenericType(genTypeParam),
+				typeof(WriteOneDelegate<>).GetMethod("Invoke"));
 
 			il.Emit(OpCodes.Callvirt, miInvoke);
 			il.Emit(OpCodes.Ret);
 		}
 
-		private static void EmitOverride_ReadTMany(TypeBuilder tb, string name, StaticCacheDescription readManyCacheDesc, FieldInfo mapperInstance)
+		private static void EmitOverride_WriteTMany(TypeBuilder tb, string name, StaticCacheDescription manyCacheDesc, FieldInfo mapperInstance)
 		{
-			MethodInfo miDeclaration = typeof(Reader).GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
+			MethodInfo miDeclaration = typeof(Writer).GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
 			
 			MethodBuilder mb = tb.DefineMethod(name, MethodAttributes.Public | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
-			mb.SetReturnType(genTypeParam);
-			mb.SetParameters(typeof(uint));
+			mb.SetReturnType(null);
+			mb.SetParameters(typeof(uint), genTypeParam);
 			tb.DefineMethodOverride(mb, miDeclaration);
 
-
-			FieldInfo fi = readManyCacheDesc.Instance(genTypeParam);
+			FieldInfo fi = manyCacheDesc.Instance(genTypeParam);
 
 			ILGenerator il = mb.GetILGenerator();
 			Label noBuild = il.DefineLabel();
 			il.Emit(OpCodes.Ldsfld, fi);
 			il.Emit(OpCodes.Brtrue, noBuild);
 			il.Emit(OpCodes.Ldsfld, mapperInstance);
-			il.Emit(OpCodes.Call, typeof(ReadMapper).GetMethod("BuildCaches", BindingFlags.Public | BindingFlags.Instance));
+			il.Emit(OpCodes.Call, typeof(WriteMapper).GetMethod("BuildCaches", BindingFlags.Public | BindingFlags.Instance));
 			il.MarkLabel(noBuild);
 			il.Emit(OpCodes.Ldsfld, fi);
-			il.Emit(OpCodes.Ldarg_0);  // this reader
+			il.Emit(OpCodes.Ldarg_0);  // this writer
 			il.Emit(OpCodes.Ldarg_1); // len or max
+			il.Emit(OpCodes.Ldarg_2); // item
 
-			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(ReadManyDelegate<>).MakeGenericType(genTypeParam),
-				typeof(ReadManyDelegate<>).GetMethod("Invoke"));
+			MethodInfo miInvoke = TypeBuilder.GetMethod(typeof(WriteManyDelegate<>).MakeGenericType(genTypeParam),
+				typeof(WriteManyDelegate<>).GetMethod("Invoke"));
 
 			il.Emit(OpCodes.Callvirt, miInvoke);
 			il.Emit(OpCodes.Ret);

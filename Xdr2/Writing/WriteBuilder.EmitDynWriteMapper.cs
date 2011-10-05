@@ -10,9 +10,8 @@ namespace Xdr2
 	{
 		private Type EmitDynWriteMapper()
 		{
-			//TODO: override WriteMapper
-			TypeBuilder typeBuilder = _modBuilder.DefineType("DynReadMapper",
-				TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed, typeof(ReadMapper));
+			TypeBuilder typeBuilder = _modBuilder.DefineType("DynWriteMapper",
+				TypeAttributes.NotPublic | TypeAttributes.Class | TypeAttributes.Sealed, typeof(WriteMapper));
 			
 			FieldBuilder fb_oneCacheType = DefineCacheField(typeBuilder, "_oneCacheType");
 			FieldBuilder fb_fixCacheType = DefineCacheField(typeBuilder, "_fixCacheType");
@@ -22,10 +21,10 @@ namespace Xdr2
 			ILGenerator ilCtor = ctor.GetILGenerator();
 
 			ilCtor.Emit(OpCodes.Ldarg_0);
-			ilCtor.Emit(OpCodes.Call, typeof(ReadMapper).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[0], null));
+			ilCtor.Emit(OpCodes.Call, typeof(WriteMapper).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[0], null));
 
 			ilCtor.Emit(OpCodes.Ldarg_0);
-			ilCtor.Emit(OpCodes.Ldftn, typeof(ReadMapper).GetMethod("AppendBuildRequest", BindingFlags.NonPublic | BindingFlags.Instance));
+			ilCtor.Emit(OpCodes.Ldftn, typeof(WriteMapper).GetMethod("AppendBuildRequest", BindingFlags.NonPublic | BindingFlags.Instance));
 			ilCtor.Emit(OpCodes.Newobj, typeof(Action<Type, OpaqueType>).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) }));
 			ilCtor.Emit(OpCodes.Stsfld, _buildBinderDescription.BuildRequest);
 			
@@ -35,7 +34,7 @@ namespace Xdr2
 			
 			// run init
 			ilCtor.Emit(OpCodes.Ldarg_0);
-			ilCtor.Emit(OpCodes.Call, typeof(ReadMapper).GetMethod("Init", BindingFlags.Instance | BindingFlags.NonPublic));
+			ilCtor.Emit(OpCodes.Call, typeof(WriteMapper).GetMethod("Init", BindingFlags.Instance | BindingFlags.NonPublic));
 
 			ilCtor.Emit(OpCodes.Ret);
 
@@ -65,7 +64,7 @@ namespace Xdr2
 			MethodBuilder mb = typeBuilder.DefineMethod(overrideName, MethodAttributes.Family | MethodAttributes.Virtual);
 			mb.SetReturnType(typeof(Type));
 			typeBuilder.DefineMethodOverride(mb,
-				typeof(ReadMapper).GetMethod(overrideName, BindingFlags.NonPublic | BindingFlags.Instance));
+				typeof(WriteMapper).GetMethod(overrideName, BindingFlags.NonPublic | BindingFlags.Instance));
 
 			ILGenerator il = mb.GetILGenerator();
 			il.Emit(OpCodes.Ldarg_0);
