@@ -1,6 +1,6 @@
 using System;
 
-namespace Xdr.Example
+namespace Xdr2.Example
 {
 	/// <summary>
 	/// Complete file structure.
@@ -46,15 +46,23 @@ namespace Xdr.Example
 		/// </summary>
 		[Order(3), Var(MaxFileLen)]
 		public byte[] Data {get; set;}
-		
-		public static void Read(Reader reader, Action<CompleteFile> completed, Action<Exception> excepted)
+
+		public static CompleteFile Read(Reader reader)
 		{
-			new ReadContext(reader, completed, excepted);
+			CompleteFile result = new CompleteFile();
+			result.FileName = reader.ReadVar<string>(MaxNameLen);
+			result.Type = reader.Read<FileType>();
+			result.Owner = reader.ReadVar<string>(MaxUserName);
+			result.Data = reader.ReadVar<byte[]>(MaxFileLen);
+			return result;
 		}
 		
-		public static void Write(Writer writer, CompleteFile item, Action completed, Action<Exception> excepted)
+		public static void Write(Writer writer, CompleteFile item)
 		{
-			new WriteContext(writer, item, completed, excepted);
+			writer.WriteVar<string>(MaxNameLen, item.FileName);
+			writer.Write<FileType>(item.Type);
+			writer.WriteVar<string>(MaxUserName, item.Owner);
+			writer.WriteVar<byte[]>(MaxFileLen, item.Data);
 		}
 	}
 }

@@ -3,10 +3,9 @@ using NUnit.Framework;
 using System.IO;
 using Xdr.TestDtos;
 using System.Collections.Generic;
-using Xdr.Example;
-using Xdr.EmitContexts;
+using Xdr2.Example;
 
-namespace Xdr
+namespace Xdr2
 {
 	[TestFixture]
 	/// <summary>
@@ -15,17 +14,10 @@ namespace Xdr
 	/// </summary>
 	public class CompleteFileTest
 	{
-		[TestFixtureTearDown]
-		public void SaveDynamicAssembly()
-		{
-			EmitContext.SaveDynamicAssembly();
-		}
-
 		[Test]
 		public void Read()
 		{
-			MemoryStream s = new MemoryStream();
-			s.Write(
+			ByteReader s = new ByteReader(
 				0x00, 0x00, 0x00, 0x09,
 				0x73, 0x69, 0x6c, 0x6c,
 				0x79, 0x70, 0x72, 0x6f,
@@ -38,22 +30,13 @@ namespace Xdr
 				0x00, 0x00, 0x00, 0x06,
 				0x28, 0x71, 0x75, 0x69,
 				0x74, 0x29, 0x00, 0x00);
-			s.Position = 0;
-			
-			ITranslator t = Translator.Create()
+
+			ReadBuilder builder = new ReadBuilder()
 				.Map<CompleteFile>(CompleteFile.Read)
-				.Map<FileType>(FileType.Read)
-				.Build();
-			
-			SyncStream ss = new SyncStream(s);
-			Reader r = t.CreateReader(ss);
+				.Map<FileType>(FileType.Read);
+			Reader r = builder.Create(s);
 
-			CompleteFile result = null;
-
-			r.Read<CompleteFile>((val) => 
-			{
-				result = val;
-			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+			CompleteFile result = r.Read<CompleteFile>();
 			
 			Assert.AreEqual(12*4, s.Position);
 			Assert.IsNotNull(result);
@@ -92,24 +75,15 @@ namespace Xdr
 			cf.Type.Interpretor = "lisp";
 			cf.Owner = "john";
 			cf.Data = new byte[] {0x28, 0x71, 0x75, 0x69, 0x74, 0x29};
-			
-			
-			MemoryStream s = new MemoryStream();
-			
-			
-			ITranslator t = Translator.Create()
-				.Map<CompleteFile>(CompleteFile.Write)
-				.Map<FileType>(FileType.Write)
-				.Build();
-			
-			SyncStream ss = new SyncStream(s);
-			Writer w = t.CreateWriter(ss);
 
-			w.Write<CompleteFile>(cf,
-				() => {},
-				(ex) => Assert.Fail("unexpected exception: {0}", ex));
-			
-			Assert.AreEqual(12*4, s.Position);
+			ByteWriter s = new ByteWriter();
+
+			WriteBuilder b = new WriteBuilder()
+				.Map<CompleteFile>(CompleteFile.Write)
+				.Map<FileType>(FileType.Write);
+			Writer w = b.Create(s);
+
+			w.Write<CompleteFile>(cf);
 			
 			byte[] expected = new byte[]
 			{
@@ -127,15 +101,13 @@ namespace Xdr
 				0x74, 0x29, 0x00, 0x00
 			};
 			
-			s.Position = 0;
 			Assert.AreEqual(expected, s.ToArray());
 		}
 		
 		[Test]
 		public void Read_AttrMapping()
 		{
-			MemoryStream s = new MemoryStream();
-			s.Write(
+			ByteReader s = new ByteReader(
 				0x00, 0x00, 0x00, 0x09,
 				0x73, 0x69, 0x6c, 0x6c,
 				0x79, 0x70, 0x72, 0x6f,
@@ -148,21 +120,14 @@ namespace Xdr
 				0x00, 0x00, 0x00, 0x06,
 				0x28, 0x71, 0x75, 0x69,
 				0x74, 0x29, 0x00, 0x00);
-			s.Position = 0;
-			
-			ITranslator t = Translator.Create()
+
+			ReadBuilder builder = new ReadBuilder()
+				//.Map<CompleteFile>(CompleteFile.Read)
 				//.Map<FileType>(FileType.Read)
-				.Build();
-			
-			SyncStream ss = new SyncStream(s);
-			Reader r = t.CreateReader(ss);
+				;
+			Reader r = builder.Create(s);
 
-			CompleteFile result = null;
-
-			r.Read<CompleteFile>((val) => 
-			{
-				result = val;
-			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+			CompleteFile result = r.Read<CompleteFile>();
 			
 			Assert.AreEqual(12*4, s.Position);
 			Assert.IsNotNull(result);
@@ -199,25 +164,18 @@ namespace Xdr
 			cf.Type.Type = FileKind.Exec;
 			cf.Type.Interpretor = "lisp";
 			cf.Owner = "john";
-			cf.Data = new byte[] {0x28, 0x71, 0x75, 0x69, 0x74, 0x29};
-			
-			
-			MemoryStream s = new MemoryStream();
-			
-			
-			ITranslator t = Translator.Create()
-				//.Map<FileType>(FileType.Write)
-				.Build();
-			
-			SyncStream ss = new SyncStream(s);
-			Writer w = t.CreateWriter(ss);
+			cf.Data = new byte[] { 0x28, 0x71, 0x75, 0x69, 0x74, 0x29 };
 
-			w.Write<CompleteFile>(cf,
-				() => {},
-				(ex) => Assert.Fail("unexpected exception: {0}", ex));
-			
-			Assert.AreEqual(12*4, s.Position);
-			
+			ByteWriter s = new ByteWriter();
+
+			WriteBuilder b = new WriteBuilder()
+				//.Map<CompleteFile>(CompleteFile.Write)
+				//.Map<FileType>(FileType.Write)
+				;
+			Writer w = b.Create(s);
+
+			w.Write<CompleteFile>(cf);
+
 			byte[] expected = new byte[]
 			{
 				0x00, 0x00, 0x00, 0x09,
@@ -233,11 +191,9 @@ namespace Xdr
 				0x28, 0x71, 0x75, 0x69,
 				0x74, 0x29, 0x00, 0x00
 			};
-			
-			s.Position = 0;
+
 			Assert.AreEqual(expected, s.ToArray());
 		}
-
 	}
 }
 

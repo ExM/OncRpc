@@ -1,6 +1,6 @@
 using System;
 
-namespace Xdr.Example
+namespace Xdr2.Example
 {
 	/// <summary>
 	/// union types of files
@@ -31,15 +31,46 @@ namespace Xdr.Example
 		/// </summary>
 		[Case(FileKind.Exec), Var(MaxNameLen)]
 		public string Interpretor {get; set;}
-		
-		public static void Read(Reader reader, Action<FileType> completed, Action<Exception> excepted)
+
+		public static FileType Read(Reader reader)
 		{
-			new ReadContext(reader, completed, excepted);
+			FileType result = new FileType();
+			result.Type = reader.Read<FileKind>();
+			switch (result.Type)
+			{
+				case FileKind.Text:
+					break;
+				case FileKind.Data:
+					result.Creator = reader.ReadVar<string>(MaxNameLen);
+					break;
+				case FileKind.Exec:
+					result.Interpretor = reader.ReadVar<string>(MaxNameLen);
+					break;
+				default:
+					throw new InvalidOperationException("unexpected value");
+			}
+
+			return result;
 		}
 		
-		public static void Write(Writer writer, FileType item, Action completed, Action<Exception> excepted)
+		public static void Write(Writer writer, FileType item)
 		{
-			new WriteContext(writer, item, completed, excepted);
+			switch (item.Type)
+			{
+				case FileKind.Text:
+					writer.Write<FileKind>(FileKind.Text);
+					return;
+				case FileKind.Data:
+					writer.Write<FileKind>(FileKind.Data);
+					writer.WriteVar<string>(MaxNameLen, item.Creator);
+					return;
+				case FileKind.Exec:
+					writer.Write<FileKind>(FileKind.Exec);
+					writer.WriteVar<string>(MaxNameLen, item.Interpretor);
+					return;
+				default:
+					throw new InvalidOperationException("unexpected value");
+			}
 		}
 	}
 }

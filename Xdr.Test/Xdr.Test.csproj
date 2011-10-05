@@ -44,7 +44,6 @@
     <Compile Include="TestDtos\EnumTest.cs" />
     <Compile Include="TestDtos\IntEnum.cs" />
     <Compile Include="TestDtos\IsolationMappingTest.cs" />
-    <Compile Include="EmitExample\TranslatorTest.cs" />
     <Compile Include="Example\FileType.cs" />
     <Compile Include="Example\CompleteFile.cs" />
     <Compile Include="Example\FileKind.cs" />
@@ -54,11 +53,7 @@
     <Compile Include="TestDtos\ByteEnum.cs" />
     <Compile Include="TestDtos\ArrayReadindTest.cs" />
     <Compile Include="TestDtos\SimplyInt.ReadContext.cs" />
-    <Compile Include="Example\CompleteFile.ReadContext.cs" />
-    <Compile Include="Example\FileType.ReadContext.cs" />
     <Compile Include="TestDtos\SimplyInt.ReadContext2.cs" />
-    <Compile Include="Example\CompleteFile.WriteContext.cs" />
-    <Compile Include="Example\FileType.WriteContext.cs" />
     <Compile Include="StandartWritersTest.cs" />
     <Compile Include="TestDtos\AttrMappingTest.cs" />
     <Compile Include="TestDtos\ListItem.cs" />

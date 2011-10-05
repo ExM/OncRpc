@@ -1,6 +1,6 @@
 using System;
 
-namespace Xdr.Example
+namespace Xdr2.Example
 {
 	/// <summary>
 	/// Types of files

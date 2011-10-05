@@ -63,6 +63,45 @@ namespace Xdr2
 			Assert.AreEqual(readed, s.Position);
 			Assert.AreEqual(expected, result);
 		}
+
+		[Test]
+		public void ReadInt()
+		{
+			ByteReader s = new ByteReader(
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x01,
+				0xFF, 0xFF, 0xFF, 0xFF,
+				0xFF, 0xFF, 0xFF, 0xFF,
+				0x7F, 0xFF, 0xFF, 0xFF);
+
+			ReadBuilder builder = new ReadBuilder();
+			Reader r = builder.Create(s);
+
+			 Assert.AreEqual(1, r.Read<int>());
+			Assert.AreEqual(4, s.Position);
+
+			Assert.AreEqual(1, r.Read<uint>());
+			Assert.AreEqual(8, s.Position);
+
+			Assert.AreEqual(uint.MaxValue, r.Read<uint>());
+			Assert.AreEqual(12, s.Position);
+
+			Assert.AreEqual(3, r.ReadFix<byte[]>(3).Length);
+			Assert.AreEqual(16, s.Position);
+
+			Assert.AreEqual(int.MaxValue, r.Read<int>());
+			Assert.AreEqual(20, s.Position);
+		}
+
+		[Test, ExpectedException(typeof(NotImplementedException))]
+		public void ReadObject()
+		{
+			ByteReader s = new ByteReader();
+			ReadBuilder builder = new ReadBuilder();
+			Reader r = builder.Create(s);
+
+			r.Read<object>();
+		}
 	}
 }
 
