@@ -61,6 +61,10 @@
     <Compile Include="Emit\ErrorStub_1.cs" />
     <Compile Include="Emit\DelegateCacheDescription.cs" />
     <Compile Include="Emit\StaticCacheDescription.cs" />
+    <Compile Include="Writing\WriteBuilder.cs" />
+    <Compile Include="Writing\WriteMapper.cs" />
+    <Compile Include="Writing\WriteBuilder.EmitDynWriter.cs" />
+    <Compile Include="Writing\WriteBuilder.EmitDynWriteMapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

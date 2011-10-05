@@ -21,14 +21,12 @@ namespace Xdr2
 		/// Encodes the Int32.
 		/// http://tools.ietf.org/html/rfc4506#section-4.1
 		/// </summary>
-		public static byte[] EncodeInt32(int v)
+		public static void EncodeInt32(int v, IByteWriter w)
 		{
-			byte[] b = new byte[4];
-			b[0] = (byte)((v >> 0x18) & 0xff);
-			b[1] = (byte)((v >> 0x10) & 0xff);
-			b[2] = (byte)((v >> 8) & 0xff);
-			b[3] = (byte)(v & 0xff);
-			return b;
+			w.Write((byte)((v >> 0x18) & 0xff));
+			w.Write((byte)((v >> 0x10) & 0xff));
+			w.Write((byte)((v >> 8) & 0xff));
+			w.Write((byte)(v & 0xff));
 		}
 		
 		/// <summary>
@@ -48,14 +46,12 @@ namespace Xdr2
 		/// Encodes the UInt32.
 		/// http://tools.ietf.org/html/rfc4506#section-4.2
 		/// </summary>
-		public static byte[] EncodeUInt32(uint v)
+		public static void EncodeUInt32(uint v, IByteWriter w)
 		{
-			byte[] b = new byte[4];
-			b[0] = (byte)((v >> 0x18) & 0xff);
-			b[1] = (byte)((v >> 0x10) & 0xff);
-			b[2] = (byte)((v >> 8) & 0xff);
-			b[3] = (byte)(v & 0xff);
-			return b;
+			w.Write((byte)((v >> 0x18) & 0xff));
+			w.Write((byte)((v >> 0x10) & 0xff));
+			w.Write((byte)((v >> 8) & 0xff));
+			w.Write((byte)(v & 0xff));
 		}
 
 		/// <summary>
@@ -79,18 +75,16 @@ namespace Xdr2
 		/// Encodes the Int64.
 		/// http://tools.ietf.org/html/rfc4506#section-4.5
 		/// </summary>
-		public static byte[] EncodeInt64(long v)
+		public static void EncodeInt64(long v, IByteWriter w)
 		{
-			byte[] b = new byte[8];
-			b[0] = (byte)((v >> 56) & 0xff);
-			b[1] = (byte)((v >> 48) & 0xff);
-			b[2] = (byte)((v >> 40) & 0xff);
-			b[3] = (byte)((v >> 32) & 0xff);
-			b[4] = (byte)((v >> 24) & 0xff);
-			b[5] = (byte)((v >> 16) & 0xff);
-			b[6] = (byte)((v >>  8) & 0xff);
-			b[7] = (byte)(v & 0xff);
-			return b;
+			w.Write((byte)((v >> 56) & 0xff));
+			w.Write((byte)((v >> 48) & 0xff));
+			w.Write((byte)((v >> 40) & 0xff));
+			w.Write((byte)((v >> 32) & 0xff));
+			w.Write((byte)((v >> 24) & 0xff));
+			w.Write((byte)((v >> 16) & 0xff));
+			w.Write((byte)((v >>  8) & 0xff));
+			w.Write((byte)(v & 0xff));
 		}
 
 		/// <summary>
@@ -114,18 +108,16 @@ namespace Xdr2
 		/// Encodes the UInt64.
 		/// http://tools.ietf.org/html/rfc4506#section-4.5
 		/// </summary>
-		public static byte[] EncodeUInt64(ulong v)
+		public static void EncodeUInt64(ulong v, IByteWriter w)
 		{
-			byte[] b = new byte[8];
-			b[0] = (byte)((v >> 56) & 0xff);
-			b[1] = (byte)((v >> 48) & 0xff);
-			b[2] = (byte)((v >> 40) & 0xff);
-			b[3] = (byte)((v >> 32) & 0xff);
-			b[4] = (byte)((v >> 24) & 0xff);
-			b[5] = (byte)((v >> 16) & 0xff);
-			b[6] = (byte)((v >> 8) & 0xff);
-			b[7] = (byte)(v & 0xff);
-			return b;
+			w.Write((byte)((v >> 56) & 0xff));
+			w.Write((byte)((v >> 48) & 0xff));
+			w.Write((byte)((v >> 40) & 0xff));
+			w.Write((byte)((v >> 32) & 0xff));
+			w.Write((byte)((v >> 24) & 0xff));
+			w.Write((byte)((v >> 16) & 0xff));
+			w.Write((byte)((v >>  8) & 0xff));
+			w.Write((byte)(v & 0xff));
 		}
 
 		/// <summary>
@@ -142,9 +134,9 @@ namespace Xdr2
 		/// Encodes the Single.
 		/// http://tools.ietf.org/html/rfc4506#section-4.6
 		/// </summary>
-		public unsafe static byte[] EncodeSingle(Single v)
+		public unsafe static void EncodeSingle(Single v, IByteWriter w)
 		{
-			return EncodeInt32(*(int*)(&v));
+			EncodeInt32(*(int*)(&v), w);
 		}
 
 		/// <summary>
@@ -161,9 +153,9 @@ namespace Xdr2
 		/// Encodes the Double.
 		/// http://tools.ietf.org/html/rfc4506#section-4.7
 		/// </summary>
-		public unsafe static byte[] EncodeDouble(Double v)
+		public unsafe static void EncodeDouble(Double v, IByteWriter w)
 		{
-			return EncodeInt64(*(long*)(&v));
+			EncodeInt64(*(long*)(&v), w);
 		}
 	}
 }

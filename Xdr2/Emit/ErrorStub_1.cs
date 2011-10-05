@@ -23,5 +23,15 @@ namespace Xdr2
 		{
 			throw Error;
 		}
+		
+		public void WriteOne(Writer writer, T v)
+		{
+			throw Error;
+		}
+		
+		public void WriteMany(Writer writer, uint len, T v)
+		{
+			throw Error;
+		}
 	}
 }

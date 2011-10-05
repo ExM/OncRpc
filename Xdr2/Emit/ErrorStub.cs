@@ -25,5 +25,15 @@ namespace Xdr2
 		{
 			return StubDelegate(ex, "ReadMany", t, typeof(ReadManyDelegate<>));
 		}
+		
+		internal static Delegate WriteOneDelegate(Type t, Exception ex)
+		{
+			return StubDelegate(ex, "WriteOne", t, typeof(WriteOneDelegate<>));
+		}
+		
+		internal static Delegate WriteManyDelegate(Type t, Exception ex)
+		{
+			return StubDelegate(ex, "WriteMany", t, typeof(WriteManyDelegate<>));
+		}
 	}
 }
