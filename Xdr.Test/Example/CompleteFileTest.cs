@@ -1,7 +1,6 @@
 using System;
 using NUnit.Framework;
 using System.IO;
-using Xdr.TestDtos;
 using System.Collections.Generic;
 using Xdr2.Example;
 

@@ -1,92 +1,62 @@
 using System;
 using NUnit.Framework;
 using System.IO;
-using Xdr.TestDtos;
 using System.Collections.Generic;
 using Xdr.Test.TestDtos;
 
-namespace Xdr
+namespace Xdr2
 {
 	[TestFixture]
 	public class EnumTest
 	{
-		[Test]
+		[Test, ExpectedException(typeof(InvalidCastException))]
 		public void ExceptionRead()
 		{
-			MemoryStream s = new MemoryStream();
-			s.Write(0x00, 0x00, 0x00, 0x00);
-			s.Position = 0;
-			
-			ITranslator t = Translator.Create().Build();
-			
-			SyncStream ss = new SyncStream(s);
-			Reader r = t.CreateReader(ss);
+			ByteReader s = new ByteReader(
+				0x00, 0x00, 0x00, 0x00);
 
-			r.Read<IntEnum>((val) =>
-			{
-				Assert.Fail("missed exception");
-			}, (ex) => Assert.IsInstanceOf<InvalidCastException>(ex));
+			ReadBuilder builder = new ReadBuilder();
+			Reader r = builder.Create(s);
 
-			Assert.AreEqual(4, s.Position);
+			r.Read<IntEnum>();
 		}
 
 		[Test]
 		public void ReadOne()
 		{
-			MemoryStream s = new MemoryStream();
-			s.Write(0x00, 0x00, 0x00, 0x01);
-			s.Position = 0;
+			ByteReader s = new ByteReader(
+				0x00, 0x00, 0x00, 0x01);
 
-			ITranslator t = Translator.Create().Build();
+			ReadBuilder builder = new ReadBuilder();
+			Reader r = builder.Create(s);
 
-			SyncStream ss = new SyncStream(s);
-			Reader r = t.CreateReader(ss);
-
-			r.Read<IntEnum>((val) =>
-			{
-				Assert.AreEqual(IntEnum.One, val);
-			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
-
+			Assert.AreEqual(IntEnum.One, r.Read<IntEnum>());
 			Assert.AreEqual(4, s.Position);
 		}
 
 		[Test]
 		public void ReadTwo()
 		{
-			MemoryStream s = new MemoryStream();
-			s.Write(0x00, 0x00, 0x00, 0x02);
-			s.Position = 0;
+			ByteReader s = new ByteReader(
+				0x00, 0x00, 0x00, 0x02);
 
-			ITranslator t = Translator.Create().Build();
+			ReadBuilder builder = new ReadBuilder();
+			Reader r = builder.Create(s);
 
-			SyncStream ss = new SyncStream(s);
-			Reader r = t.CreateReader(ss);
-
-			r.Read<IntEnum>((val) =>
-			{
-				Assert.AreEqual(IntEnum.Two, val);
-			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
-
+			Assert.AreEqual(IntEnum.Two, r.Read<IntEnum>());
 			Assert.AreEqual(4, s.Position);
 		}
 		
 		[Test]
 		public void ReadByteOne()
 		{
-			MemoryStream s = new MemoryStream();
-			s.Write(0x00, 0x00, 0x00, 0x01);
-			s.Position = 0;
+			ByteReader s = new ByteReader(
+				0x00, 0x00, 0x00, 0x01);
 
-			ITranslator t = Translator.Create().Build();
+			ReadBuilder builder = new ReadBuilder();
+			Reader r = builder.Create(s);
 
-			SyncStream ss = new SyncStream(s);
-			Reader r = t.CreateReader(ss);
-
-			r.Read<ByteEnum>((val) =>
-			{
-				Assert.AreEqual(ByteEnum.One, val);
-			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
-
+			Assert.AreEqual(ByteEnum.One, r.Read<ByteEnum>());
 			Assert.AreEqual(4, s.Position);
 		}
 	}

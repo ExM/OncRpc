@@ -2,10 +2,10 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using System.IO;
-using Xdr.TestDtos;
 using System.Collections.Generic;
+using Xdr2.TestDtos;
 
-namespace Xdr
+namespace Xdr2
 {
 	[TestFixture]
 	public class IsolationMappingTest
@@ -13,37 +13,30 @@ namespace Xdr
 		[Test]
 		public void Read()
 		{
-			MemoryStream s = new MemoryStream();
-			s.Write(0x00, 0x00, 0x00, 0x07, 0xCD, 0xEF, 0x98, 0x76);
-			SyncStream ss = new SyncStream(s);
+			ByteReader s1 = new ByteReader(
+				0x00, 0x00, 0x00, 0x07,
+				0xCD, 0xEF, 0x98, 0x76);
 
-			ITranslator t1 = Translator.Create()
-				.Map<SimplyInt>(SimplyInt.Read2)
-				.Build();
+			ReadBuilder builder1 = new ReadBuilder()
+				.Map<SimplyInt>(SimplyInt.Read2);
+			Reader r1 = builder1.Create(s1);
 
-
-			Reader r1 = t1.CreateReader(ss);
-
-			s.Position = 0;
-			r1.Read<SimplyInt>((val) =>
-			{
-				Assert.AreEqual(-7, val.Field1);
-				Assert.AreEqual(0xCDEF9876, val.Field2);
-			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+			var val1 = r1.Read<SimplyInt>();
+			Assert.AreEqual(-7, val1.Field1);
+			Assert.AreEqual(0xCDEF9876, val1.Field2);
 
 
-			ITranslator t2 = Translator.Create()
-				.Map<SimplyInt>(SimplyInt.Read)
-				.Build();
+			ByteReader s2 = new ByteReader(
+				0x00, 0x00, 0x00, 0x07,
+				0xCD, 0xEF, 0x98, 0x76);
 
-			Reader r2 = t2.CreateReader(ss);
+			ReadBuilder builder2 = new ReadBuilder()
+				.Map<SimplyInt>(SimplyInt.Read);
+			Reader r2 = builder2.Create(s2);
 
-			s.Position = 0;
-			r2.Read<SimplyInt>((val) =>
-			{
-				Assert.AreEqual(7, val.Field1);
-				Assert.AreEqual(0xCDEF9876, val.Field2);
-			}, (ex) => Assert.Fail("unexpected exception: {0}", ex));
+			var val2 = r2.Read<SimplyInt>();
+			Assert.AreEqual(7, val2.Field1);
+			Assert.AreEqual(0xCDEF9876, val2.Field2);
 		}
 	}
 }

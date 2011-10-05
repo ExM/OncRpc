@@ -1,6 +1,6 @@
 using System;
 
-namespace Xdr.TestDtos
+namespace Xdr2.TestDtos
 {
 	public partial class SimplyInt
 	{
@@ -9,15 +9,21 @@ namespace Xdr.TestDtos
 		
 		[Order(1)]
 		public uint Field2 { get; set; }
-		
-		public static void Read(Reader reader, Action<SimplyInt> completed, Action<Exception> excepted)
+
+		public static SimplyInt Read(Reader reader)
 		{
-			new ReadContext(reader, completed, excepted);
+			SimplyInt result = new SimplyInt();
+			result.Field1 = reader.Read<int>();
+			result.Field2 = reader.Read<uint>();
+			return result;
 		}
-		
-		public static void Read2(Reader reader, Action<SimplyInt> completed, Action<Exception> excepted)
+
+		public static SimplyInt Read2(Reader reader)
 		{
-			new ReadContext2(reader, completed, excepted);
+			SimplyInt result = new SimplyInt();
+			result.Field1 = -reader.Read<int>();
+			result.Field2 = reader.Read<uint>();
+			return result;
 		}
 	}
 }

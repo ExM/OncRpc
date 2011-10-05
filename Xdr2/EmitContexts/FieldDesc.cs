@@ -27,6 +27,7 @@ namespace Xdr2.EmitContexts
 			{
 				FieldType = fi.FieldType;
 				ExtractAttributes();
+				return;
 			}
 
 			PropertyInfo pi = mi as PropertyInfo;
@@ -34,6 +35,7 @@ namespace Xdr2.EmitContexts
 			{
 				FieldType = pi.PropertyType;
 				ExtractAttributes();
+				return;
 			}
 
 			throw new NotImplementedException("only PropertyInfo or FieldInfo");

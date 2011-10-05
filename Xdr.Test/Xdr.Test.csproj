@@ -47,21 +47,15 @@
     <Compile Include="Example\FileType.cs" />
     <Compile Include="Example\CompleteFile.cs" />
     <Compile Include="Example\FileKind.cs" />
-    <Compile Include="TestExtensions.cs" />
     <Compile Include="TestDtos\SimplyInt.cs" />
     <Compile Include="TestDtos\DirectMappingTest.cs" />
     <Compile Include="TestDtos\ByteEnum.cs" />
     <Compile Include="TestDtos\ArrayReadindTest.cs" />
-    <Compile Include="TestDtos\SimplyInt.ReadContext.cs" />
-    <Compile Include="TestDtos\SimplyInt.ReadContext2.cs" />
     <Compile Include="StandartWritersTest.cs" />
     <Compile Include="TestDtos\AttrMappingTest.cs" />
     <Compile Include="TestDtos\ListItem.cs" />
     <Compile Include="TestDtos\ListContainer.cs" />
-    <Compile Include="TestDtos\SimplyInt.WriteContext.cs" />
     <Compile Include="TestDtos\StructInt.cs" />
-    <Compile Include="TestDtos\StructInt.ReadContext.cs" />
-    <Compile Include="TestDtos\StructInt.WriteContext.cs" />
     <Compile Include="ByteReader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
