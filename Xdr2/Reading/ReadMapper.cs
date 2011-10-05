@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using Xdr.Translating;
-using Xdr.Contexts;
-using Xdr.EmitContexts;
 
 namespace Xdr2
 {
@@ -24,25 +21,52 @@ namespace Xdr2
 		
 		protected void Init()
 		{
-			SetOne<int>((r) => XdrEncoding.DecodeInt32(r.ByteReader.Read(4)));
-			SetOne<uint>((r, c, e) => r.ReadUInt32(c, e));
-			SetOne<long>((r, c, e) => r.ReadInt64(c, e));
-			SetOne<ulong>((r, c, e) => r.ReadUInt64(c, e));
-			SetOne<float>((r, c, e) => r.ReadSingle(c, e));
-			SetOne<double>((r, c, e) => r.ReadDouble(c, e));
-			SetOne<bool>((r, c, e) => r.ReadInt32((val) => IntToBool(val, c, e), e));
-			SetFix<byte[]>((r, l, c, e) => r.ReadFixOpaque(l, c, e));
-			SetVar<byte[]>((r, l, c, e) => r.ReadVarOpaque(l, c, e));
+			SetOne<int>((r) => XdrEncoding.DecodeInt32(r.ByteReader));
+			SetOne<uint>((r) => XdrEncoding.DecodeUInt32(r.ByteReader));
+			SetOne<long>((r) => XdrEncoding.DecodeInt64(r.ByteReader));
+			SetOne<ulong>((r) => XdrEncoding.DecodeUInt64(r.ByteReader));
+			SetOne<float>((r) => XdrEncoding.DecodeSingle(r.ByteReader));
+			SetOne<double>((r) => XdrEncoding.DecodeDouble(r.ByteReader));
+			SetOne<bool>(ReadBool);
+			SetFix<byte[]>(ReadFixOpaque);
+			SetVar<byte[]>(ReadVarOpaque);
 
 			_builders.Add(OpaqueType.One,
-				new Func<Type, Delegate>[] { CreateEnumReader, CreateNullableReader, EmitContext.GetReader });
+				new Func<Type, Delegate>[] { CreateEnumReader, CreateNullableReader /*, EmitContext.GetReader for attribute*/ });
 			_builders.Add(OpaqueType.Fix,
 				new Func<Type, Delegate>[] { CreateFixArrayReader, CreateFixListReader });
 			_builders.Add(OpaqueType.Var,
 				new Func<Type, Delegate>[] { CreateVarArrayReader, CreateVarListReader });
 		}
-		
-		
+
+		private static bool ReadBool(Reader r)
+		{
+			uint val = XdrEncoding.DecodeUInt32(r.ByteReader);
+			if (val == 0)
+				return false;
+			if (val == 1)
+				return true;
+
+			throw new InvalidOperationException("unexpected value");
+		}
+
+		private static byte[] ReadFixOpaque(Reader r, uint len)
+		{
+			byte[] result = r.ByteReader.Read(len);
+			uint tail = len % 4u;
+			if (tail != 0)
+				r.ByteReader.Read(4u - tail);
+			return result;
+		}
+
+		private static byte[] ReadVarOpaque(Reader r, uint max)
+		{
+			uint len = XdrEncoding.DecodeUInt32(r.ByteReader);
+			if(len > max)
+				throw new InvalidOperationException("unexpected length");
+
+			return ReadFixOpaque(r, len);
+		}
 
 		private Delegate BuildDelegate(OpaqueType methodType, Type targetType)
 		{
@@ -95,16 +119,16 @@ namespace Xdr2
 				.GetField("Instance")
 				.SetValue(null, method);
 		}
-		
-		private Type GetCacheType(MethodType methodType)
+
+		private Type GetCacheType(OpaqueType methodType)
 		{
 			switch (methodType)
 			{
-				case MethodType.ReadOne: return GetOneCacheType();
-				case MethodType.ReadFix: return GetFixCacheType();
-				case MethodType.ReadVar: return GetVarCacheType();
+				case OpaqueType.One: return GetOneCacheType();
+				case OpaqueType.Fix: return GetFixCacheType();
+				case OpaqueType.Var: return GetVarCacheType();
 				default:
-					throw new NotImplementedException("unknown method type");
+					throw new NotImplementedException("unknown opaque type");
 			}
 		}
 		
@@ -114,7 +138,7 @@ namespace Xdr2
 
 		protected abstract Type GetVarCacheType();
 
-		protected void BuildCaches()
+		public void BuildCaches()
 		{
 			lock (_sync)
 			{
@@ -133,14 +157,14 @@ namespace Xdr2
 				}
 			}
 		}
-		
-		internal void AppendMethod(Type targetType, MethodType methodType, Delegate method)
+
+		internal void AppendMethod(Type targetType, OpaqueType methodType, Delegate method)
 		{
 			lock(_sync)
 				LockedAppendMethod(targetType, methodType, method);
 		}
-		
-		private void LockedAppendMethod(Type targetType, MethodType methodType, Delegate method)
+
+		private void LockedAppendMethod(Type targetType, OpaqueType methodType, Delegate method)
 		{
 			FieldInfo fi = GetCacheType(methodType).MakeGenericType(targetType).GetField("Instance");
 			if (fi.GetValue(null) != null)
@@ -149,59 +173,59 @@ namespace Xdr2
 			fi.SetValue(null, method);
 		}
 
-		protected void AppendBuildRequest(Type targetType, MethodType methodType)
+		protected void AppendBuildRequest(Type targetType, OpaqueType methodType)
 		{
 			lock (_dependencySync)
 				_dependency.Enqueue(new BuildRequest { TargetType = targetType, Method = methodType });
 		}
 
-		public Reader CreateReader(IByteReader reader)
-		{
-			return new Reader(this, reader);
-		}
-
-		public Writer CreateWriter(IByteWriter writer)
-		{
-			return new Writer(this, writer);
-		}
-
 		public static Delegate CreateFixArrayReader(Type collectionType)
 		{
-			if (!collectionType.HasElementType)
-				return null;
-			Type itemType = collectionType.GetElementType();
-			if (itemType == null || itemType.MakeArrayType() != collectionType)
+			Type itemType = collectionType.ArraySubType();
+			if (itemType == null)
 				return null;
 
-			MethodInfo mi = typeof(ArrayReader<>).MakeGenericType(itemType).GetMethod("ReadFix", BindingFlags.Static | BindingFlags.Public);
+			MethodInfo mi = typeof(ReadMapper).GetMethod("ReadFixArray").MakeGenericMethod(itemType);
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
+		}
+
+		public static T[] ReadFixArray<T>(Reader r, uint len)
+		{
+			T[] result = new T[len];
+			for (uint i = 0; i < len; i++)
+				result[i] = r.Read<T>();
+			return result;
 		}
 
 		public static Delegate CreateFixListReader(Type collectionType)
 		{
-			if (!collectionType.IsGenericType)
+			Type itemType = collectionType.ListSubType();
+			if (itemType == null)
 				return null;
 
-			Type genericType = collectionType.GetGenericTypeDefinition();
-			if (genericType != typeof(List<>))
-				return null;
-			Type itemType = collectionType.GetGenericArguments()[0];
-
-			MethodInfo mi = typeof(ListReader<>).MakeGenericType(itemType).GetMethod("ReadFix", BindingFlags.Static | BindingFlags.Public);
+			MethodInfo mi = typeof(ReadMapper).GetMethod("ReadFixList").MakeGenericMethod(itemType);
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
+		}
+
+		public static List<T> ReadFixList<T>(Reader r, uint len)
+		{
+			List<T> result = new List<T>();
+			for (uint i = 0; i < len; i++)
+				result.Add(r.Read<T>());
+			return result;
 		}
 
 		public static Delegate CreateEnumReader(Type targetType)
 		{
 			if (!targetType.IsEnum)
 				return null;
-			MethodInfo mi = typeof(BaseTranslator).GetMethod("EnumRead", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(targetType);
+			MethodInfo mi = typeof(ReadMapper).GetMethod("EnumRead").MakeGenericMethod(targetType);
 			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 
-		private static void EnumRead<T>(Reader reader, Action<T> completed, Action<Exception> excepted) where T : struct
+		public static T EnumRead<T>(Reader reader) where T : struct
 		{
-			reader.ReadInt32((val) => EnumHelper<T>.IntToEnum(val, completed, excepted), excepted);
+			return EnumHelper<T>.IntToEnum(reader.Read<int>());
 		}
 
 		public static Delegate CreateNullableReader(Type targetType)
@@ -210,120 +234,54 @@ namespace Xdr2
 			if (itemType == null)
 				return null;
 
-			MethodInfo mi = typeof(BaseTranslator).GetMethod("ReadNullable", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(itemType);
+			MethodInfo mi = typeof(ReadMapper).GetMethod("ReadNullable").MakeGenericMethod(itemType);
 			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(targetType), mi);
 		}
 
-		private static void ReadNullable<T>(Reader reader, Action<T?> completed, Action<Exception> excepted)
-			where T : struct
+		public static T? ReadNullable<T>(Reader reader) where T : struct
 		{
-			reader.ReadUInt32((val) =>
-			{
-				if (val == 0)
-					completed(null);
-				else if (val == 1)
-					reader.Read<T>((item) => completed(item), excepted);
-				else
-					excepted(new InvalidOperationException(string.Format("unexpected value {0}", val)));
-			}, excepted);
+			if (reader.Read<bool>())
+				return reader.Read<T>();
+			else
+				return null;
 		}
 
 		public static Delegate CreateVarArrayReader(Type collectionType)
 		{
-			if (!collectionType.HasElementType)
-				return null;
-			Type itemType = collectionType.GetElementType();
-			if (itemType == null || itemType.MakeArrayType() != collectionType)
+			Type itemType = collectionType.ArraySubType();
+			if (itemType == null)
 				return null;
 
-			MethodInfo mi = typeof(ArrayReader<>).MakeGenericType(itemType).GetMethod("ReadVar", BindingFlags.Static | BindingFlags.Public);
+			MethodInfo mi = typeof(ReadMapper).GetMethod("ReadVarArray").MakeGenericMethod(itemType);
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
+		}
+
+		public static T[] ReadVarArray<T>(Reader r, uint max)
+		{
+			uint len = r.Read<uint>();
+			if (len > max)
+				throw new InvalidOperationException("unexpected Length");
+
+			return ReadFixArray<T>(r, len);
 		}
 
 		public static Delegate CreateVarListReader(Type collectionType)
 		{
-			if (!collectionType.IsGenericType)
+			Type itemType = collectionType.ListSubType();
+			if (itemType == null)
 				return null;
 
-			Type genericType = collectionType.GetGenericTypeDefinition();
-			if (genericType != typeof(List<>))
-				return null;
-			Type itemType = collectionType.GetGenericArguments()[0];
-
-			MethodInfo mi = typeof(ListReader<>).MakeGenericType(itemType).GetMethod("ReadVar", BindingFlags.Static | BindingFlags.Public);
+			MethodInfo mi = typeof(ReadMapper).GetMethod("ReadVarList").MakeGenericMethod(itemType);
 			return Delegate.CreateDelegate(typeof(ReadManyDelegate<>).MakeGenericType(collectionType), mi);
 		}
 
-		public static Delegate CreateFixListWriter(Type collectionType)
+		public static List<T> ReadVarList<T>(Reader r, uint max)
 		{
-			Type itemType = collectionType.ListSubType();
-			if (itemType == null)
-				return null;
+			uint len = r.Read<uint>();
+			if (len > max)
+				throw new InvalidOperationException("unexpected Length");
 
-			MethodInfo mi = typeof(ListWriter<>).MakeGenericType(itemType).GetMethod("WriteFix", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteManyDelegate<>).MakeGenericType(collectionType), mi);
-		}
-
-		public static Delegate CreateFixArrayWriter(Type collectionType)
-		{
-			Type itemType = collectionType.ArraySubType();
-			if (itemType == null)
-				return null;
-
-			MethodInfo mi = typeof(ArrayWriter<>).MakeGenericType(itemType).GetMethod("WriteFix", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteManyDelegate<>).MakeGenericType(collectionType), mi);
-		}
-
-		public static Delegate CreateEnumWriter(Type targetType)
-		{
-			if (!targetType.IsEnum)
-				return null;
-
-			MethodInfo mi = typeof(BaseTranslator).GetMethod("EnumWrite", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(targetType);
-			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(targetType), mi);
-		}
-
-		private static void EnumWrite<T>(Writer writer, T item, Action completed, Action<Exception> excepted) where T : struct
-		{
-			EnumHelper<T>.EnumToInt(item, (val) => writer.WriteInt32(val, completed, excepted), excepted);
-		}
-
-		public static Delegate CreateNullableWriter(Type targetType)
-		{
-			Type itemType = targetType.NullableSubType();
-			if (itemType == null)
-				return null;
-
-			MethodInfo mi = typeof(BaseTranslator).GetMethod("WriteNullable", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(itemType);
-			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(targetType), mi);
-		}
-
-		private static void WriteNullable<T>(Writer writer, T? item, Action completed, Action<Exception> excepted) where T : struct
-		{
-			if (item.HasValue)
-				writer.WriteUInt32(1, () => writer.Write<T>(item.Value, completed, excepted), excepted);
-			else
-				writer.WriteUInt32(0, completed, excepted);
-		}
-
-		public static Delegate CreateVarListWriter(Type collectionType)
-		{
-			Type itemType = collectionType.ListSubType();
-			if (itemType == null)
-				return null;
-
-			MethodInfo mi = typeof(ListWriter<>).MakeGenericType(itemType).GetMethod("WriteVar", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteManyDelegate<>).MakeGenericType(collectionType), mi);
-		}
-
-		public static Delegate CreateVarArrayWriter(Type collectionType)
-		{
-			Type itemType = collectionType.ArraySubType();
-			if (itemType == null)
-				return null;
-
-			MethodInfo mi = typeof(ArrayWriter<>).MakeGenericType(itemType).GetMethod("WriteVar", BindingFlags.Static | BindingFlags.Public);
-			return Delegate.CreateDelegate(typeof(WriteManyDelegate<>).MakeGenericType(collectionType), mi);
+			return ReadFixList<T>(r, len);
 		}
 	}
 }

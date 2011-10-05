@@ -8,13 +8,13 @@ namespace Xdr2
 		/// Decodes the Int32.
 		/// http://tools.ietf.org/html/rfc4506#section-4.1
 		/// </summary>
-		public static int DecodeInt32(byte[] buff)
+		public static int DecodeInt32(IByteReader r)
 		{
 			return
-				(buff[0] << 0x18) |
-				(buff[1] << 0x10) |
-				(buff[2]  << 0x08) |
-				buff[3];
+				(r.Read() << 0x18) |
+				(r.Read() << 0x10) |
+				(r.Read() << 0x08) |
+				r.Read();
 		}
 
 		/// <summary>
@@ -35,13 +35,13 @@ namespace Xdr2
 		/// Decodes the UInt32.
 		/// http://tools.ietf.org/html/rfc4506#section-4.2
 		/// </summary>
-		public static uint DecodeUInt32(byte[] buff)
+		public static uint DecodeUInt32(IByteReader r)
 		{
 			return
-				((uint)buff[0] << 0x18) |
-				((uint)buff[1] << 0x10) |
-				((uint)buff[2] << 0x08) |
-				(uint)buff[3];
+				((uint)r.Read() << 0x18) |
+				((uint)r.Read() << 0x10) |
+				((uint)r.Read() << 0x08) |
+				(uint)r.Read();
 		}
 		
 		/// <summary>
@@ -62,17 +62,17 @@ namespace Xdr2
 		/// Decodes the Int64.
 		/// http://tools.ietf.org/html/rfc4506#section-4.5
 		/// </summary>
-		public static long DecodeInt64(byte[] buff)
+		public static long DecodeInt64(IByteReader r)
 		{
 			return
-				((long)buff[0] << 56) |
-				((long)buff[1] << 48) |
-				((long)buff[2] << 40) |
-				((long)buff[3] << 32) |
-				((long)buff[4] << 24) |
-				((long)buff[5] << 16) |
-				((long)buff[6] << 8) |
-				(long)buff[7];
+				((long)r.Read() << 56) |
+				((long)r.Read() << 48) |
+				((long)r.Read() << 40) |
+				((long)r.Read() << 32) |
+				((long)r.Read() << 24) |
+				((long)r.Read() << 16) |
+				((long)r.Read() << 8) |
+				(long)r.Read();
 		}
 
 		/// <summary>
@@ -97,17 +97,17 @@ namespace Xdr2
 		/// Decodes the UInt64.
 		/// http://tools.ietf.org/html/rfc4506#section-4.5
 		/// </summary>
-		public static ulong DecodeUInt64(byte[] buff)
+		public static ulong DecodeUInt64(IByteReader r)
 		{
 			return
-				((ulong)buff[0] << 56) |
-				((ulong)buff[1] << 48) |
-				((ulong)buff[2] << 40) |
-				((ulong)buff[3] << 32) |
-				((ulong)buff[4] << 24) |
-				((ulong)buff[5] << 16) |
-				((ulong)buff[6] << 8) |
-				(ulong)buff[7];
+				((ulong)r.Read() << 56) |
+				((ulong)r.Read() << 48) |
+				((ulong)r.Read() << 40) |
+				((ulong)r.Read() << 32) |
+				((ulong)r.Read() << 24) |
+				((ulong)r.Read() << 16) |
+				((ulong)r.Read() << 8) |
+				(ulong)r.Read();
 		}
 
 		/// <summary>
@@ -132,9 +132,9 @@ namespace Xdr2
 		/// Decodes the Single.
 		/// http://tools.ietf.org/html/rfc4506#section-4.6
 		/// </summary>
-		public unsafe static Single DecodeSingle(byte[] buff)
+		public unsafe static Single DecodeSingle(IByteReader r)
 		{
-			int num = DecodeInt32(buff);
+			int num = DecodeInt32(r);
 			return *(float*)(&num);
 		}
 
@@ -151,9 +151,9 @@ namespace Xdr2
 		/// Decodes the Double.
 		/// http://tools.ietf.org/html/rfc4506#section-4.7
 		/// </summary>
-		public unsafe static Double DecodeDouble(byte[] buff)
+		public unsafe static Double DecodeDouble(IByteReader r)
 		{
-			long num = DecodeInt64(buff);
+			long num = DecodeInt64(r);
 			return *(double*)(&num);
 		}
 

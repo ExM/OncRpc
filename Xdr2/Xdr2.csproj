@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{96e613c1-451f-4e4e-a891-7357dccb560f}</ProjectGuid>
+    <ProjectGuid>{96E613C1-451F-4E4E-A891-7357DCCB560F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Xdr2</RootNamespace>
     <AssemblyName>Xdr</AssemblyName>
@@ -38,8 +38,17 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Attributes\SwitchAttribute.cs" />
     <Compile Include="Attributes\CaseAttribute.cs" />
+    <Compile Include="EnumHelper_1.cs" />
     <Compile Include="IByteReader.cs" />
     <Compile Include="IByteWriter.cs" />
+    <Compile Include="Reading\ReadBuilder.EmitDynReader.cs" />
+    <Compile Include="Reading\Emit\DelegateCacheDescription.cs" />
+    <Compile Include="Reading\Emit\GenCacheDescription.cs" />
+    <Compile Include="Reading\Emit\FixCacheDescription.cs" />
+    <Compile Include="Reading\Emit\OneCacheDescription.cs" />
+    <Compile Include="Reading\Emit\VarCacheDescription.cs" />
+    <Compile Include="Reading\ReadBuilder.EmitDynReadMapper.cs" />
+    <Compile Include="TypeExtensions.cs" />
     <Compile Include="XdrEncoding.cs" />
     <Compile Include="Attributes\VarAttribute.cs" />
     <Compile Include="Attributes\FixAttribute.cs" />
@@ -60,9 +69,5 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Reading\" />
-    <Folder Include="Writing\" />
-    <Folder Include="Emit\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
