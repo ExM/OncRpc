@@ -48,6 +48,9 @@
     <Compile Include="MessageProtocol\mismatch_info.cs" />
     <Compile Include="MessageProtocol\auth_flavor.cs" />
     <Compile Include="MessageProtocol\opaque_auth.cs" />
+    <Compile Include="BindingProtocols\rpcb.cs" />
+    <Compile Include="BindingProtocols\_types.cs" />
+    <Compile Include="BindingProtocols\BindingProtocol.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -58,5 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MessageProtocol\" />
+    <Folder Include="BindingProtocols\" />
   </ItemGroup>
 </Project>

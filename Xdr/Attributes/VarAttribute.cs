@@ -7,6 +7,11 @@ namespace Xdr
 	{
 		public uint MaxLength {get; private set;}
 		
+		public VarAttribute()
+		{
+			MaxLength = uint.MaxValue;
+		}
+		
 		public VarAttribute(uint maxLength)
 		{
 			if(maxLength == 0)
