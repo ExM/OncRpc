@@ -10,8 +10,9 @@ namespace Xdr
 {
 	public sealed partial class ReadBuilder
 	{
+
 		private ReadMapper _rm;
-		private Type _dynReaderType;
+		private Func<IByteReader, Reader> _creater;
 
 		private ModuleBuilder _modBuilder;
 		private BuildBinderDescription _buildBinderDescription;
@@ -37,10 +38,22 @@ namespace Xdr
 
 			_rm = (ReadMapper)Activator.CreateInstance(dynReadMapperType);
 
-			_dynReaderType = EmitDynReader();
+			Type dynReaderType = EmitDynReader();
 
-			FieldInfo mapperInstance = _dynReaderType.GetField("Mapper", BindingFlags.Public | BindingFlags.Static);
+			FieldInfo mapperInstance = dynReaderType.GetField("Mapper", BindingFlags.Public | BindingFlags.Static);
 			mapperInstance.SetValue(null, _rm);
+
+			_creater = EmitCreater(dynReaderType.GetConstructor(new Type[] { typeof(IByteReader) }));
+		}
+
+		private static Func<IByteReader, Reader> EmitCreater(ConstructorInfo ci)
+		{
+			var dm = new DynamicMethod("DynCreateReader", typeof(Reader), new Type[] {typeof(IByteReader)}, typeof(ReadBuilder), true);
+			var il = dm.GetILGenerator();
+			il.Emit(OpCodes.Ldarg_0);
+			il.Emit(OpCodes.Newobj, ci);
+			il.Emit(OpCodes.Ret);
+			return (Func<IByteReader, Reader>)dm.CreateDelegate(typeof(Func<IByteReader, Reader>));
 		}
 
 		public ReadBuilder Map<T>(ReadOneDelegate<T> reader)
@@ -63,7 +76,7 @@ namespace Xdr
 
 		public Reader Create(IByteReader reader)
 		{
-			return (Reader)Activator.CreateInstance(_dynReaderType, reader); // HACK: emit creater
+			return _creater(reader);
 		}
 	}
 }

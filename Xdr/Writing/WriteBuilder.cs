@@ -11,7 +11,7 @@ namespace Xdr
 	public sealed partial class WriteBuilder
 	{
 		private WriteMapper _wm;
-		private Type _dynWriterType;
+		private Func<IByteWriter, Writer> _creater;
 
 		private ModuleBuilder _modBuilder;
 		private BuildBinderDescription _buildBinderDescription;
@@ -37,10 +37,22 @@ namespace Xdr
 
 			_wm = (WriteMapper)Activator.CreateInstance(dynWriteMapperType);
 
-			_dynWriterType = EmitDynWriter();
+			Type dynWriterType = EmitDynWriter();
 
-			FieldInfo mapperInstance = _dynWriterType.GetField("Mapper", BindingFlags.Public | BindingFlags.Static);
+			FieldInfo mapperInstance = dynWriterType.GetField("Mapper", BindingFlags.Public | BindingFlags.Static);
 			mapperInstance.SetValue(null, _wm);
+
+			_creater = EmitCreater(dynWriterType.GetConstructor(new Type[] { typeof(IByteWriter) }));
+		}
+
+		private static Func<IByteWriter, Writer> EmitCreater(ConstructorInfo ci)
+		{
+			var dm = new DynamicMethod("DynCreateWriter", typeof(Writer), new Type[] { typeof(IByteWriter) }, typeof(WriteBuilder), true);
+			var il = dm.GetILGenerator();
+			il.Emit(OpCodes.Ldarg_0);
+			il.Emit(OpCodes.Newobj, ci);
+			il.Emit(OpCodes.Ret);
+			return (Func<IByteWriter, Writer>)dm.CreateDelegate(typeof(Func<IByteWriter, Writer>));
 		}
 
 		public WriteBuilder Map<T>(WriteOneDelegate<T> writer)
@@ -63,7 +75,7 @@ namespace Xdr
 
 		public Writer Create(IByteWriter writer)
 		{
-			return (Writer)Activator.CreateInstance(_dynWriterType, writer); // HACK: emit creater
+			return _creater(writer);
 		}
 	}
 }
