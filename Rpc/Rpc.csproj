@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -21,6 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <GenerateDocumentation>true</GenerateDocumentation>
+    <DocumentationFile>bin\Debug\Rpc.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -35,6 +36,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BindingProtocols\TransportSemantics.cs" />
+    <Compile Include="BindingProtocols\ProtocolName.cs" />
+    <Compile Include="BindingProtocols\ProtocolFamily.cs" />
+    <Compile Include="BindingProtocols\rpcbs_addrlist.cs" />
+    <Compile Include="BindingProtocols\rpcbs_rmtcalllist.cs" />
+    <Compile Include="BindingProtocols\rpcb_stat.cs" />
+    <Compile Include="BindingProtocols\rpcb_stat_byvers.cs" />
+    <Compile Include="BindingProtocols\netbuf.cs" />
+    <Compile Include="BindingProtocols\rpcb_entry_list.cs" />
+    <Compile Include="BindingProtocols\rpcb_entry.cs" />
+    <Compile Include="BindingProtocols\rpcb_rmtcallres.cs" />
+    <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
+    <Compile Include="BindingProtocols\rpcblist_ptr.cs" />
+    <Compile Include="BindingProtocols\rp__list.cs" />
     <Compile Include="MessageProtocol\reply_stat.cs" />
     <Compile Include="MessageProtocol\msg_type.cs" />
     <Compile Include="MessageProtocol\reject_stat.cs" />
@@ -49,7 +64,7 @@
     <Compile Include="MessageProtocol\auth_flavor.cs" />
     <Compile Include="MessageProtocol\opaque_auth.cs" />
     <Compile Include="BindingProtocols\rpcb.cs" />
-    <Compile Include="BindingProtocols\_types.cs" />
+    <Compile Include="BindingProtocols\rpcb_entry_list_ptr.cs" />
     <Compile Include="BindingProtocols\BindingProtocol.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -59,8 +74,5 @@
       <Name>Xdr</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MessageProtocol\" />
-    <Folder Include="BindingProtocols\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

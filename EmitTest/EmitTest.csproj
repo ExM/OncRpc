@@ -44,6 +44,10 @@
     <Compile Include="Caches.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Rpc\Rpc.csproj">
+      <Project>{3D05D93B-A861-4CE0-810A-7A0C6BC5D46E}</Project>
+      <Name>Rpc</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Xdr\Xdr.csproj">
       <Project>{E9D7D0A1-F900-44B1-A649-98D88846610C}</Project>
       <Name>Xdr</Name>

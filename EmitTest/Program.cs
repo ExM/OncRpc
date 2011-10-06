@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection.Emit;
 using System.Reflection;
 using Xdr;
+using Rpc.BindingProtocols;
 
 namespace EmitTest
 {
