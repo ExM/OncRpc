@@ -16,12 +16,12 @@ namespace Rpc.BindingProtocols
 		/// program number
 		/// </summary>
 		[Order(0)]
-		public ulong r_prog;
+		public uint r_prog;
 		/// <summary>
 		/// version number
 		/// </summary>
 		[Order(1)]
-		public ulong r_vers;
+		public uint r_vers;
 		/// <summary>
 		/// network id 
 		/// </summary>

@@ -6,6 +6,10 @@ using System.Reflection.Emit;
 using System.Reflection;
 using Xdr;
 using Rpc.BindingProtocols;
+using System.Net.Sockets;
+using System.Net;
+using Rpc;
+using Rpc.MessageProtocol;
 
 namespace EmitTest
 {
@@ -13,7 +17,67 @@ namespace EmitTest
 	{
 		static void Main(string[] args)
 		{
+			
+			
+			
+			
+			
+			rpc_msg msg = new rpc_msg();
+			msg.xid = 123;
+			msg.body = new rpc_msg.body_union();
+			msg.body.mtype = msg_type.CALL;
+			msg.body.cbody = new call_body();
+			msg.body.cbody.rpcvers = 2;
+			msg.body.cbody.prog = 100000;
+			msg.body.cbody.proc = 4;
+			msg.body.cbody.vers = 4;
+			msg.body.cbody.cred = new opaque_auth();
+			msg.body.cbody.cred.flavor = auth_flavor.AUTH_NONE;
+			msg.body.cbody.cred.body = new byte[0];
+			msg.body.cbody.verf = msg.body.cbody.cred;
+			
+			
+			
+			ByteWriter bw = new ByteWriter();
+			Writer w = new WriteBuilder().Create(bw);
 
+			w.Write(msg);
+			
+			
+			
+			UdpClient client = new UdpClient(AddressFamily.InterNetwork);
+			byte[] outBuff = bw.ToArray();
+			
+			
+			IPEndPoint ep = new IPEndPoint(IPAddress.Loopback, 111);
+			
+			client.Send(outBuff, outBuff.Length, ep);
+			
+			
+			byte[] inBuff = client.Receive(ref ep);
+			
+			int p = 0;
+			foreach(byte b in inBuff)
+			{
+				if(p > 14)
+				{
+					Console.WriteLine("0x{0},", b.ToString("X2"));
+					p = 0;
+				}
+				else
+				{
+					Console.Write("0x{0}, ", b.ToString("X2"));
+					p++;
+				}
+			}
+			
+			ByteReader br = new ByteReader(inBuff);
+			Reader r = new ReadBuilder().Create(br);
+			
+			rpc_msg response = r.Read<rpc_msg>();
+			
+			rp__list list = r.ReadOption<rp__list>();
+			
 		}
 	}
 }
