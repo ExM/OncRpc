@@ -9,8 +9,6 @@ namespace Rpc.BindingProtocols
 	/// </summary>
 	public static partial class BindingProtocol
 	{
-		public const uint Program = 100000u;
-		
 		//const rpcb_highproc_2 = RPCBPROC_CALLIT;
 		//const rpcb_highproc_3 = RPCBPROC_TADDR2UADDR;
 		//const rpcb_highproc_4 = RPCBPROC_GETSTAT;
@@ -35,8 +33,5 @@ namespace Rpc.BindingProtocols
 		/// fixme: missing comment
 		/// </summary>
 		public const uint RPCBVERS_2_STAT = 0;
-
-		//public static readonly Version3 V3 = new Version3();
-		//public static readonly Version4 V4 = new Version4();
 	};
 }

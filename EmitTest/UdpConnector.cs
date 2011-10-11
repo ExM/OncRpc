@@ -29,7 +29,6 @@ namespace EmitTest
 			byte[] outBuff = bw.ToArray();
 			
 			
-			
 			IPEndPoint ep = new IPEndPoint(IPAddress.Loopback, 111);
 			
 			_client.Send(outBuff, outBuff.Length, ep);

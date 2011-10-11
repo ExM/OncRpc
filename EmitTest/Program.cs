@@ -20,7 +20,7 @@ namespace EmitTest
 			
 			var conn = new UdpConnector(new ReadBuilder(), new WriteBuilder());
 
-			var client = new BindingV4(conn);
+			var client = new RpcBindV4(conn);
 			
 			client.GetTime((t) => Console.WriteLine(t), (e) => Console.WriteLine(e));
 			client.Dump((t) =>
