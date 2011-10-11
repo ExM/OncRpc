@@ -40,7 +40,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void CallIt(rpcb_rmtcallargs arg, Action<rpcb_rmtcallres> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(5u), arg, completed, excepted);
+			Request(5u, arg, completed, excepted);
 		}
 	}
 }

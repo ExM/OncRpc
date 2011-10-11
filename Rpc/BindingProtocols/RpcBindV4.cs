@@ -37,7 +37,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void BCast(rpcb_rmtcallargs arg, Action<rpcb_rmtcallres> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(5u), arg, completed, excepted);
+			Request(5u, arg, completed, excepted);
 		}
 
 		/// <summary>
@@ -49,7 +49,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void GetVersAddr(rpcb arg, Action<string> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(9u), arg, completed, excepted);
+			Request(9u, arg, completed, excepted);
 		}
 		
 		/// <summary>
@@ -62,7 +62,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void Indirect(rpcb_rmtcallargs arg, Action<rpcb_rmtcallres> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(10u), arg, completed, excepted);
+			Request(10u, arg, completed, excepted);
 		}
 		
 		/// <summary>
@@ -74,7 +74,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void GetAddrList(rpcb arg, Action<rpcb_entry_list_ptr> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(11u), arg, completed, excepted);
+			Request(11u, arg, completed, excepted);
 		}
 
 		/// <summary>
@@ -89,7 +89,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void GetStat(Action<rpcb_stat_byvers> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(12u), new Xdr.Void(), completed, excepted);
+			Request(12u, new Xdr.Void(), completed, excepted);
 		}
 	}
 }

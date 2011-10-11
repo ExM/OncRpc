@@ -11,49 +11,11 @@ namespace Rpc.BindingProtocols
 	/// For TCP/IP and UDP/IP, for example, it is port number 111. Each transport has such an assigned, well-known address.
 	/// http://tools.ietf.org/html/rfc1833#section-2.2.1
 	/// </summary>
-	public class BaseRpcBind
+	public class BaseRpcBind : BaseOperation
 	{
-		/// <summary>
-		/// program number
-		/// </summary>
-		protected const uint Program = 100000u;
-
-		/// <summary>
-		/// data exchange
-		/// </summary>
-		protected IConnector _conn;
-
-		/// <summary>
-		/// version number
-		/// </summary>
-		protected uint _version;
-		
 		internal BaseRpcBind(uint vers, IConnector conn)
+			:base(vers, conn)
 		{
-			_version = vers;
-			_conn = conn;
-		}
-
-		/// <summary>
-		/// create header of RPC message (CALL)
-		/// </summary>
-		/// <param name="proc"></param>
-		/// <returns></returns>
-		protected rpc_msg CreateHeader(uint proc)
-		{
-			rpc_msg msg = new rpc_msg();
-			msg.xid = 0;
-			msg.body = new body();
-			msg.body.mtype = msg_type.CALL;
-			msg.body.cbody = new call_body();
-			msg.body.cbody.rpcvers = 2;
-			msg.body.cbody.prog = Program;
-			msg.body.cbody.proc = proc;
-			msg.body.cbody.vers = _version;
-			msg.body.cbody.cred = opaque_auth.None;
-			msg.body.cbody.verf = opaque_auth.None;
-			
-			return msg;
 		}
 
 		/// <summary>
@@ -69,7 +31,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void Set(rpcb arg, Action<bool> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(1u), arg, completed, excepted);
+			Request(1u, arg, completed, excepted);
 		}
 		
 		/// <summary>
@@ -84,7 +46,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void UnSet(rpcb arg, Action<bool> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(2u), arg, completed, excepted);
+			Request(2u, arg, completed, excepted);
 		}
 
 		/// <summary>
@@ -97,7 +59,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void GetAddr(rpcb arg, Action<string> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(3u), arg, completed, excepted);
+			Request(3u, arg, completed, excepted);
 		}
 
 		/// <summary>
@@ -108,7 +70,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void Dump(Action<rpcblist_ptr> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(4u), new Xdr.Void(), completed, excepted);
+			Request(4u, new Xdr.Void(), completed, excepted);
 		}
 
 		/// <summary>
@@ -119,7 +81,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void GetTime(Action<uint> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(6u), new Xdr.Void(), completed, excepted);
+			Request(6u, new Xdr.Void(), completed, excepted);
 		}
 
 		/// <summary>
@@ -130,7 +92,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void UAddr2TAddr(string arg, Action<netbuf> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(7u), arg, completed, excepted);
+			Request(7u, arg, completed, excepted);
 		}
 
 		/// <summary>
@@ -141,7 +103,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="excepted"></param>
 		public void TAddr2Uaddr(netbuf arg, Action<string> completed, Action<Exception> excepted)
 		{
-			_conn.Request(CreateHeader(8u), arg, completed, excepted);
+			Request(8u, arg, completed, excepted);
 		}
 	}
 }
