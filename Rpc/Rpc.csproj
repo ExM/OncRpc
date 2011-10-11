@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -36,7 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="BindingProtocols\Bind.Version4.cs" />
     <Compile Include="BindingProtocols\TransportSemantics.cs" />
     <Compile Include="BindingProtocols\ProtocolName.cs" />
     <Compile Include="BindingProtocols\ProtocolFamily.cs" />
@@ -51,11 +50,6 @@
     <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
     <Compile Include="BindingProtocols\rpcblist_ptr.cs" />
     <Compile Include="BindingProtocols\rp__list.cs" />
-    <Compile Include="BindingProtocols\Bind.cs" />
-    <Compile Include="BindingProtocols\Bind.Version3.cs" />
-    <Compile Include="DefineProgram.cs" />
-    <Compile Include="DefineVersion.cs" />
-    <Compile Include="DefineProcedure.cs" />
     <Compile Include="MessageProtocol\body.cs" />
     <Compile Include="MessageProtocol\reply_stat.cs" />
     <Compile Include="MessageProtocol\msg_type.cs" />
@@ -75,6 +69,11 @@
     <Compile Include="BindingProtocols\BindingProtocol.cs" />
     <Compile Include="ByteWriter.cs" />
     <Compile Include="ByteReader.cs" />
+    <Compile Include="BindingProtocols\BindingProtocol.Version3.cs" />
+    <Compile Include="BindingProtocols\BindingProtocol.Version4.cs" />
+    <Compile Include="ProcedureDescription.cs" />
+    <Compile Include="BindingProtocols\BindingV4.cs" />
+    <Compile Include="IConnector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -17,12 +17,24 @@ namespace EmitTest
 	{
 		static void Main(string[] args)
 		{
-			//DefineBind.Instance.V3.RPCBPROC_CALLIT
+			
+			var conn = new UdpConnector(new ReadBuilder(), new WriteBuilder());
 
-			var def = BindingProtocol.Bind.V4.RPCBPROC_INDIRECT;
-
-
-
+			var client = new BindingV4(conn);
+			
+			client.GetTime((t) => Console.WriteLine(t), (e) => Console.WriteLine(e));
+			client.Dump((t) =>
+			{
+				rp__list item = t.Instance;
+				
+				while(item != null)
+				{
+					Console.WriteLine("addr:{0} netid:{1} owner:{2} prog:{3} vers:{4}",
+						item.rpcb_map.r_addr, item.rpcb_map.r_netid, item.rpcb_map.r_owner, item.rpcb_map.r_prog, item.rpcb_map.r_vers);
+					item = item.rpcb_next;
+				}
+			}, (e) => Console.WriteLine(e));
+			/*
 			rpc_msg msg = new rpc_msg();
 			msg.xid = 123;
 			msg.body = new body();
@@ -75,7 +87,7 @@ namespace EmitTest
 			rpc_msg response = r.Read<rpc_msg>();
 			
 			rp__list list = r.ReadOption<rp__list>();
-			
+			*/
 		}
 	}
 }
