@@ -23,14 +23,14 @@ namespace Rpc
 			return new FormatException(string.Format(frm, args));
 		}
 
-		internal static ServerException SystemError()
+		internal static ReplyException SystemError(reply_body replyBody)
 		{
-			return new ServerException();
+			return new ReplyException(replyBody, "system error in RPC-server");
 		}
 
-		internal static AuthenticateException AuthError(auth_stat state)
+		internal static AuthenticateException AuthError(reply_body replyBody, auth_stat state)
 		{
-			return new AuthenticateException(GetAuthDescription(state));
+			return new AuthenticateException(replyBody, GetAuthDescription(state));
 		}
 
 		internal static string GetAuthDescription(auth_stat state)
@@ -62,26 +62,26 @@ namespace Rpc
 			}
 		}
 
-		internal static RpcException RpcVersionError(mismatch_info info)
+		internal static ReplyException RpcVersionError(reply_body replyBody, mismatch_info info)
 		{
-			return new RpcException(
+			return new ReplyException(replyBody,
 				string.Format("unsupported RPC version number (supported versions of between {0} and {1})", info.low, info.high));
 		}
 
-		internal static RpcException ProgramMismatch(mismatch_info info)
+		internal static ReplyException ProgramMismatch(reply_body replyBody, mismatch_info info)
 		{
-			return new RpcException(
+			return new ReplyException(replyBody,
 				string.Format("remote can't support version (supported versions of between {0} and {1})", info.low, info.high));
 		}
 
-		internal static RpcException ProgramUnavalible()
+		internal static ReplyException ProgramUnavalible(reply_body replyBody)
 		{
-			return new RpcException("remote hasn't exported program");
+			return new ReplyException(replyBody, "remote hasn't exported program");
 		}
 
-		internal static RpcException ProcedureUnavalible()
+		internal static RpcException ProcedureUnavalible(reply_body replyBody)
 		{
-			return new RpcException("program can't support procedure");
+			return new ReplyException(replyBody, "program can't support procedure");
 		}
 
 		internal static RpcException GarbageArgs()

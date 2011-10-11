@@ -14,7 +14,7 @@ namespace Rpc
 		[Test]
 		public void ReadList()
 		{
-			ByteReader br = new ByteReader(inBuff);
+			MessageReader br = new MessageReader(inBuff);
 			Reader r = new ReadBuilder().Create(br);
 			
 			rpc_msg resp = r.Read<rpc_msg>();

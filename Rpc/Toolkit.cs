@@ -33,15 +33,15 @@ namespace Rpc
 						case accept_stat.GARBAGE_ARGS:
 							return Exceptions.GarbageArgs();
 						case accept_stat.PROC_UNAVAIL:
-							return Exceptions.ProcedureUnavalible();
+							return Exceptions.ProcedureUnavalible(replyBody);
 						case accept_stat.PROG_MISMATCH:
-							return Exceptions.ProgramMismatch(du.mismatch_info);
+							return Exceptions.ProgramMismatch(replyBody, du.mismatch_info);
 						case accept_stat.PROG_UNAVAIL:
-							return Exceptions.ProgramUnavalible();
+							return Exceptions.ProgramUnavalible(replyBody);
 						case accept_stat.SUCCESS:
 							return null;
 						case accept_stat.SYSTEM_ERR:
-							return Exceptions.SystemError();
+							return Exceptions.SystemError(replyBody);
 						default:
 							throw null;
 					}
@@ -49,9 +49,9 @@ namespace Rpc
 				else if(replyBody.stat == reply_stat.MSG_DENIED)
 				{
 					if (replyBody.rreply.rstat == reject_stat.AUTH_ERROR)
-						return Exceptions.AuthError(replyBody.rreply.astat);
+						return Exceptions.AuthError(replyBody, replyBody.rreply.astat);
 					else if (replyBody.rreply.rstat == reject_stat.RPC_MISMATCH)
-						return Exceptions.RpcVersionError(replyBody.rreply.mismatch_info);
+						return Exceptions.RpcVersionError(replyBody, replyBody.rreply.mismatch_info);
 					else
 						throw null;
 				}

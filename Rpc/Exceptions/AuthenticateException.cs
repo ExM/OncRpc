@@ -6,15 +6,38 @@ using Rpc.MessageProtocol;
 
 namespace Rpc
 {
-	public class AuthenticateException: RpcException
+	/// <summary>
+	/// Authenticate error
+	/// </summary>
+	public class AuthenticateException: ReplyException
 	{
-		public AuthenticateException(string message)
-			: base(message)
+		/// <summary>
+		/// Authenticate error
+		/// </summary>
+		/// <param name="replyBody"></param>
+		public AuthenticateException(reply_body replyBody)
+			:base(replyBody)
 		{
 		}
 
-		public AuthenticateException(string message, Exception innerEx)
-			: base(message, innerEx)
+		/// <summary>
+		/// Authenticate error
+		/// </summary>
+		/// <param name="replyBody"></param>
+		/// <param name="message"></param>
+		public AuthenticateException(reply_body replyBody, string message)
+			: base(replyBody, message)
+		{
+		}
+
+		/// <summary>
+		/// Authenticate error
+		/// </summary>
+		/// <param name="replyBody"></param>
+		/// <param name="message"></param>
+		/// <param name="innerEx"></param>
+		public AuthenticateException(reply_body replyBody, string message, Exception innerEx)
+			: base(replyBody, message, innerEx)
 		{
 		}
 	}

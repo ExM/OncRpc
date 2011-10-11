@@ -60,8 +60,9 @@
     <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
     <Compile Include="BindingProtocols\rpcblist_ptr.cs" />
     <Compile Include="BindingProtocols\rp__list.cs" />
+    <Compile Include="UdpDatagram.cs" />
     <Compile Include="Exceptions\AuthenticateException.cs" />
-    <Compile Include="Exceptions\ServerException.cs" />
+    <Compile Include="Exceptions\ReplyException.cs" />
     <Compile Include="Exceptions\RpcException.cs" />
     <Compile Include="Exceptions\Exceptions.cs" />
     <Compile Include="MessageProtocol\body.cs" />
@@ -81,8 +82,7 @@
     <Compile Include="BindingProtocols\rpcb.cs" />
     <Compile Include="BindingProtocols\rpcb_entry_list_ptr.cs" />
     <Compile Include="BindingProtocols\BindingProtocol.cs" />
-    <Compile Include="ByteWriter.cs" />
-    <Compile Include="ByteReader.cs" />
+    <Compile Include="MessageReader.cs" />
     <Compile Include="BindingProtocols\RpcBindV4.cs" />
     <Compile Include="IConnector.cs" />
     <Compile Include="Toolkit.cs" />
