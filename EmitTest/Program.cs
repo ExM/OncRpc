@@ -17,6 +17,12 @@ namespace EmitTest
 	{
 		static void Main(string[] args)
 		{
+			//DefineBind.Instance.V3.RPCBPROC_CALLIT
+
+			var def = BindingProtocol.Bind.V4.RPCBPROC_INDIRECT;
+
+
+
 			rpc_msg msg = new rpc_msg();
 			msg.xid = 123;
 			msg.body = new body();

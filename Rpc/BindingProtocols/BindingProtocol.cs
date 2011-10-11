@@ -33,5 +33,7 @@ namespace Rpc.BindingProtocols
 		/// fixme: missing comment
 		/// </summary>
 		public const uint RPCBVERS_2_STAT = 0;
+
+		public static readonly Bind Bind = new Bind();
 	};
 }

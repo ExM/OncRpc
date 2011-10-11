@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BindingProtocols\Bind.Version4.cs" />
     <Compile Include="BindingProtocols\TransportSemantics.cs" />
     <Compile Include="BindingProtocols\ProtocolName.cs" />
     <Compile Include="BindingProtocols\ProtocolFamily.cs" />
@@ -50,7 +51,10 @@
     <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
     <Compile Include="BindingProtocols\rpcblist_ptr.cs" />
     <Compile Include="BindingProtocols\rp__list.cs" />
-    <Compile Include="BindV3.cs" />
+    <Compile Include="BindingProtocols\Bind.cs" />
+    <Compile Include="BindingProtocols\Bind.Version3.cs" />
+    <Compile Include="DefineProgram.cs" />
+    <Compile Include="DefineVersion.cs" />
     <Compile Include="DefineProcedure.cs" />
     <Compile Include="MessageProtocol\body.cs" />
     <Compile Include="MessageProtocol\reply_stat.cs" />
