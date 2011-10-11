@@ -18,9 +18,8 @@ namespace EmitTest
 		static void Main(string[] args)
 		{
 			
-			var conn = new UdpConnector(new ReadBuilder(), new WriteBuilder());
-
-
+			var conn = new SyncUdpConnector(new ReadBuilder(), new WriteBuilder(),
+				new IPEndPoint(IPAddress.Loopback, 111));
 
 			var client = new PortMapper(conn);
 
@@ -35,6 +34,10 @@ namespace EmitTest
 					item = item.next;
 				}
 			}, (e) => Console.WriteLine(e));
+
+			var client2 = new RpcBindV4(conn);
+
+			client2.GetTime((t) => Console.WriteLine(t), (e) => Console.WriteLine(e));
 
 			/*
 			var client = new RpcBindV4(conn);

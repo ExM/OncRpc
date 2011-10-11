@@ -60,6 +60,10 @@
     <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
     <Compile Include="BindingProtocols\rpcblist_ptr.cs" />
     <Compile Include="BindingProtocols\rp__list.cs" />
+    <Compile Include="Exceptions\AuthenticateException.cs" />
+    <Compile Include="Exceptions\ServerException.cs" />
+    <Compile Include="Exceptions\RpcException.cs" />
+    <Compile Include="Exceptions\Exceptions.cs" />
     <Compile Include="MessageProtocol\body.cs" />
     <Compile Include="MessageProtocol\reply_stat.cs" />
     <Compile Include="MessageProtocol\msg_type.cs" />
@@ -81,6 +85,8 @@
     <Compile Include="ByteReader.cs" />
     <Compile Include="BindingProtocols\RpcBindV4.cs" />
     <Compile Include="IConnector.cs" />
+    <Compile Include="Toolkit.cs" />
+    <Compile Include="Connectors\SyncUdpConnector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

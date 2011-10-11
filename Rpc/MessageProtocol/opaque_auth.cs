@@ -7,23 +7,13 @@ namespace Rpc.MessageProtocol
 	/// 
 	/// http://tools.ietf.org/html/rfc5531#section-8.2
 	/// </summary>
-	public class opaque_auth
+	public struct opaque_auth
 	{
 		/// <summary>
 		/// Null Authentication
 		/// http://tools.ietf.org/html/rfc5531#section-10.1
 		/// </summary>
-		public static opaque_auth None
-		{
-			get
-			{
-				return new opaque_auth()
-				{
-					flavor = auth_flavor.AUTH_NONE,
-					body = new byte[0]
-				};
-			}
-		}
+		public static readonly opaque_auth None = new opaque_auth() { flavor = auth_flavor.AUTH_NONE, body = new byte[0]};
 
 		/// <summary>
 		/// Authentication flavor
