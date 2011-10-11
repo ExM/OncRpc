@@ -30,9 +30,7 @@ namespace Xdr.EmitContexts
 			body.Add(
 			Expression.Switch(
 				Expression.PropertyOrField(pItem, SwitchField.MInfo.Name),
-				Expression.Block(
-					Expression.Throw(Expression.New(typeof(InvalidOperationException).GetConstructor(new Type[] { typeof(string) }), Expression.Constant("unexpected value")))
-					),
+				Expression.Block(ThrowUnexpectedValue(Expression.PropertyOrField(pItem, SwitchField.MInfo.Name))),
 				cases.ToArray())
 			);
 
@@ -48,7 +46,7 @@ namespace Xdr.EmitContexts
 		private SwitchCase BuildWriteBranch(object key, FieldDesc fieldDesc, Expression pWriter, Expression pItem, LabelTarget exit)
 		{
 			List<Expression> body = new List<Expression>();
-			body.Add(Expression.Call(pWriter, typeof(Writer).GetMethod("Write").MakeGenericMethod(SwitchField.FieldType), Expression.Constant(key)));
+			body.Add(SwitchField.BuildWriteOne(pWriter, key));
 
 			if (fieldDesc != null)
 				body.Add(fieldDesc.BuildWrite(pWriter, pItem));

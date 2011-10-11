@@ -26,17 +26,17 @@ namespace Xdr
 			ilCtor.Emit(OpCodes.Ret);
 
 			EmitOverride_WriteTOne(typeBuilder, fb_mapperInstance);
-			EmitOverride_WriteTMany(typeBuilder, "WriteFix", _fixCacheDescription, fb_mapperInstance);
-			EmitOverride_WriteTMany(typeBuilder, "WriteVar", _varCacheDescription, fb_mapperInstance);
+			EmitOverride_WriteTMany(typeBuilder, "CacheWriteFix", _fixCacheDescription, fb_mapperInstance);
+			EmitOverride_WriteTMany(typeBuilder, "CacheWriteVar", _varCacheDescription, fb_mapperInstance);
 
 			return typeBuilder.CreateType();
 		}
 
 		private void EmitOverride_WriteTOne(TypeBuilder typeBuilder, FieldInfo mapperInstance)
 		{
-			MethodInfo miDeclaration = typeof(Writer).GetMethod("Write", BindingFlags.Public | BindingFlags.Instance);
+			MethodInfo miDeclaration = typeof(Writer).GetMethod("CacheWrite", BindingFlags.NonPublic | BindingFlags.Instance);
 
-			MethodBuilder mb = typeBuilder.DefineMethod("Write", MethodAttributes.Public | MethodAttributes.Virtual);
+			MethodBuilder mb = typeBuilder.DefineMethod("CacheWrite", MethodAttributes.Family | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
 			mb.SetReturnType(null);
 			mb.SetParameters(genTypeParam);
@@ -65,9 +65,9 @@ namespace Xdr
 
 		private static void EmitOverride_WriteTMany(TypeBuilder tb, string name, StaticCacheDescription manyCacheDesc, FieldInfo mapperInstance)
 		{
-			MethodInfo miDeclaration = typeof(Writer).GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
-			
-			MethodBuilder mb = tb.DefineMethod(name, MethodAttributes.Public | MethodAttributes.Virtual);
+			MethodInfo miDeclaration = typeof(Writer).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+
+			MethodBuilder mb = tb.DefineMethod(name, MethodAttributes.Family | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
 			mb.SetReturnType(null);
 			mb.SetParameters(typeof(uint), genTypeParam);

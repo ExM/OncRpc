@@ -88,13 +88,36 @@ namespace Xdr.EmitContexts
 			return Expression.Call(pReader, typeof(Reader).GetMethod("Read").MakeGenericMethod(FieldType));
 		}
 
+		internal Expression BuildWriteOne(Expression pWriter, object key)
+		{
+			Expression inTryBody = Expression.Call(pWriter, typeof(Writer).GetMethod("Write").MakeGenericMethod(FieldType), Expression.Constant(key));
+			var exParam = Expression.Parameter(typeof(SystemException), "ex");
+			var inCatchBody = Expression.Throw(Expression.New(
+				typeof(FormatException).GetConstructor(new Type[] { typeof(string), typeof(Exception) }),
+				Expression.Constant("can't write '" + MInfo.Name + "' field"), exParam));
+
+			return Expression.TryCatch(
+				inTryBody,
+				Expression.Catch(exParam, inCatchBody));
+		}
+
 		internal Expression BuildWrite(Expression pWriter, Expression pItem)
 		{
 			Expression field = Expression.PropertyOrField(pItem, MInfo.Name);
+			Expression inTryBody;
 			if (_isMany)
-				return Expression.Call(pWriter, typeof(Writer).GetMethod(_isFix ? "WriteFix" : "WriteVar").MakeGenericMethod(FieldType), Expression.Constant(_len), field);
+				inTryBody = Expression.Call(pWriter, typeof(Writer).GetMethod(_isFix ? "WriteFix" : "WriteVar").MakeGenericMethod(FieldType), Expression.Constant(_len), field);
 			else
-				return Expression.Call(pWriter, typeof(Writer).GetMethod(_isOption ? "WriteOption" : "Write").MakeGenericMethod(FieldType), field);
+				inTryBody = Expression.Call(pWriter, typeof(Writer).GetMethod(_isOption ? "WriteOption" : "Write").MakeGenericMethod(FieldType), field);
+
+			var exParam = Expression.Parameter(typeof(SystemException), "ex");
+			var inCatchBody = Expression.Throw(Expression.New(
+				typeof(FormatException).GetConstructor(new Type[] { typeof(string), typeof(Exception) }),
+				Expression.Constant("can't write '" + MInfo.Name + "' field"), exParam));
+
+			return Expression.TryCatch(
+				inTryBody,
+				Expression.Catch(exParam, inCatchBody));
 		}
 
 		internal Expression BuildAssign(Expression readed, ParameterExpression result)

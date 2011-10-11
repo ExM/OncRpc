@@ -91,7 +91,15 @@ namespace Xdr.Example
 		
 		public static void Write(Writer writer, CompleteFile item)
 		{
-			writer.WriteVar<string>(MaxNameLen, item.FileName);
+			try
+			{
+				writer.WriteVar<string>(MaxNameLen, item.FileName);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't write 'FileName' field", ex);
+			}
+
 			writer.Write<FileType>(item.Type);
 			writer.WriteVar<string>(MaxUserName, item.Owner);
 			writer.WriteVar<byte[]>(MaxFileLen, item.Data);

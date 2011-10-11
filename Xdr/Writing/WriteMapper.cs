@@ -57,7 +57,8 @@ namespace Xdr
 		private static void WriteFixOpaque(Writer w, uint len, byte[] v)
 		{
 			if(v.LongLength != len)
-				throw new InvalidOperationException("unexpected length");
+				throw new FormatException("unexpected length: " + v.LongLength.ToString());
+
 			NoCheckWriteFixOpaque(w, len, v);
 		}
 
@@ -65,17 +66,32 @@ namespace Xdr
 		{
 			uint len = (uint)v.LongLength;
 			if(len > max)
-				throw new InvalidOperationException("unexpected length");
-			w.Write<uint>(len);
+				throw new FormatException("unexpected length: " + len.ToString());
+
+			try
+			{
+				w.Write<uint>(len);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't write length", ex);
+			}
 			NoCheckWriteFixOpaque(w, len, v);
 		}
 		
 		private static void NoCheckWriteFixOpaque(Writer w, uint len, byte[] v)
 		{
-			w.ByteWriter.Write(v);
-			uint tail = len % 4u;
-			if (tail != 0)
-				w.ByteWriter.Write(_tails[4u - tail]);
+			try
+			{
+				w.ByteWriter.Write(v);
+				uint tail = len % 4u;
+				if (tail != 0)
+					w.ByteWriter.Write(_tails[4u - tail]);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't write byte array", ex);
+			}
 		}
 		
 		private static void WriteString(Writer w, uint max, string v)
@@ -207,9 +223,18 @@ namespace Xdr
 		public static void WriteFixArray<T>(Writer w, uint len, T[] val)
 		{
 			if(val.LongLength != len)
-				throw new InvalidOperationException("unexpected length");
-			for (uint i = 0; i < len; i++)
-				w.Write<T>(val[i]);
+				throw new FormatException("unexpected length: " + val.LongLength.ToString());
+
+			uint i = 0;
+			try
+			{
+				for (; i < len; i++)
+					w.Write<T>(val[i]);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException(string.Format("can't write {0} item", i), ex);
+			}
 		}
 
 		public static Delegate CreateFixListWriter(Type collectionType)
@@ -225,9 +250,18 @@ namespace Xdr
 		public static void WriteFixList<T>(Writer w, uint len, List<T> val)
 		{
 			if(val.Count != len)
-				throw new InvalidOperationException("unexpected length");
-			for (int i = 0; i < val.Count; i++)
-				w.Write<T>(val[i]);
+				throw new FormatException("unexpected length: " + val.Count.ToString());
+
+			int i = 0;
+			try
+			{
+				for (; i < val.Count; i++)
+					w.Write<T>(val[i]);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException(string.Format("can't write {0} item", i), ex);
+			}
 		}
 
 		public static Delegate CreateEnumWriter(Type targetType)
@@ -255,13 +289,26 @@ namespace Xdr
 
 		public static void WriteNullable<T>(Writer writer, T? val) where T : struct
 		{
-			if(val.HasValue)
+			try
 			{
-				writer.Write<bool>(true);
+				writer.Write<bool>(val.HasValue);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't write option", ex);
+			}
+
+			if (!val.HasValue)
+				return;
+
+			try
+			{
 				writer.Write<T>(val.Value);
 			}
-			else
-				writer.Write<bool>(false);
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't write value", ex);
+			}
 		}
 
 		public static Delegate CreateVarArrayWriter(Type collectionType)
@@ -278,10 +325,27 @@ namespace Xdr
 		{
 			uint len = (uint)val.LongLength;
 			if (len > max)
-				throw new InvalidOperationException("unexpected Length");
-			w.Write<uint>(len);
-			for (uint i = 0; i < len; i++)
-				w.Write<T>(val[i]);
+				throw new FormatException("unexpected length: " + len.ToString());
+
+			try
+			{
+				w.Write<uint>(len);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't write length", ex);
+			}
+
+			uint i = 0;
+			try
+			{
+				for (; i < len; i++)
+					w.Write<T>(val[i]);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException(string.Format("can't write {0} item", i), ex);
+			}
 		}
 
 		public static Delegate CreateVarListWriter(Type collectionType)
@@ -298,10 +362,27 @@ namespace Xdr
 		{
 			int len = val.Count;
 			if (len > max)
-				throw new InvalidOperationException("unexpected Length");
-			w.Write<uint>((uint)len);
-			for (int i = 0; i < len; i++)
-				w.Write<T>(val[i]);
+				throw new FormatException("unexpected length: " + len.ToString());
+
+			try
+			{
+				w.Write<uint>((uint)len);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't write length", ex);
+			}
+
+			int i = 0;
+			try
+			{
+				for (; i < len; i++)
+					w.Write<T>(val[i]);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException(string.Format("can't write {0} item", i), ex);
+			}
 		}
 	}
 }
