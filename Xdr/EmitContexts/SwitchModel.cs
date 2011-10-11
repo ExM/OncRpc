@@ -70,9 +70,7 @@ namespace Xdr.EmitContexts
 			BinaryExpression assign = Expression.Assign(resultVar, Expression.New(targetType));
 			body.Add(assign);
 
-			body.Add(Expression.Assign(
-				Expression.PropertyOrField(resultVar, SwitchField.MInfo.Name),
-				Expression.Call(pReader, typeof(Reader).GetMethod("Read").MakeGenericMethod(SwitchField.FieldType))));
+			body.Add(SwitchField.BuildAssign(SwitchField.BuildReadOne(pReader), resultVar));
 
 			LabelTarget exit = Expression.Label();
 
@@ -83,9 +81,7 @@ namespace Xdr.EmitContexts
 			body.Add(
 			Expression.Switch(
 				Expression.PropertyOrField(resultVar, SwitchField.MInfo.Name),
-				Expression.Block(
-					Expression.Throw(Expression.New(typeof(InvalidOperationException).GetConstructor(new Type[] { typeof(string)}), Expression.Constant("unexpected value")))
-					),
+				Expression.Block(ThrowUnexpectedValue(Expression.PropertyOrField(resultVar, SwitchField.MInfo.Name))),
 				cases.ToArray())
 			);
 
@@ -99,13 +95,22 @@ namespace Xdr.EmitContexts
 				.Compile();
 		}
 
-		private static SwitchCase BuildReadBranch(object key, FieldDesc fieldDesc, Expression resultVar, Expression pReader, LabelTarget exit)
+		private static Expression ThrowUnexpectedValue(MemberExpression value)
+		{
+			//throw new FormatException(string.Format("unexpected value: {0}", result.Type));
+
+			var strExpr = Expression.Call(typeof(string).GetMethod("Format", new Type[] { typeof(string), typeof(object) }),
+				Expression.Constant("unexpected value: {0}"),
+				Expression.Call(value, typeof(object).GetMethod("ToString")));
+			return Expression.Throw(Expression.New(typeof(FormatException).GetConstructor(new Type[] { typeof(string) }), strExpr));
+		}
+
+		private static SwitchCase BuildReadBranch(object key, FieldDesc fieldDesc, ParameterExpression resultVar, Expression pReader, LabelTarget exit)
 		{
 			List<Expression> body = new List<Expression>();
 			if (fieldDesc != null)
-				body.Add(Expression.Assign(
-					Expression.PropertyOrField(resultVar, fieldDesc.MInfo.Name),
-					fieldDesc.BuildRead(pReader)));
+				body.Add(fieldDesc.BuildAssign(fieldDesc.BuildRead(pReader), resultVar));
+					
 			body.Add(Expression.Break(exit));
 			return Expression.SwitchCase(Expression.Block(body), Expression.Constant(key));
 		}

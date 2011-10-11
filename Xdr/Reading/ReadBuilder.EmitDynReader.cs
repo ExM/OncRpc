@@ -27,17 +27,17 @@ namespace Xdr
 
 
 			EmitOverride_ReadTOne(typeBuilder, fb_mapperInstance);
-			EmitOverride_ReadTMany(typeBuilder, "ReadFix", _fixCacheDescription, fb_mapperInstance);
-			EmitOverride_ReadTMany(typeBuilder, "ReadVar", _varCacheDescription, fb_mapperInstance);
+			EmitOverride_ReadTMany(typeBuilder, "CacheReadFix", _fixCacheDescription, fb_mapperInstance);
+			EmitOverride_ReadTMany(typeBuilder, "CacheReadVar", _varCacheDescription, fb_mapperInstance);
 
 			return typeBuilder.CreateType();
 		}
 
 		private void EmitOverride_ReadTOne(TypeBuilder typeBuilder, FieldInfo mapperInstance)
 		{
-			MethodInfo miDeclaration = typeof(Reader).GetMethod("Read", BindingFlags.Public | BindingFlags.Instance);
+			MethodInfo miDeclaration = typeof(Reader).GetMethod("CacheRead", BindingFlags.NonPublic | BindingFlags.Instance);
 
-			MethodBuilder mb = typeBuilder.DefineMethod("Read", MethodAttributes.Public | MethodAttributes.Virtual);
+			MethodBuilder mb = typeBuilder.DefineMethod("CacheRead", MethodAttributes.Family | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
 			mb.SetReturnType(genTypeParam);
 			typeBuilder.DefineMethodOverride(mb, miDeclaration);
@@ -64,9 +64,9 @@ namespace Xdr
 
 		private static void EmitOverride_ReadTMany(TypeBuilder tb, string name, StaticCacheDescription readManyCacheDesc, FieldInfo mapperInstance)
 		{
-			MethodInfo miDeclaration = typeof(Reader).GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
-			
-			MethodBuilder mb = tb.DefineMethod(name, MethodAttributes.Public | MethodAttributes.Virtual);
+			MethodInfo miDeclaration = typeof(Reader).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+
+			MethodBuilder mb = tb.DefineMethod(name, MethodAttributes.Family | MethodAttributes.Virtual);
 			GenericTypeParameterBuilder genTypeParam = mb.DefineGenericParameters("T")[0];
 			mb.SetReturnType(genTypeParam);
 			mb.SetParameters(typeof(uint));

@@ -35,19 +35,42 @@ namespace Xdr.Example
 		public static FileType Read(Reader reader)
 		{
 			FileType result = new FileType();
-			result.Type = reader.Read<FileKind>();
+
+			try
+			{
+				result.Type = reader.Read<FileKind>();
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't read 'Type' field", ex);
+			}
+			
 			switch (result.Type)
 			{
 				case FileKind.Text:
 					break;
 				case FileKind.Data:
-					result.Creator = reader.ReadVar<string>(MaxNameLen);
+					try
+					{
+						result.Creator = reader.ReadVar<string>(MaxNameLen);
+					}
+					catch (SystemException ex)
+					{
+						throw new FormatException("can't read 'Creator' field", ex);
+					}
 					break;
 				case FileKind.Exec:
-					result.Interpretor = reader.ReadVar<string>(MaxNameLen);
+					try
+					{
+						result.Interpretor = reader.ReadVar<string>(MaxNameLen);
+					}
+					catch (SystemException ex)
+					{
+						throw new FormatException("can't read 'Interpretor' field", ex);
+					}
 					break;
 				default:
-					throw new InvalidOperationException("unexpected value");
+					throw new FormatException("unexpected value: " + result.Type.ToString());
 			}
 
 			return result;

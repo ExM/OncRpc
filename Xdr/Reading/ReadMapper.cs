@@ -49,7 +49,7 @@ namespace Xdr
 			if (val == 1)
 				return true;
 
-			throw new InvalidOperationException("unexpected value");
+			throw new InvalidOperationException("unexpected value: " + val.ToString());
 		}
 
 		private static byte[] ReadFixOpaque(Reader r, uint len)
@@ -63,11 +63,7 @@ namespace Xdr
 
 		private static byte[] ReadVarOpaque(Reader r, uint max)
 		{
-			uint len = XdrEncoding.DecodeUInt32(r.ByteReader);
-			if(len > max)
-				throw new InvalidOperationException("unexpected length");
-
-			return ReadFixOpaque(r, len);
+			return ReadFixOpaque(r, CheckedReadLength(r, max));
 		}
 		
 		private static string ReadString(Reader r, uint max)
@@ -198,10 +194,18 @@ namespace Xdr
 
 		public static T[] ReadFixArray<T>(Reader r, uint len)
 		{
-			T[] result = new T[len];
-			for (uint i = 0; i < len; i++)
-				result[i] = r.Read<T>();
-			return result;
+			uint i = 0;
+			try
+			{
+				T[] result = new T[len];
+				for (; i < len; i++)
+					result[i] = r.Read<T>();
+				return result;
+			}
+			catch (Exception ex)
+			{
+				throw new FormatException(string.Format("cant't read {0} item", i), ex);
+			}
 		}
 
 		public static Delegate CreateFixListReader(Type collectionType)
@@ -216,10 +220,18 @@ namespace Xdr
 
 		public static List<T> ReadFixList<T>(Reader r, uint len)
 		{
-			List<T> result = new List<T>();
-			for (uint i = 0; i < len; i++)
-				result.Add(r.Read<T>());
-			return result;
+			uint i = 0;
+			try
+			{
+				List<T> result = new List<T>();
+				for (; i < len; i++)
+					result.Add(r.Read<T>());
+				return result;
+			}
+			catch (Exception ex)
+			{
+				throw new FormatException(string.Format("cant't read {0} item", i), ex);
+			}
 		}
 
 		public static Delegate CreateEnumReader(Type targetType)
@@ -247,10 +259,27 @@ namespace Xdr
 
 		public static T? ReadNullable<T>(Reader reader) where T : struct
 		{
-			if (reader.Read<bool>())
-				return reader.Read<T>();
-			else
-				return null;
+			bool exist;
+			try
+			{
+				exist = reader.Read<bool>();
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("cant't read 'option'", ex);
+			}
+
+			try
+			{
+				if (exist)
+					return reader.Read<T>();
+				else
+					return null;
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("cant't read 'value'", ex);
+			}
 		}
 
 		public static Delegate CreateVarArrayReader(Type collectionType)
@@ -265,11 +294,7 @@ namespace Xdr
 
 		public static T[] ReadVarArray<T>(Reader r, uint max)
 		{
-			uint len = r.Read<uint>();
-			if (len > max)
-				throw new InvalidOperationException("unexpected Length");
-
-			return ReadFixArray<T>(r, len);
+			return ReadFixArray<T>(r, CheckedReadLength(r, max));
 		}
 
 		public static Delegate CreateVarListReader(Type collectionType)
@@ -284,11 +309,24 @@ namespace Xdr
 
 		public static List<T> ReadVarList<T>(Reader r, uint max)
 		{
-			uint len = r.Read<uint>();
-			if (len > max)
-				throw new InvalidOperationException("unexpected Length");
+			return ReadFixList<T>(r, CheckedReadLength(r, max));
+		}
 
-			return ReadFixList<T>(r, len);
+		private static uint CheckedReadLength(Reader r, uint max)
+		{
+			uint len;
+			try
+			{
+				len = XdrEncoding.DecodeUInt32(r.ByteReader);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("cant't read 'length'", ex);
+			}
+
+			if (len > max)
+				throw new FormatException("unexpected length: " + len.ToString());
+			return len;
 		}
 	}
 }

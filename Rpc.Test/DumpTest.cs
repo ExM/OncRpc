@@ -25,7 +25,10 @@ namespace Rpc
 			
 			
 			rpcblist_ptr list = r.Read<rpcblist_ptr>();
-			
+
+			//r.Read<bool>();
+			//rpcb rpcb = r.Read<rpcb>();
+
 		}
 		
 		byte[] inBuff = new byte[]{

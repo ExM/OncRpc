@@ -14,11 +14,47 @@ namespace Xdr
 			ByteReader = reader;
 		}
 
-		public abstract T Read<T>();
-		
-		public abstract T ReadFix<T>(uint len);
-		
-		public abstract T ReadVar<T>(uint max);
+		public T Read<T>()
+		{
+			try
+			{
+				return CacheRead<T>();
+			}
+			catch (SystemException ex)
+			{
+				throw MapException.ReadOne(typeof(T), ex);
+			}
+		}
+
+		protected abstract T CacheRead<T>();
+
+		public T ReadFix<T>(uint len)
+		{
+			try
+			{
+				return CacheReadFix<T>(len);
+			}
+			catch (SystemException ex)
+			{
+				throw MapException.ReadFix(typeof(T), len, ex);
+			}
+		}
+
+		protected abstract T CacheReadFix<T>(uint len);
+
+		public T ReadVar<T>(uint max)
+		{
+			try
+			{
+				return CacheReadVar<T>(max);
+			}
+			catch (SystemException ex)
+			{
+				throw MapException.ReadVar(typeof(T), max, ex);
+			}
+		}
+
+		protected abstract T CacheReadVar<T>(uint max);
 		
 		public T ReadOption<T>() where T: class
 		{

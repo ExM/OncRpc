@@ -9,7 +9,7 @@ namespace Xdr
 	[TestFixture]
 	public class EnumTest
 	{
-		[Test, ExpectedException(typeof(InvalidCastException))]
+		[Test, ExpectedException(typeof(MapException))]
 		public void ExceptionRead()
 		{
 			ByteReader s = new ByteReader(

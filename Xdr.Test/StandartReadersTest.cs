@@ -93,7 +93,7 @@ namespace Xdr
 			Assert.AreEqual(20, s.Position);
 		}
 
-		[Test, ExpectedException(typeof(NotImplementedException))]
+		[Test, ExpectedException(typeof(MapException))]
 		public void ReadObject()
 		{
 			ByteReader s = new ByteReader();

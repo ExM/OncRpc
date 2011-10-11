@@ -54,6 +54,7 @@
     <Compile Include="Emit\ErrorStub_1.cs" />
     <Compile Include="Emit\StaticCacheDescription.cs" />
     <Compile Include="EnumHelper_1.cs" />
+    <Compile Include="Exceptions\MapException.cs" />
     <Compile Include="IByteReader.cs" />
     <Compile Include="IByteWriter.cs" />
     <Compile Include="OpaqueType.cs" />

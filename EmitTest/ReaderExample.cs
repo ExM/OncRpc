@@ -13,22 +13,22 @@ namespace EmitTest
 		public ReaderExample(IByteReader r): base(r)
 		{
 		}
-		
-		public override T Read<T> ()
+
+		protected override T CacheRead<T>()
 		{
-			if(OneCache<T>.Instance == null)
+			if (OneCache<T>.Instance == null)
 				MapperInstance.BuildCaches();
 			return OneCache<T>.Instance(this);
 		}
 
-		public override T ReadFix<T> (uint len)
+		protected override T CacheReadFix<T>(uint len)
 		{
-			throw new NotImplementedException ();
+			throw new NotImplementedException();
 		}
 
-		public override T ReadVar<T> (uint max)
+		protected override T CacheReadVar<T>(uint max)
 		{
-			throw new NotImplementedException ();
+			throw new NotImplementedException();
 		}
 	}
 }

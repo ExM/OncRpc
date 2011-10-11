@@ -83,6 +83,11 @@ namespace Xdr.EmitContexts
 				return Expression.Call(pReader, typeof(Reader).GetMethod(_isOption ? "ReadOption" : "Read").MakeGenericMethod(FieldType));
 		}
 
+		internal Expression BuildReadOne(Expression pReader)
+		{
+			return Expression.Call(pReader, typeof(Reader).GetMethod("Read").MakeGenericMethod(FieldType));
+		}
+
 		internal Expression BuildWrite(Expression pWriter, Expression pItem)
 		{
 			Expression field = Expression.PropertyOrField(pItem, MInfo.Name);
@@ -90,6 +95,20 @@ namespace Xdr.EmitContexts
 				return Expression.Call(pWriter, typeof(Writer).GetMethod(_isFix ? "WriteFix" : "WriteVar").MakeGenericMethod(FieldType), Expression.Constant(_len), field);
 			else
 				return Expression.Call(pWriter, typeof(Writer).GetMethod(_isOption ? "WriteOption" : "Write").MakeGenericMethod(FieldType), field);
+		}
+
+		internal Expression BuildAssign(Expression readed, ParameterExpression result)
+		{
+			var inTryBody = Expression.Assign(Expression.PropertyOrField(result, MInfo.Name), readed);
+
+			var exParam = Expression.Parameter(typeof(SystemException), "ex");
+			var inCatchBody = Expression.Throw(Expression.New(
+				typeof(FormatException).GetConstructor(new Type[] { typeof(string), typeof(Exception) }),
+				Expression.Constant("can't read '" + MInfo.Name + "' field"), exParam));
+
+			return Expression.TryCatch(
+				Expression.Block(typeof(void), inTryBody),
+				Expression.Catch(exParam, inCatchBody));
 		}
 	}
 }

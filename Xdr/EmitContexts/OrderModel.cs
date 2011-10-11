@@ -27,10 +27,7 @@ namespace Xdr.EmitContexts
 
 			foreach (var fieldDesc in Fields)
 			{
-
-				body.Add(Expression.Assign(
-					Expression.PropertyOrField(resultVar, fieldDesc.MInfo.Name),
-					fieldDesc.BuildRead(pReader)));
+				body.Add(fieldDesc.BuildAssign(fieldDesc.BuildRead(pReader), resultVar));
 			}
 
 			body.Add(resultVar);

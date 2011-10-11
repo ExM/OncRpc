@@ -50,10 +50,42 @@ namespace Xdr.Example
 		public static CompleteFile Read(Reader reader)
 		{
 			CompleteFile result = new CompleteFile();
-			result.FileName = reader.ReadVar<string>(MaxNameLen);
-			result.Type = reader.Read<FileType>();
-			result.Owner = reader.ReadVar<string>(MaxUserName);
-			result.Data = reader.ReadVar<byte[]>(MaxFileLen);
+			
+			try
+			{
+				result.FileName = reader.ReadVar<string>(MaxNameLen);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't read 'FileName' field", ex);
+			}
+			
+			try
+			{
+				result.Type = reader.Read<FileType>();
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't read 'Type' field", ex);
+			}
+
+			try
+			{
+				result.Owner = reader.ReadVar<string>(MaxUserName);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't read 'Owner' field", ex);
+			}
+
+			try
+			{
+				result.Data = reader.ReadVar<byte[]>(MaxFileLen);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't read 'Data' field", ex);
+			}
 			return result;
 		}
 		
