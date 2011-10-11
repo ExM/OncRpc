@@ -22,6 +22,7 @@ namespace Xdr
 		
 		protected void Init()
 		{
+			SetOne<Void>((w, i) => { });
 			SetOne<int>((w, i) => XdrEncoding.EncodeInt32(i, w.ByteWriter));
 			SetOne<uint>((w, i) => XdrEncoding.EncodeUInt32(i, w.ByteWriter));
 			SetOne<long>((w, i) => XdrEncoding.EncodeInt64(i, w.ByteWriter));

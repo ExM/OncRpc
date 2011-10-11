@@ -64,6 +64,7 @@
     <Compile Include="Reading\Reader.cs" />
     <Compile Include="Reading\ReadMapper.cs" />
     <Compile Include="TypeExtensions.cs" />
+    <Compile Include="Void.cs" />
     <Compile Include="Writing\WriteBuilder.cs" />
     <Compile Include="Writing\WriteBuilder.EmitDynWriteMapper.cs" />
     <Compile Include="Writing\WriteBuilder.EmitDynWriter.cs" />
