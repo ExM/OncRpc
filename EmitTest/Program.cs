@@ -17,25 +17,17 @@ namespace EmitTest
 	{
 		static void Main(string[] args)
 		{
-			
-			
-			
-			
-			
 			rpc_msg msg = new rpc_msg();
 			msg.xid = 123;
-			msg.body = new rpc_msg.body_union();
+			msg.body = new body();
 			msg.body.mtype = msg_type.CALL;
 			msg.body.cbody = new call_body();
 			msg.body.cbody.rpcvers = 2;
 			msg.body.cbody.prog = 100000;
 			msg.body.cbody.proc = 4;
 			msg.body.cbody.vers = 4;
-			msg.body.cbody.cred = new opaque_auth();
-			msg.body.cbody.cred.flavor = auth_flavor.AUTH_NONE;
-			msg.body.cbody.cred.body = new byte[0];
-			msg.body.cbody.verf = msg.body.cbody.cred;
-			
+			msg.body.cbody.cred = opaque_auth.None;
+			msg.body.cbody.verf = opaque_auth.None;
 			
 			
 			ByteWriter bw = new ByteWriter();
