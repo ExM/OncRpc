@@ -23,7 +23,6 @@ namespace Rpc
 			Assert.AreEqual(123, resp.xid);
 			
 			
-			
 			rpcblist_ptr list = r.Read<rpcblist_ptr>();
 
 			//r.Read<bool>();

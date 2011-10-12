@@ -19,7 +19,7 @@ namespace EmitTest
 		{
 			
 			var conn = new SyncUdpConnector(new ReadBuilder(), new WriteBuilder(),
-				new IPEndPoint(IPAddress.Loopback, 111));
+				new IPEndPoint(IPAddress.Loopback, 111), 2000);
 
 			var client = new PortMapper(conn);
 

@@ -23,12 +23,13 @@ namespace Rpc
 		/// <param name="rb"></param>
 		/// <param name="wb"></param>
 		/// <param name="ep"></param>
-		public SyncUdpConnector(ReadBuilder rb, WriteBuilder wb, IPEndPoint ep)
+		public SyncUdpConnector(ReadBuilder rb, WriteBuilder wb, IPEndPoint ep, int timeout)
 		{
 			_rb = rb;
 			_wb = wb;
 			_ep = ep;
 			_client = new UdpClient(ep.AddressFamily);
+			_client.Client.ReceiveTimeout = timeout;
 		}
 
 		/// <summary>
@@ -36,32 +37,42 @@ namespace Rpc
 		/// </summary>
 		/// <typeparam name="TReq"></typeparam>
 		/// <typeparam name="TResp"></typeparam>
-		/// <param name="header"></param>
-		/// <param name="request"></param>
+		/// <param name="reqHeader"></param>
+		/// <param name="reqArgs"></param>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		public void Request<TReq, TResp>(rpc_msg header, TReq request, Action<TResp> completed, Action<Exception> excepted)
+		public void Request<TReq, TResp>(rpc_msg reqHeader, TReq reqArgs, Action<TResp> completed, Action<Exception> excepted)
 		{
 			Exception resEx = null;
 			TResp respArgs = default(TResp);
 			try
 			{
+				reqHeader.xid = 0xF1E2D3C4;
+				
 				UdpDatagram dtg = new UdpDatagram();
 				Writer w = _wb.Create(dtg);
-				w.Write(header);
-				w.Write(request);
+				w.Write(reqHeader);
+				w.Write(reqArgs);
 
 				byte[] outBuff = dtg.ToArray();
 
 				_client.Send(outBuff, outBuff.Length, _ep);
-				IPEndPoint ep = _ep;
-				byte[] inBuff = _client.Receive(ref ep); //TODO: add time out
-
-				MessageReader br = new MessageReader(inBuff);
-				Reader r = _rb.Create(br);
-
-				rpc_msg respMsg = r.Read<rpc_msg>();
-
+				MessageReader br;
+				rpc_msg respMsg;
+				Reader r;
+				while(true)
+				{
+					IPEndPoint ep = _ep;
+					byte[] inBuff = _client.Receive(ref ep); //TODO: calc sum time out
+	
+					br = new MessageReader(inBuff);
+					r = _rb.Create(br);
+	
+					respMsg = r.Read<rpc_msg>();
+					if(respMsg.xid == reqHeader.xid)
+						break;
+				}
+				
 				resEx = Toolkit.ReplyMessageValidate(respMsg);
 				if (resEx == null)
 				{
