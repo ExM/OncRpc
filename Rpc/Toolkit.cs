@@ -41,6 +41,28 @@ namespace Rpc
 			return _rb.Create(reader);
 		}
 
+		public static string ToDisplay(this byte[] buffer)
+		{
+			// example:
+			// 12345678-12345678-12345678-12345678-12345678-12345678-12345678-12345678 12345678-1234...
+
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < buffer.Length; i++)
+			{
+				if (i % 4 == 0)
+				{
+					if (i % 32 == 0)
+						sb.AppendLine();
+					else
+						sb.Append(' ');
+				}
+
+				sb.Append(buffer[i].ToString("X2"));
+			}
+
+			return sb.ToString();
+		}
+
 		/// <summary>
 		/// returns the description of the RPC message
 		/// </summary>

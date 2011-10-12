@@ -5,6 +5,7 @@ using Xdr;
 using System.Net.Sockets;
 using System.Net;
 using System.Diagnostics;
+using NLog;
 
 namespace Rpc
 {
@@ -13,6 +14,8 @@ namespace Rpc
 	/// </summary>
 	public class SyncUdpConnector: IConnector
 	{
+		private static Logger Log = LogManager.GetCurrentClassLogger();
+
 		private UdpClient _client;
 		private IPEndPoint _ep;
 		private int _timeout;
@@ -24,6 +27,7 @@ namespace Rpc
 		/// <param name="timeout"></param>
 		public SyncUdpConnector(IPEndPoint ep, int timeout)
 		{
+			Log.Info("create connector from {0} (to: {1} ms)", ep, timeout);
 			_ep = ep;
 			_client = new UdpClient(ep.AddressFamily);
 			_timeout = timeout;
@@ -62,6 +66,8 @@ namespace Rpc
 
 				byte[] outBuff = dtg.ToArray();
 
+				Log.Trace(() => "sending byte dump: " + outBuff.ToDisplay());
+
 				_client.Send(outBuff, outBuff.Length, _ep);
 				MessageReader mr = new MessageReader();
 				Reader r = Toolkit.CreateReader(mr);
@@ -74,7 +80,7 @@ namespace Rpc
 				while(true)
 				{
 					IPEndPoint ep = _ep;
-					mr.SetBuffer(_client.Receive(ref ep));
+					mr.Bytes = _client.Receive(ref ep);
 
 					respMsg = r.Read<rpc_msg>();
 					if(respMsg.xid == reqHeader.xid)
@@ -87,7 +93,9 @@ namespace Rpc
 					else
 						_client.Client.ReceiveTimeout = nextTimeout;
 				}
-				
+
+				Log.Trace(() => "received byte dump: " + mr.Bytes.ToDisplay());
+
 				resEx = Toolkit.ReplyMessageValidate(respMsg);
 				if (resEx == null)
 				{

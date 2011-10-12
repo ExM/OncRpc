@@ -22,10 +22,7 @@ namespace Xdr
 		
 		protected void Init()
 		{
-			/// <summary>
-			/// Decodes the Int32.
-			/// http://tools.ietf.org/html/rfc4506#section-4.1
-			/// </summary>
+			SetOne<Void>((r) => new Xdr.Void());
 			SetOne<int>((r) => XdrEncoding.DecodeInt32(r.ByteReader));
 			SetOne<uint>((r) => XdrEncoding.DecodeUInt32(r.ByteReader));
 			SetOne<long>((r) => XdrEncoding.DecodeInt64(r.ByteReader));

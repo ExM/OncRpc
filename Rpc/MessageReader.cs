@@ -10,7 +10,14 @@ namespace Rpc
 	public class MessageReader: IByteReader
 	{
 		private uint _pos = 0;
-		private byte[] _bytes;
+		private byte[] _bytes = null;
+
+		/// <summary>
+		/// parser of RPC message
+		/// </summary>
+		public MessageReader()
+		{
+		}
 
 		/// <summary>
 		/// parser of RPC message
@@ -22,13 +29,19 @@ namespace Rpc
 		}
 
 		/// <summary>
-		/// Set new buffer
+		/// Inner byte array
 		/// </summary>
-		/// <param name="bytes"></param>
-		public void SetBuffer(byte[] bytes)
+		public byte[] Bytes
 		{
-			_bytes = bytes;
-			_pos = 0;
+			get
+			{
+				return _bytes;
+			}
+			set
+			{
+				_bytes = value;
+				_pos = 0;
+			}
 		}
 
 		/// <summary>
