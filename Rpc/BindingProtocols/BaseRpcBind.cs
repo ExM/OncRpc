@@ -68,7 +68,7 @@ namespace Rpc.BindingProtocols
 		/// </summary>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		public void Dump(Action<rpcblist_ptr> completed, Action<Exception> excepted)
+		public void Dump(Action<List<rpcb>> completed, Action<Exception> excepted)
 		{
 			Request(4u, new Xdr.Void(), completed, excepted);
 		}

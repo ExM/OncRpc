@@ -35,7 +35,7 @@ namespace Xdr
 			SetVar<string>(WriteString);
 
 			_builders.Add(OpaqueType.One,
-				new Func<Type, Delegate>[] { CreateEnumWriter, CreateNullableWriter , EmitContext.GetWriter });
+				new Func<Type, Delegate>[] { CreateEnumWriter, CreateNullableWriter, CreateLinkedListWriter, EmitContext.GetWriter });
 			_builders.Add(OpaqueType.Fix,
 				new Func<Type, Delegate>[] { CreateFixArrayWriter, CreateFixListWriter });
 			_builders.Add(OpaqueType.Var,
@@ -238,6 +238,33 @@ namespace Xdr
 			}
 		}
 
+		public static Delegate CreateLinkedListWriter(Type collectionType)
+		{
+			Type itemType = collectionType.ListSubType();
+			if (itemType == null)
+				return null;
+
+			MethodInfo mi = typeof(WriteMapper).GetMethod("WriteLinkedList").MakeGenericMethod(itemType);
+			return Delegate.CreateDelegate(typeof(WriteOneDelegate<>).MakeGenericType(collectionType), mi);
+		}
+
+		public static void WriteLinkedList<T>(Writer w, List<T> val)
+		{
+			for (int i = 0; i < val.Count; i++)
+			{
+				WriteOption(w, true);
+				try
+				{
+					w.Write<T>(val[i]);
+				}
+				catch (SystemException ex)
+				{
+					throw new FormatException(string.Format("can't write {0} item", i), ex);
+				}
+			}
+			WriteOption(w, false);
+		}
+
 		public static Delegate CreateFixListWriter(Type collectionType)
 		{
 			Type itemType = collectionType.ListSubType();
@@ -290,14 +317,7 @@ namespace Xdr
 
 		public static void WriteNullable<T>(Writer writer, T? val) where T : struct
 		{
-			try
-			{
-				writer.Write<bool>(val.HasValue);
-			}
-			catch (SystemException ex)
-			{
-				throw new FormatException("can't write option", ex);
-			}
+			WriteOption(writer, val.HasValue);
 
 			if (!val.HasValue)
 				return;
@@ -309,6 +329,18 @@ namespace Xdr
 			catch (SystemException ex)
 			{
 				throw new FormatException("can't write value", ex);
+			}
+		}
+
+		private static void WriteOption(Writer writer, bool val)
+		{
+			try
+			{
+				writer.Write<bool>(val);
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("can't write option", ex);
 			}
 		}
 

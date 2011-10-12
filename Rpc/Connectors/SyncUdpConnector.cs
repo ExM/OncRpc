@@ -23,6 +23,7 @@ namespace Rpc
 		/// <param name="rb"></param>
 		/// <param name="wb"></param>
 		/// <param name="ep"></param>
+		/// <param name="timeout"></param>
 		public SyncUdpConnector(ReadBuilder rb, WriteBuilder wb, IPEndPoint ep, int timeout)
 		{
 			_rb = rb;

@@ -28,11 +28,11 @@ namespace Rpc.BindingProtocols
 		/// fixme: missing comment
 		/// </summary>
 		[Order(3), Option]
-		public rpcbs_addrlist addrinfo;
+		public rpcbs_addrlist addrinfo; //TODO: convert type to List<rpcbs_addr>
 		/// <summary>
 		/// fixme: missing comment
 		/// </summary>
 		[Order(4), Option]
-		public rpcbs_rmtcalllist rmtinfo;
+		public rpcbs_rmtcalllist rmtinfo;  //TODO: convert type to List<rpcbs_rmtcall>
 	};
 }

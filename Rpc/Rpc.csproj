@@ -41,8 +41,6 @@
     <Compile Include="BindingProtocols\call_args.cs" />
     <Compile Include="BindingProtocols\call_result.cs" />
     <Compile Include="BindingProtocols\PortMapperProtocol.cs" />
-    <Compile Include="BindingProtocols\pmaplist_ptr.cs" />
-    <Compile Include="BindingProtocols\pmaplist.cs" />
     <Compile Include="BindingProtocols\mapping.cs" />
     <Compile Include="BindingProtocols\PortMapper.cs" />
     <Compile Include="BindingProtocols\RpcBindV3.cs" />
@@ -54,12 +52,9 @@
     <Compile Include="BindingProtocols\rpcb_stat.cs" />
     <Compile Include="BindingProtocols\rpcb_stat_byvers.cs" />
     <Compile Include="BindingProtocols\netbuf.cs" />
-    <Compile Include="BindingProtocols\rpcb_entry_list.cs" />
     <Compile Include="BindingProtocols\rpcb_entry.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallres.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
-    <Compile Include="BindingProtocols\rpcblist_ptr.cs" />
-    <Compile Include="BindingProtocols\rp__list.cs" />
     <Compile Include="UdpDatagram.cs" />
     <Compile Include="Exceptions\AuthenticateException.cs" />
     <Compile Include="Exceptions\ReplyException.cs" />
@@ -80,7 +75,6 @@
     <Compile Include="MessageProtocol\auth_flavor.cs" />
     <Compile Include="MessageProtocol\opaque_auth.cs" />
     <Compile Include="BindingProtocols\rpcb.cs" />
-    <Compile Include="BindingProtocols\rpcb_entry_list_ptr.cs" />
     <Compile Include="BindingProtocols\BindingProtocol.cs" />
     <Compile Include="MessageReader.cs" />
     <Compile Include="BindingProtocols\RpcBindV4.cs" />

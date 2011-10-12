@@ -25,14 +25,8 @@ namespace EmitTest
 
 			client.Dump((t) =>
 			{
-				pmaplist item = t.next;
-
-				while (item != null)
-				{
-					Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}",
-						item.map.port, item.map.prog, item.map.prot, item.map.vers);
-					item = item.next;
-				}
+				foreach(var m in t)
+					Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}", m.port, m.prog, m.prot, m.vers);
 			}, (e) => Console.WriteLine(e));
 
 			var client2 = new RpcBindV4(conn);

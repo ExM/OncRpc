@@ -21,13 +21,16 @@ namespace Rpc
 			
 			Assert.AreEqual(24, br.Position);
 			Assert.AreEqual(123, resp.xid);
-			
-			
-			rpcblist_ptr list = r.Read<rpcblist_ptr>();
 
-			//r.Read<bool>();
-			//rpcb rpcb = r.Read<rpcb>();
 
+			List<rpcb> list = r.Read<List<rpcb>>();
+			Assert.AreEqual(60, list.Count);
+
+			//foreach(var item in list)
+			//	Console.WriteLine("addr:{0} netid:{1} owner:{2} prog:{3} vers:{4}",
+			//		item.r_addr, item.r_netid, item.r_owner, item.r_prog, item.r_vers);
+
+			br.CheckEmpty();
 		}
 		
 		byte[] inBuff = new byte[]{

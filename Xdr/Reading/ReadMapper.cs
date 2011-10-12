@@ -38,7 +38,7 @@ namespace Xdr
 			SetVar<string>(ReadString);
 
 			_builders.Add(OpaqueType.One,
-				new Func<Type, Delegate>[] { CreateEnumReader, CreateNullableReader , EmitContext.GetReader });
+				new Func<Type, Delegate>[] { CreateEnumReader, CreateNullableReader, CreateLinkedListReader, EmitContext.GetReader });
 			_builders.Add(OpaqueType.Fix,
 				new Func<Type, Delegate>[] { CreateFixArrayReader, CreateFixListReader });
 			_builders.Add(OpaqueType.Var,
@@ -212,6 +212,35 @@ namespace Xdr
 			}
 		}
 
+		public static Delegate CreateLinkedListReader(Type collectionType)
+		{
+			Type itemType = collectionType.ListSubType();
+			if (itemType == null)
+				return null;
+
+			MethodInfo mi = typeof(ReadMapper).GetMethod("ReadLinkedList").MakeGenericMethod(itemType);
+			return Delegate.CreateDelegate(typeof(ReadOneDelegate<>).MakeGenericType(collectionType), mi);
+		}
+
+		public static List<T> ReadLinkedList<T>(Reader r)
+		{
+			List<T> result = new List<T>();
+
+			while(ReadOption(r))
+			{
+				try
+				{
+					result.Add(r.Read<T>());
+				}
+				catch (Exception ex)
+				{
+					throw new FormatException(string.Format("cant't read {0} item", result.Count + 1), ex);
+				}
+			}
+
+			return result;
+		}
+
 		public static Delegate CreateFixListReader(Type collectionType)
 		{
 			Type itemType = collectionType.ListSubType();
@@ -263,15 +292,7 @@ namespace Xdr
 
 		public static T? ReadNullable<T>(Reader reader) where T : struct
 		{
-			bool exist;
-			try
-			{
-				exist = reader.Read<bool>();
-			}
-			catch (SystemException ex)
-			{
-				throw new FormatException("cant't read 'option'", ex);
-			}
+			bool exist = ReadOption(reader);
 
 			try
 			{
@@ -283,6 +304,18 @@ namespace Xdr
 			catch (SystemException ex)
 			{
 				throw new FormatException("cant't read 'value'", ex);
+			}
+		}
+
+		private static bool ReadOption(Reader reader)
+		{
+			try
+			{
+				return reader.Read<bool>();
+			}
+			catch (SystemException ex)
+			{
+				throw new FormatException("cant't read 'option'", ex);
 			}
 		}
 

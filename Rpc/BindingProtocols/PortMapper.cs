@@ -80,7 +80,7 @@ namespace Rpc.BindingProtocols
 		/// </summary>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		public void Dump(Action<pmaplist_ptr> completed, Action<Exception> excepted)
+		public void Dump(Action<List<mapping>> completed, Action<Exception> excepted)
 		{
 			Request(4u, new Xdr.Void(), completed, excepted);
 		}

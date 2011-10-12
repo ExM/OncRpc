@@ -72,7 +72,7 @@ namespace Rpc.BindingProtocols
 		/// <param name="arg"></param>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		public void GetAddrList(rpcb arg, Action<rpcb_entry_list_ptr> completed, Action<Exception> excepted)
+		public void GetAddrList(rpcb arg, Action<List<rpcb_entry>> completed, Action<Exception> excepted)
 		{
 			Request(11u, arg, completed, excepted);
 		}
