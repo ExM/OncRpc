@@ -14,12 +14,12 @@ namespace Rpc
 		[Test]
 		public void ReadList()
 		{
-			MessageReader br = new MessageReader(inBuff);
-			Reader r = new ReadBuilder().Create(br);
+			MessageReader mr = new MessageReader(inBuff);
+			Reader r = Toolkit.CreateReader(mr);
 			
 			rpc_msg resp = r.Read<rpc_msg>();
-			
-			Assert.AreEqual(24, br.Position);
+
+			Assert.AreEqual(24, mr.Position);
 			Assert.AreEqual(123, resp.xid);
 
 
@@ -30,7 +30,7 @@ namespace Rpc
 			//	Console.WriteLine("addr:{0} netid:{1} owner:{2} prog:{3} vers:{4}",
 			//		item.r_addr, item.r_netid, item.r_owner, item.r_prog, item.r_vers);
 
-			br.CheckEmpty();
+			mr.CheckEmpty();
 		}
 		
 		byte[] inBuff = new byte[]{

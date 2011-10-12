@@ -11,20 +11,9 @@ namespace Rpc.BindingProtocols
 	/// </summary>
 	public abstract class BaseOperation
 	{
-		/// <summary>
-		/// program number
-		/// </summary>
-		protected const uint Program = 100000u;
-
-		/// <summary>
-		/// data exchange
-		/// </summary>
-		protected IConnector _conn;
-
-		/// <summary>
-		/// version number
-		/// </summary>
-		protected uint _version;
+		private const uint Program = 100000u;
+		private IConnector _conn;
+		private uint _version;
 
 		internal BaseOperation(uint vers, IConnector conn)
 		{
@@ -32,21 +21,17 @@ namespace Rpc.BindingProtocols
 			_conn = conn;
 		}
 
-		private rpc_msg CreateHeader(uint proc)
+		private call_body CreateHeader(uint procNum)
 		{
-			rpc_msg msg = new rpc_msg();
-			msg.xid = 0;
-			msg.body = new body();
-			msg.body.mtype = msg_type.CALL;
-			msg.body.cbody = new call_body();
-			msg.body.cbody.rpcvers = 2;
-			msg.body.cbody.prog = Program;
-			msg.body.cbody.proc = proc;
-			msg.body.cbody.vers = _version;
-			msg.body.cbody.cred = opaque_auth.None;
-			msg.body.cbody.verf = opaque_auth.None;
-			
-			return msg;
+			return new call_body()
+			{
+				rpcvers = 2,
+				prog = Program,
+				proc = procNum,
+				vers = _version,
+				cred = opaque_auth.None,
+				verf = opaque_auth.None
+			};
 		}
 
 		/// <summary>

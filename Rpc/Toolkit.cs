@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Rpc.MessageProtocol;
+using Xdr;
 
 namespace Rpc
 {
@@ -11,6 +12,35 @@ namespace Rpc
 	/// </summary>
 	public static class Toolkit
 	{
+		private static readonly WriteBuilder _wb;
+		private static readonly ReadBuilder _rb;
+
+		static Toolkit()
+		{
+			_wb = new WriteBuilder();
+			_rb = new ReadBuilder();
+		}
+
+		/// <summary>
+		/// create writer configured for RPC protocol
+		/// </summary>
+		/// <param name="writer"></param>
+		/// <returns></returns>
+		public static Writer CreateWriter(IByteWriter writer)
+		{
+			return _wb.Create(writer);
+		}
+
+		/// <summary>
+		/// create reader configured for RPC protocol
+		/// </summary>
+		/// <param name="reader"></param>
+		/// <returns></returns>
+		public static Reader CreateReader(IByteReader reader)
+		{
+			return _rb.Create(reader);
+		}
+
 		/// <summary>
 		/// returns the description of the RPC message
 		/// </summary>

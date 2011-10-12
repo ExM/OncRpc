@@ -13,11 +13,11 @@ namespace Rpc
 		/// </summary>
 		/// <typeparam name="TReq"></typeparam>
 		/// <typeparam name="TResp"></typeparam>
-		/// <param name="header"></param>
+		/// <param name="callBody"></param>
 		/// <param name="request"></param>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		void Request<TReq, TResp>(rpc_msg header, TReq request, Action<TResp> completed, Action<Exception> excepted);
+		void Request<TReq, TResp>(call_body callBody, TReq request, Action<TResp> completed, Action<Exception> excepted);
 	}
 }
 

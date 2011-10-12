@@ -22,6 +22,16 @@ namespace Rpc
 		}
 
 		/// <summary>
+		/// Set new buffer
+		/// </summary>
+		/// <param name="bytes"></param>
+		public void SetBuffer(byte[] bytes)
+		{
+			_bytes = bytes;
+			_pos = 0;
+		}
+
+		/// <summary>
 		/// current position in byte array
 		/// </summary>
 		public uint Position

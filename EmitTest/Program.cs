@@ -18,8 +18,8 @@ namespace EmitTest
 		static void Main(string[] args)
 		{
 			
-			var conn = new SyncUdpConnector(new ReadBuilder(), new WriteBuilder(),
-				new IPEndPoint(IPAddress.Loopback, 111), 2000);
+			var conn = new SyncUdpConnector(new IPEndPoint(IPAddress.Loopback, 111), 2000);
+
 
 			var client = new PortMapper(conn);
 
@@ -28,6 +28,7 @@ namespace EmitTest
 				foreach(var m in t)
 					Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}", m.port, m.prog, m.prot, m.vers);
 			}, (e) => Console.WriteLine(e));
+
 
 			var client2 = new RpcBindV4(conn);
 
