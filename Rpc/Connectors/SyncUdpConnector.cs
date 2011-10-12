@@ -4,6 +4,7 @@ using Rpc.MessageProtocol;
 using Xdr;
 using System.Net.Sockets;
 using System.Net;
+using System.Diagnostics;
 
 namespace Rpc
 {
@@ -16,6 +17,7 @@ namespace Rpc
 		private ReadBuilder _rb;
 		private UdpClient _client;
 		private IPEndPoint _ep;
+		private int _timeout;
 
 		/// <summary>
 		/// connector on the UDP with a synchronous query execution
@@ -30,7 +32,7 @@ namespace Rpc
 			_wb = wb;
 			_ep = ep;
 			_client = new UdpClient(ep.AddressFamily);
-			_client.Client.ReceiveTimeout = timeout;
+			_timeout = timeout;
 		}
 
 		/// <summary>
@@ -61,6 +63,10 @@ namespace Rpc
 				MessageReader br;
 				rpc_msg respMsg;
 				Reader r;
+
+				long endTime = Stopwatch.GetTimestamp() + _timeout * System.Diagnostics.Stopwatch.Frequency / 1000;
+				_client.Client.ReceiveTimeout = _timeout;
+
 				while(true)
 				{
 					IPEndPoint ep = _ep;
@@ -72,6 +78,13 @@ namespace Rpc
 					respMsg = r.Read<rpc_msg>();
 					if(respMsg.xid == reqHeader.xid)
 						break;
+
+					int nextTimeout = (int)((double)((endTime - Stopwatch.GetTimestamp()) * 1000) / Stopwatch.Frequency);
+
+					if (nextTimeout <= 0)
+						throw new SocketException((int)SocketError.TimedOut);
+					else
+						_client.Client.ReceiveTimeout = nextTimeout;
 				}
 				
 				resEx = Toolkit.ReplyMessageValidate(respMsg);
