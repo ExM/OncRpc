@@ -1,0 +1,11 @@
+﻿NLog is a free logging platform for .NET
+
+Site:
+ http://nlog-project.org/
+
+Download page:
+ http://nlog.codeplex.com/releases/view/32639
+ 
+Current version 2.0
+File 'NLog2.netfx40.zip' downloaded from:
+ http://download.codeplex.com/Download?ProjectName=nlog&DownloadId=259968&FileTime=129554469856900000&Build=18207
