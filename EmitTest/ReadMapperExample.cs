@@ -14,7 +14,9 @@ namespace EmitTest
 		
 		public ReadMapperExample()
 		{
-			
+			_oneCacheType = null;
+			_fixCacheType = null;
+			_varCacheType = null;
 		}
 
 		protected override Type GetOneCacheType ()
@@ -31,6 +33,5 @@ namespace EmitTest
 		{
 			return _varCacheType;
 		}
-		
 	}
 }

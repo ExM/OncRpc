@@ -59,6 +59,8 @@
     <Compile Include="BindingProtocols\rpcb_entry.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallres.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
+    <Compile Include="Connectors\AsyncUdpConnector.cs" />
+    <Compile Include="Connectors\UdpReceivedHandler.cs" />
     <Compile Include="UdpDatagram.cs" />
     <Compile Include="Exceptions\AuthenticateException.cs" />
     <Compile Include="Exceptions\ReplyException.cs" />

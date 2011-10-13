@@ -13,7 +13,7 @@ namespace EmitTest
 	
 	public static class OneCache<T>
 	{
-		public static ReadOneDelegate<T> Instance;
+		public static volatile ReadOneDelegate<T> Instance;
 		
 		static OneCache()
 		{
