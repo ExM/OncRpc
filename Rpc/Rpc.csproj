@@ -51,8 +51,8 @@
     <Compile Include="BindingProtocols\TransportSemantics.cs" />
     <Compile Include="BindingProtocols\ProtocolName.cs" />
     <Compile Include="BindingProtocols\ProtocolFamily.cs" />
-    <Compile Include="BindingProtocols\rpcbs_addrlist.cs" />
-    <Compile Include="BindingProtocols\rpcbs_rmtcalllist.cs" />
+    <Compile Include="BindingProtocols\rpcbs_addr.cs" />
+    <Compile Include="BindingProtocols\rpcbs_rmtcall.cs" />
     <Compile Include="BindingProtocols\rpcb_stat.cs" />
     <Compile Include="BindingProtocols\rpcb_stat_byvers.cs" />
     <Compile Include="BindingProtocols\netbuf.cs" />
@@ -79,7 +79,6 @@
     <Compile Include="MessageProtocol\auth_flavor.cs" />
     <Compile Include="MessageProtocol\opaque_auth.cs" />
     <Compile Include="BindingProtocols\rpcb.cs" />
-    <Compile Include="BindingProtocols\BindingProtocol.cs" />
     <Compile Include="MessageReader.cs" />
     <Compile Include="BindingProtocols\RpcBindV4.cs" />
     <Compile Include="IConnector.cs" />

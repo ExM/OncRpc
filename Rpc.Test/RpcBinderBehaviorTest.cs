@@ -33,8 +33,6 @@ namespace Rpc
 			var conn = new SyncUdpConnector(Config.PortMapperAddr, 2000);
 			var client = new RpcBindV4(conn);
 			
-			rpcb_stat_byvers res = null;
-			
 			client.GetStat((stats) =>
 			{
 				Assert.IsNotNull(stats);

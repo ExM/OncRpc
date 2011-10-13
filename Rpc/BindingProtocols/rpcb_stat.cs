@@ -1,5 +1,6 @@
 using System;
 using Xdr;
+using System.Collections.Generic;
 
 namespace Rpc.BindingProtocols
 {
@@ -10,9 +11,14 @@ namespace Rpc.BindingProtocols
 	public class rpcb_stat
 	{
 		/// <summary>
-		/// fixme: missing comment
+		/// # of procs in rpcbind V4 plus one
 		/// </summary>
-		[Order(0), Fix(BindingProtocol.RPCBSTAT_HIGHPROC)]
+		public const uint RPCBSTAT_HIGHPROC = 13;
+
+		/// <summary>
+		/// number of procedure calls by numbers
+		/// </summary>
+		[Order(0), Fix(RPCBSTAT_HIGHPROC)]
 		public int[] info;
 		/// <summary>
 		/// fixme: missing comment
@@ -25,14 +31,14 @@ namespace Rpc.BindingProtocols
 		[Order(2)]
 		public int unsetinfo;
 		/// <summary>
-		/// fixme: missing comment
+		/// list of all the stats about getport and getaddr
 		/// </summary>
-		[Order(3), Option]
-		public rpcbs_addrlist addrinfo; //TODO: convert type to List<rpcbs_addr>
+		[Order(3)]
+		public List<rpcbs_addr> addrinfo;
 		/// <summary>
-		/// fixme: missing comment
+		/// list of all the stats about rmtcall
 		/// </summary>
-		[Order(4), Option]
-		public rpcbs_rmtcalllist rmtinfo;  //TODO: convert type to List<rpcbs_rmtcall>
+		[Order(4)]
+		public List<rpcbs_rmtcall> rmtinfo;
 	};
 }

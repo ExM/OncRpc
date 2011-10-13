@@ -4,40 +4,45 @@ using Xdr;
 namespace Rpc.BindingProtocols
 {
 	/// <summary>
-	/// Link list of all the stats about getport and getaddr
+	/// the stats about rmtcall
 	/// http://tools.ietf.org/html/rfc1833#section-2.1
 	/// </summary>
-	public class rpcbs_addrlist
+	public class rpcbs_rmtcall
 	{
 		/// <summary>
 		/// fixme: missing comment
 		/// </summary>
 		[Order(0)]
-		public ulong prog;
+		public uint prog;
 		/// <summary>
 		/// fixme: missing comment
 		/// </summary>
 		[Order(1)]
-		public ulong vers;
+		public uint vers;
 		/// <summary>
 		/// fixme: missing comment
 		/// </summary>
 		[Order(2)]
-		public int success;
+		public uint proc;
 		/// <summary>
 		/// fixme: missing comment
 		/// </summary>
 		[Order(3)]
+		public int success;
+		/// <summary>
+		/// fixme: missing comment
+		/// </summary>
+		[Order(4)]
 		public int failure;
 		/// <summary>
-		/// fixme: missing comment
+		/// whether callit or indirect
 		/// </summary>
-		[Order(4), Var]
-		public string netid;
+		[Order(5)]
+		public int indirect;
 		/// <summary>
 		/// fixme: missing comment
 		/// </summary>
-		[Order(5), Option]
-		public rpcbs_addrlist next;
+		[Order(6), Var]
+		public string netid;
 	};
 }

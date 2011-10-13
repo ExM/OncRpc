@@ -41,6 +41,11 @@ namespace Rpc
 			return _rb.Create(reader);
 		}
 
+		/// <summary>
+		/// convert byte array to text
+		/// </summary>
+		/// <param name="buffer"></param>
+		/// <returns></returns>
 		public static string ToDisplay(this byte[] buffer)
 		{
 			// example:
