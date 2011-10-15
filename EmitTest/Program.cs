@@ -18,21 +18,28 @@ namespace EmitTest
 		static void Main(string[] args)
 		{
 			
-			var conn = new SyncUdpConnector(new IPEndPoint(IPAddress.Loopback, 111), 2000);
+			var conn = new AsyncUdpConnector(new IPEndPoint(IPAddress.Loopback, 111));
 
 			var client = new PortMapper(conn);
-
-			client.Dump((t) =>
+			
+			for(int i = 0; i<10; i++)
 			{
-				foreach(var m in t)
-					Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}", m.port, m.prog, m.prot, m.vers);
-			}, (e) => Console.WriteLine(e));
+			
+				client.Dump((t) =>
+				{
+					foreach(var m in t)
+						Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}", m.port, m.prog, m.prot, m.vers);
+				}, (e) => Console.WriteLine(e));
+				
+			}
 
 
 			var client2 = new RpcBindV4(conn);
 
 			client2.GetTime((t) => Console.WriteLine(t), (e) => Console.WriteLine(e));
-
+			
+			
+			Console.ReadLine();
 			/*
 			var client = new RpcBindV4(conn);
 			

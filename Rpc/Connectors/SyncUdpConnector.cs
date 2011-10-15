@@ -42,7 +42,7 @@ namespace Rpc
 		/// <param name="reqArgs"></param>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		public void Request<TReq, TResp>(call_body callBody, TReq reqArgs, Action<TResp> completed, Action<Exception> excepted)
+		public IDisposable Request<TReq, TResp>(call_body callBody, TReq reqArgs, Action<TResp> completed, Action<Exception> excepted)
 		{
 			Exception resEx = null;
 			TResp respArgs = default(TResp);
@@ -112,6 +112,8 @@ namespace Rpc
 				completed(respArgs);
 			else
 				excepted(resEx);
+			
+			return null;
 		}
 	}
 }

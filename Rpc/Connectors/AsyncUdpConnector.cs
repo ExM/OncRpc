@@ -43,57 +43,148 @@ namespace Rpc
 		/// <param name="reqArgs"></param>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		public void Request<TReq, TResp>(call_body callBody, TReq reqArgs, Action<TResp> completed, Action<Exception> excepted)
+		public IDisposable Request<TReq, TResp>(call_body callBody, TReq reqArgs, Action<TResp> completed, Action<Exception> excepted)
 		{
-			UdpReceivedHandler handler = GetHandler();
-
-			rpc_msg reqHeader = new rpc_msg()
+			IUdpReceivedHandler handler = null;
+			try
 			{
-				xid = handler.Xid,
-				body = new body()
+				handler = NewHandler<TResp>(completed, excepted);
+	
+				rpc_msg reqHeader = new rpc_msg()
 				{
-					mtype = msg_type.CALL,
-					cbody = callBody
-				}
-			};
-
-			UdpDatagram dtg = new UdpDatagram();
-			Writer w = Toolkit.CreateWriter(dtg);
-			w.Write(reqHeader);
-			w.Write(reqArgs);
-
-			byte[] outBuff = dtg.ToArray();
-
-			Log.Trace(() => "sending byte dump: " + outBuff.ToDisplay());
-
-			_client.BeginSend(outBuff, outBuff.Length, _ep, (ar) =>
+					xid = handler.Xid,
+					body = new body()
+					{
+						mtype = msg_type.CALL,
+						cbody = callBody
+					}
+				};
+	
+				UdpDatagram dtg = new UdpDatagram();
+				Writer w = Toolkit.CreateWriter(dtg);
+				w.Write(reqHeader);
+				w.Write(reqArgs);
+	
+				byte[] outBuff = dtg.ToArray();
+	
+				Log.Trace(() => "sending byte dump: " + outBuff.ToDisplay());
+	
+				_client.BeginSend(outBuff, outBuff.Length, _ep, (ar) =>
+				{
+					try
+					{
+						_client.EndSend(ar);
+						
+						BeginReceive();
+					}
+					catch(Exception inEx)
+					{
+						excepted(new RpcException("request error", inEx));
+					}
+				}, null);
+			}
+			catch(Exception ex)
 			{
-				_client.EndSend(ar);
-				
+				ThreadPool.QueueUserWorkItem((o) =>
+					excepted(new RpcException("request error", ex)));
+			}
 
-
-			}, null);
-
+			return new UdpRequestDisposer(this, handler);
+		}
+		
+		internal void Break(IUdpReceivedHandler handler)
+		{
+			if(handler == null)
+				return;
 			
+			
+		}
+		
+		internal void BeginReceive()
+		{
+			lock(_sync)
+			{
+				if(receiving)
+					return;
+				receiving = true;
+			}
+			
+			_client.BeginReceive(Received, null);
+		}
+		
+		private void Received(IAsyncResult ar)
+		{
+			byte[] received;
+			IPEndPoint ep = _ep;
+			try
+			{
+				received = _client.EndReceive(ar, ref ep);
+				_client.BeginReceive(Received, null);
+			}
+			catch(Exception ex)
+			{
+				Log.Info("receiving exception: {0}", ex);
+				lock(_sync)
+					receiving = false;
+				return;
+			}
+			
+			IUdpReceivedHandler handler;
+			rpc_msg respMsg;
+			MessageReader mr;
+			Reader r;
+			
+			try
+			{
+				Log.Trace(() => "received byte dump: " + received.ToDisplay());
+				mr = new MessageReader(received);
+				r = Toolkit.CreateReader(mr);
+				respMsg = r.Read<rpc_msg>();
+				
+				handler = GetHandler(respMsg.xid);
+				if(handler == null)
+					return;
+			}
+			catch(Exception ex)
+			{
+				Log.Info("parse exception: {0}", ex);
+				return;
+			}
+			
+			handler.ReadResult(mr, r, respMsg);
 		}
 
 		private object _sync = new object();
+		private bool receiving = false;
+		
 		private uint _nextXid = 0;
-		private Dictionary<uint, UdpReceivedHandler> _handlers = new Dictionary<uint,UdpReceivedHandler>();
+		private Dictionary<uint, IUdpReceivedHandler> _handlers = new Dictionary<uint, IUdpReceivedHandler>();
 
-		private UdpReceivedHandler GetHandler()
+		private IUdpReceivedHandler NewHandler<TResp>(Action<TResp> completed, Action<Exception> excepted)
 		{
-			UdpReceivedHandler result;
+			UdpReceivedHandler<TResp> result;
 			lock (_sync)
 			{
 				if (_nextXid == uint.MaxValue)
 					throw new IndexOutOfRangeException("number of transactions ended"); //HACK: who can handle it?
 
-				result = new UdpReceivedHandler(_nextXid);
+				result = new UdpReceivedHandler<TResp>(_nextXid, completed, excepted);
 				_handlers.Add(_nextXid, result);
 				_nextXid++;
 			}
 			return result;
+		}
+		
+		private IUdpReceivedHandler GetHandler(uint xid)
+		{
+			lock (_sync)
+			{
+				IUdpReceivedHandler result;
+				if(_handlers.TryGetValue(xid, out result))
+					return result;
+				else
+					return null;
+			}
 		}
 	}
 }
