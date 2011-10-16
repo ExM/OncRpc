@@ -115,6 +115,13 @@ namespace Rpc
 			
 			return null;
 		}
+
+		#region IConnector implementation
+		public IRpcRequest<TResp> Request<TReq, TResp> (call_body callBody, TReq reqArgs)
+		{
+			throw new NotImplementedException ();
+		}
+		#endregion
 	}
 }
 

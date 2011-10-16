@@ -13,6 +13,8 @@ namespace Rpc
 		IRpcRequest<TResult> Except(Action<Exception> excepted);
 		
 		void Except(Exception ex);
+		
+		IRpcRequest<TResult> Timeout(int timeout);
 	}
 }
 

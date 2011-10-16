@@ -17,7 +17,10 @@ namespace Rpc
 		/// <param name="request"></param>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		IDisposable Request<TReq, TResp>(call_body callBody, TReq request, Action<TResp> completed, Action<Exception> excepted);
+		//IDisposable Request<TReq, TResp>(call_body callBody, TReq request, Action<TResp> completed, Action<Exception> excepted);
+		
+		
+		IRpcRequest<TResp> Request<TReq, TResp>(call_body callBody, TReq reqArgs);
 	}
 }
 

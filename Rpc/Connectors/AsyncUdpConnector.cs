@@ -16,7 +16,7 @@ namespace Rpc
 	/// <summary>
 	/// connector on the UDP with a asynchronous query execution
 	/// </summary>
-	public class AsyncUdpConnector//: IConnector
+	public class AsyncUdpConnector: IConnector
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 

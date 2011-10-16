@@ -3,6 +3,7 @@ using Rpc.Connectors;
 using Xdr;
 using Rpc.MessageProtocol;
 using System.Threading;
+using System.Net.Sockets;
 
 namespace Rpc
 {
@@ -113,17 +114,17 @@ namespace Rpc
 		
 		public IRpcRequest<TResult> Timeout(int timeout)
 		{
-			/*
 			ManualResetEvent wait = new ManualResetEvent(false);
-			RegisteredWaitHandle handle = ThreadPool.RegisterWaitForSingleObject(wait,
+			RegisteredWaitHandle handle = null;
+			handle = ThreadPool.RegisterWaitForSingleObject(wait,
 				(object state, bool timedOut) =>
 				{
 					handle.Unregister(wait);
-					d.Dispose();
+					if(timedOut)
+						Except(new SocketException((int)SocketError.TimedOut));
 				}, null, timeout, true);
 			
-			return new SleepSticker(wait);
-			*/
+			Complete(() => {wait.Set();});
 			
 			return this;
 		}

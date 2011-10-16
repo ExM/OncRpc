@@ -26,7 +26,7 @@ namespace EmitTest
 			Stopwatch swReq = new Stopwatch();
 			swReq.Start();
 			
-			List<IDisposable> tickets = new List<IDisposable>();
+			List<IRpcRequest<List<mapping>>> tickets = new List<IRpcRequest<List<mapping>>>();
 			
 			for(int i = 0; i<200; i++)
 			{
@@ -34,12 +34,14 @@ namespace EmitTest
 				sw.Start();
 				int n = i;
 				
-				IDisposable ticket = client.Dump((t) =>
+				IRpcRequest<List<mapping>> ticket = client.Dump((t) =>
 				{
 					Console.WriteLine("Req {0} elapsed {1} ok", n, sw.Elapsed);
 					//foreach(var m in t)
 					//	Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}", m.port, m.prog, m.prot, m.vers);
-				}, (e) => Console.WriteLine("Req {0} elapsed {1} err {2}", n, sw.Elapsed, e.Message));
+				}, (e) => Console.WriteLine("Req {0} elapsed {1} err {2}", n, sw.Elapsed, e));
+				
+				ticket.Timeout(5000);
 				
 				tickets.Add(ticket);
 			}
@@ -49,7 +51,7 @@ namespace EmitTest
 			Console.ReadLine();
 			
 			foreach(var t in tickets)
-				t.Dispose();
+				t.Except(new InvalidProgramException("hand break"));
 
 			//var client2 = new RpcBindV4(conn);
 

@@ -43,9 +43,9 @@ namespace Rpc.BindingProtocols
 		/// <param name="args"></param>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		protected IDisposable Request<TReq, TResp>(uint proc, TReq args, Action<TResp> completed, Action<Exception> excepted)
+		protected IRpcRequest<TResp> Request<TReq, TResp>(uint proc, TReq args, Action<TResp> completed, Action<Exception> excepted)
 		{
-			return _conn.Request(CreateHeader(proc), args, completed, excepted);
+			return _conn.Request<TReq, TResp>(CreateHeader(proc), args).Result(completed).Except(excepted);
 		}
 	}
 }

@@ -80,7 +80,7 @@ namespace Rpc.BindingProtocols
 		/// </summary>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		public IDisposable Dump(Action<List<mapping>> completed, Action<Exception> excepted)
+		public IRpcRequest<List<mapping>> Dump(Action<List<mapping>> completed, Action<Exception> excepted)
 		{
 			return Request(4u, new Xdr.Void(), completed, excepted);
 		}
