@@ -14,5 +14,7 @@ namespace Rpc.Connectors
 		void ReadResult(MessageReader mr, Reader r, rpc_msg respMsg);
 		
 		void Except(Exception ex);
+
+		byte[] OutBuff { get; set; }
 	}
 }

@@ -16,7 +16,7 @@ namespace Rpc
 	/// <summary>
 	/// connector on the UDP with a asynchronous query execution
 	/// </summary>
-	public class AsyncUdpConnector: IConnector
+	public class AsyncUdpConnector: IConnector, IDisposable
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -61,9 +61,15 @@ namespace Rpc
 	
 				byte[] outBuff = dtg.ToArray();
 	
-				Log.Trace(() => "sending byte dump: " + outBuff.ToDisplay());
-	
-				_client.BeginSend(outBuff, outBuff.Length, _ep, handler.DatagramSended, null);
+				//Log.Trace(() => "sending byte dump: " + outBuff.ToDisplay());
+
+				handler.OutBuff = outBuff;
+
+				EqueueSend(handler);
+
+				//lock (_sync)
+				//	_sendingHandlers.Enqueue(handler);
+				//_client.BeginSend(outBuff, outBuff.Length, _ep, handler.DatagramSended, null);
 			}
 			catch(Exception ex)
 			{
@@ -85,6 +91,68 @@ namespace Rpc
 			lock (_sync)
 				return _handlers.Remove(xid);
 		}
+
+		internal void EqueueSend(IReceivedHandler handler)
+		{
+
+			lock (_sync)
+			{
+				_sendingHandlers.Enqueue(handler);
+				if (sending)
+					return;
+
+				sending = true;
+			}
+
+			NextBeginSend();
+		}
+
+		internal void DatagramSended(IAsyncResult ar)
+		{
+			IReceivedHandler handler = ar.AsyncState as IReceivedHandler;
+
+			Log.Trace("DatagramSended (xid:{0})", handler.Xid);
+			try
+			{
+				_client.EndSend(ar);
+			}
+			catch (Exception ex)
+			{
+				handler.Except(ex);
+			}
+
+			BeginReceive();
+
+			NextBeginSend();
+		}
+
+		internal void NextBeginSend()
+		{
+			IReceivedHandler handler;
+			lock (_sync)
+			{
+				if (_sendingHandlers.Count == 0)
+				{
+					Log.Trace("send queue emprty");
+					sending = false;
+					return;
+				}
+
+				handler = _sendingHandlers.Dequeue();
+			}
+
+			try
+			{
+				_client.BeginSend(handler.OutBuff, handler.OutBuff.Length, _ep, DatagramSended, handler);
+				return;
+			}
+			catch (Exception ex)
+			{
+				handler.Except(ex);
+			}
+
+			NextBeginSend();
+		}
 		
 		internal void BeginReceive()
 		{
@@ -92,9 +160,13 @@ namespace Rpc
 			{
 				if(receiving)
 					return;
+				if (_handlers.Count == 0)
+					return;
 				receiving = true;
 			}
-			
+
+			Log.Info("Begin receive");
+
 			try
 			{
 				_client.BeginReceive(Received, null);
@@ -113,6 +185,16 @@ namespace Rpc
 			try
 			{
 				received = _client.EndReceive(ar, ref ep);
+				lock (_sync)
+				{
+					if (_handlers.Count == 0)
+					{
+						Log.Info("no handlers");
+						receiving = false;
+						return;
+					}
+				}
+
 				_client.BeginReceive(Received, null);
 			}
 			catch(Exception ex)
@@ -134,8 +216,12 @@ namespace Rpc
 				respMsg = r.Read<rpc_msg>();
 				
 				handler = GetHandler(respMsg.xid);
-				if(handler == null)
+
+				if (handler == null)
+				{
+					Log.Trace("no handler for xid:{0}", respMsg.xid);
 					return;
+				}
 			}
 			catch(Exception ex)
 			{
@@ -163,9 +249,13 @@ namespace Rpc
 		
 		private object _sync = new object();
 		private bool receiving = false;
-		
+
+		private bool sending = false;
+
 		private uint _nextXid = 0;
 		private Dictionary<uint, IReceivedHandler> _handlers = new Dictionary<uint, IReceivedHandler>();
+
+		private Queue<IReceivedHandler> _sendingHandlers = new Queue<IReceivedHandler>();
 
 		private RpcRequest<TResp> NewHandler<TResp>()
 		{
@@ -196,6 +286,12 @@ namespace Rpc
 				else
 					return null;
 			}
+		}
+
+		public void Dispose()
+		{
+			Log.Info("dispose");
+			_client.Close();
 		}
 	}
 }

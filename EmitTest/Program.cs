@@ -19,7 +19,9 @@ namespace EmitTest
 	{
 		static void Main(string[] args)
 		{
-			var conn = new AsyncUdpConnector(new IPEndPoint(IPAddress.Loopback, 111));
+			
+			var conn = new AsyncUdpConnector(//new IPEndPoint(IPAddress.Loopback, 111));
+				new IPEndPoint(new IPAddress(new byte[]{192, 168, 62, 122}), 111));
 
 			var client = new PortMapper(conn);
 			
@@ -28,7 +30,7 @@ namespace EmitTest
 			
 			List<IRpcRequest<List<mapping>>> tickets = new List<IRpcRequest<List<mapping>>>();
 			
-			for(int i = 0; i<200; i++)
+			for(int i = 0; i<20; i++)
 			{
 				Stopwatch sw = new Stopwatch();
 				sw.Start();
@@ -41,7 +43,7 @@ namespace EmitTest
 					//	Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}", m.port, m.prog, m.prot, m.vers);
 				}, (e) => Console.WriteLine("Req {0} elapsed {1} err {2}", n, sw.Elapsed, e));
 				
-				ticket.Timeout(5000);
+				ticket.Timeout(2000);
 				
 				tickets.Add(ticket);
 			}
@@ -52,6 +54,10 @@ namespace EmitTest
 			
 			foreach(var t in tickets)
 				t.Except(new InvalidProgramException("hand break"));
+
+			conn.Dispose();
+
+			
 
 			//var client2 = new RpcBindV4(conn);
 

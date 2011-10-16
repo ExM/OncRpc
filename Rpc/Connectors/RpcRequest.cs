@@ -4,11 +4,14 @@ using Xdr;
 using Rpc.MessageProtocol;
 using System.Threading;
 using System.Net.Sockets;
+using NLog;
 
 namespace Rpc
 {
 	internal class RpcRequest<TResult>: IRpcRequest<TResult>, IReceivedHandler
 	{
+		private static Logger Log = LogManager.GetCurrentClassLogger();
+
 		private readonly AsyncUdpConnector _conn;
 		private readonly uint _xid;
 		
@@ -34,6 +37,8 @@ namespace Rpc
 				return _xid;
 			}
 		}
+
+		public byte[] OutBuff { get; set; }
 		
 		public IRpcRequest<TResult> Complete(Action completed)
 		{
@@ -61,6 +66,7 @@ namespace Rpc
 		
 		public void Result(TResult res)
 		{
+			Log.Trace("Result (xid:{0}): {1}", _xid, res);
 			Action<TResult> copy;
 			lock(_sync)
 			{
@@ -74,7 +80,9 @@ namespace Rpc
 				_exceptRecs = null;
 			}
 			_conn.RemoveHandler(_xid);
-			copy(res);
+
+			if(copy != null)
+				copy(res);
 		}
 		
 		public IRpcRequest<TResult> Except(Action<Exception> excepted)
@@ -95,6 +103,7 @@ namespace Rpc
 		
 		public void Except(Exception ex)
 		{
+			Log.Trace("Except (xid:{0}): {1}", _xid, ex);
 			Action<Exception> copy;
 			lock(_sync)
 			{
@@ -109,23 +118,40 @@ namespace Rpc
 				_exceptRecs = null;
 			}
 			_conn.RemoveHandler(_xid);
-			copy(ex);
+			
+			if (copy != null)
+				copy(ex);
 		}
 		
 		public IRpcRequest<TResult> Timeout(int timeout)
 		{
+			Timer t = null;
+			t = new Timer((o) =>
+				{
+					t.Dispose();
+					Log.Trace("Timeout (xid:{0})", _xid);
+					Except(new SocketException((int)SocketError.TimedOut));
+				}, null, timeout, -1);
+
+
+			Complete(() => { t.Dispose(); });
+
+
+
+			/*
 			ManualResetEvent wait = new ManualResetEvent(false);
 			RegisteredWaitHandle handle = null;
 			handle = ThreadPool.RegisterWaitForSingleObject(wait,
 				(object state, bool timedOut) =>
 				{
+					Log.Trace("Timeout (xid:{0}): timedOut: {1}", _xid, timedOut);
 					handle.Unregister(wait);
 					if(timedOut)
 						Except(new SocketException((int)SocketError.TimedOut));
 				}, null, timeout, true);
 			
 			Complete(() => {wait.Set();});
-			
+			*/
 			return this;
 		}
 		
@@ -135,7 +161,7 @@ namespace Rpc
 			_excepted(new RpcException("request error", 
 				new SocketException((int)SocketError.TimedOut)));
 		}
-*/
+		*/
 		
 		public void ReadResult(MessageReader mr, Reader r, rpc_msg respMsg)
 		{
@@ -160,21 +186,6 @@ namespace Rpc
 				Result(respArgs);
 			else
 				Except(resEx);
-		}
-		
-		internal void DatagramSended(IAsyncResult ar)
-		{
-			try
-			{
-				_conn.EndSend(ar);
-			}
-			catch(Exception ex)
-			{
-				Except(ex);
-				return;
-			}
-			
-			_conn.BeginReceive();
 		}
 	}
 }
