@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Rpc;
 using Rpc.MessageProtocol;
 using Xdr;
@@ -15,7 +16,7 @@ namespace Rpc
 	/// <summary>
 	/// connector on the UDP with a asynchronous query execution
 	/// </summary>
-	public class AsyncUdpConnector: IConnector
+	public class AsyncUdpConnector//: IConnector
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -31,24 +32,17 @@ namespace Rpc
 			Log.Info("create connector from {0}", ep);
 			_ep = ep;
 			_client = new UdpClient(ep.AddressFamily);
-
 		}
 
 		/// <summary>
 		/// asynchronous execution of an RPC request
 		/// </summary>
-		/// <typeparam name="TReq"></typeparam>
-		/// <typeparam name="TResp"></typeparam>
-		/// <param name="callBody"></param>
-		/// <param name="reqArgs"></param>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public IDisposable Request<TReq, TResp>(call_body callBody, TReq reqArgs, Action<TResp> completed, Action<Exception> excepted)
+		public IRpcRequest<TResp> Request<TReq, TResp>(call_body callBody, TReq reqArgs)
 		{
-			IUdpReceivedHandler handler = null;
+			RpcRequest<TResp> handler = null;
 			try
 			{
-				handler = NewHandler<TResp>(completed, excepted);
+				handler = NewHandler<TResp>();
 	
 				rpc_msg reqHeader = new rpc_msg()
 				{
@@ -69,35 +63,27 @@ namespace Rpc
 	
 				Log.Trace(() => "sending byte dump: " + outBuff.ToDisplay());
 	
-				_client.BeginSend(outBuff, outBuff.Length, _ep, (ar) =>
-				{
-					try
-					{
-						_client.EndSend(ar);
-						
-						BeginReceive();
-					}
-					catch(Exception inEx)
-					{
-						excepted(new RpcException("request error", inEx));
-					}
-				}, null);
+				_client.BeginSend(outBuff, outBuff.Length, _ep, handler.DatagramSended, null);
 			}
 			catch(Exception ex)
 			{
-				ThreadPool.QueueUserWorkItem((o) =>
-					excepted(new RpcException("request error", ex)));
+				if(handler == null)
+					handler = new RpcRequest<TResp>(null, 0);
+				ThreadPool.QueueUserWorkItem((o) => handler.Except(ex));
 			}
 
-			return new UdpRequestDisposer(this, handler);
+			return handler;
 		}
 		
-		internal void Break(IUdpReceivedHandler handler)
+		internal void EndSend(IAsyncResult ar)
 		{
-			if(handler == null)
-				return;
-			
-			
+			_client.EndSend(ar);
+		}
+		
+		internal bool RemoveHandler(uint xid)
+		{
+			lock (_sync)
+				return _handlers.Remove(xid);
 		}
 		
 		internal void BeginReceive()
@@ -109,8 +95,16 @@ namespace Rpc
 				receiving = true;
 			}
 			
-			_client.BeginReceive(Received, null);
+			try
+			{
+				_client.BeginReceive(Received, null);
+			}
+			catch(Exception ex)
+			{
+				ExceptReceive(ex);
+			}
 		}
+		
 		
 		private void Received(IAsyncResult ar)
 		{
@@ -123,13 +117,11 @@ namespace Rpc
 			}
 			catch(Exception ex)
 			{
-				Log.Info("receiving exception: {0}", ex);
-				lock(_sync)
-					receiving = false;
+				ExceptReceive(ex);
 				return;
 			}
 			
-			IUdpReceivedHandler handler;
+			IReceivedHandler handler;
 			rpc_msg respMsg;
 			MessageReader mr;
 			Reader r;
@@ -154,34 +146,53 @@ namespace Rpc
 			handler.ReadResult(mr, r, respMsg);
 		}
 
+		private void ExceptReceive(Exception ex)
+		{
+			Log.Info("receiving exception: {0}", ex);
+			List<IReceivedHandler> handlers;
+			lock(_sync)
+			{
+				handlers = _handlers.Values.ToList();
+				_handlers.Clear();
+				receiving = false;
+			}
+			
+			foreach(var h in handlers)
+				h.Except(ex);
+		}
+		
 		private object _sync = new object();
 		private bool receiving = false;
 		
 		private uint _nextXid = 0;
-		private Dictionary<uint, IUdpReceivedHandler> _handlers = new Dictionary<uint, IUdpReceivedHandler>();
+		private Dictionary<uint, IReceivedHandler> _handlers = new Dictionary<uint, IReceivedHandler>();
 
-		private IUdpReceivedHandler NewHandler<TResp>(Action<TResp> completed, Action<Exception> excepted)
+		private RpcRequest<TResp> NewHandler<TResp>()
 		{
-			UdpReceivedHandler<TResp> result;
+			RpcRequest<TResp> result;
 			lock (_sync)
 			{
 				if (_nextXid == uint.MaxValue)
 					throw new IndexOutOfRangeException("number of transactions ended"); //HACK: who can handle it?
 
-				result = new UdpReceivedHandler<TResp>(_nextXid, completed, excepted);
+				result = new RpcRequest<TResp>(this, _nextXid);
 				_handlers.Add(_nextXid, result);
 				_nextXid++;
 			}
 			return result;
 		}
 		
-		private IUdpReceivedHandler GetHandler(uint xid)
+		
+		private IReceivedHandler GetHandler(uint xid)
 		{
 			lock (_sync)
 			{
-				IUdpReceivedHandler result;
+				IReceivedHandler result;
 				if(_handlers.TryGetValue(xid, out result))
+				{
+					_handlers.Remove(xid);
 					return result;
+				}
 				else
 					return null;
 			}

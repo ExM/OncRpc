@@ -7,10 +7,12 @@ using Xdr;
 
 namespace Rpc.Connectors
 {
-	internal interface IUdpReceivedHandler
+	internal interface IReceivedHandler
 	{
 		uint Xid { get; }
 		
 		void ReadResult(MessageReader mr, Reader r, rpc_msg respMsg);
+		
+		void Except(Exception ex);
 	}
 }

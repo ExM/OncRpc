@@ -10,6 +10,8 @@ using System.Net.Sockets;
 using System.Net;
 using Rpc;
 using Rpc.MessageProtocol;
+using System.Diagnostics;
+using System.Threading;
 
 namespace EmitTest
 {
@@ -17,29 +19,44 @@ namespace EmitTest
 	{
 		static void Main(string[] args)
 		{
-			
 			var conn = new AsyncUdpConnector(new IPEndPoint(IPAddress.Loopback, 111));
 
 			var client = new PortMapper(conn);
 			
-			for(int i = 0; i<10; i++)
+			Stopwatch swReq = new Stopwatch();
+			swReq.Start();
+			
+			List<IDisposable> tickets = new List<IDisposable>();
+			
+			for(int i = 0; i<200; i++)
 			{
-			
-				client.Dump((t) =>
-				{
-					foreach(var m in t)
-						Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}", m.port, m.prog, m.prot, m.vers);
-				}, (e) => Console.WriteLine(e));
+				Stopwatch sw = new Stopwatch();
+				sw.Start();
+				int n = i;
 				
+				IDisposable ticket = client.Dump((t) =>
+				{
+					Console.WriteLine("Req {0} elapsed {1} ok", n, sw.Elapsed);
+					//foreach(var m in t)
+					//	Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}", m.port, m.prog, m.prot, m.vers);
+				}, (e) => Console.WriteLine("Req {0} elapsed {1} err {2}", n, sw.Elapsed, e.Message));
+				
+				tickets.Add(ticket);
 			}
-
-
-			var client2 = new RpcBindV4(conn);
-
-			client2.GetTime((t) => Console.WriteLine(t), (e) => Console.WriteLine(e));
 			
+			Console.WriteLine("All req elapsed {0}", swReq.Elapsed);
 			
 			Console.ReadLine();
+			
+			foreach(var t in tickets)
+				t.Dispose();
+
+			//var client2 = new RpcBindV4(conn);
+
+			//client2.GetTime((t) => Console.WriteLine(t), (e) => Console.WriteLine(e));
+			
+			
+			
 			/*
 			var client = new RpcBindV4(conn);
 			

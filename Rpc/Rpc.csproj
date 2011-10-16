@@ -60,7 +60,6 @@
     <Compile Include="BindingProtocols\rpcb_rmtcallres.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
     <Compile Include="Connectors\AsyncUdpConnector.cs" />
-    <Compile Include="Connectors\UdpReceivedHandler.cs" />
     <Compile Include="UdpDatagram.cs" />
     <Compile Include="Exceptions\AuthenticateException.cs" />
     <Compile Include="Exceptions\ReplyException.cs" />
@@ -86,8 +85,9 @@
     <Compile Include="IConnector.cs" />
     <Compile Include="Toolkit.cs" />
     <Compile Include="Connectors\SyncUdpConnector.cs" />
-    <Compile Include="Connectors\UdpRequestDisposer.cs" />
-    <Compile Include="Connectors\IUdpReceivedHandler.cs" />
+    <Compile Include="Connectors\RpcRequest.cs" />
+    <Compile Include="Connectors\IRpcRequest.cs" />
+    <Compile Include="Connectors\IReceivedHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -97,4 +97,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MessageProtocol\" />
+  </ItemGroup>
 </Project>
