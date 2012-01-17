@@ -1,20 +1,11 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Rpc
 {
-	public interface IRpcRequest<TResult>
+	public interface IRpcRequest<T>
 	{
-		IRpcRequest<TResult> Complete(Action completed);
-		
-		IRpcRequest<TResult> Result(Action<TResult> resulted);
-		
-		void Result(TResult res);
-		
-		IRpcRequest<TResult> Except(Action<Exception> excepted);
-		
-		void Except(Exception ex);
-		
-		IRpcRequest<TResult> Timeout(int timeout);
 	}
 }
-

@@ -120,5 +120,59 @@ namespace Rpc
 				throw Exceptions.NoRFC5531("msg");
 			}
 		}
+
+		/// <summary>
+		/// returns the description of the RPC message
+		/// </summary>
+		/// <param name="msg"></param>
+		/// <returns></returns>
+		public static void ReplyMessageValidate2(rpc_msg msg)
+		{
+			try
+			{
+				if (msg.body.mtype != msg_type.REPLY)
+					throw Exceptions.UnexpectedMessageType(msg.body.mtype);
+
+				reply_body replyBody = msg.body.rbody;
+
+				if (replyBody.stat == reply_stat.MSG_ACCEPTED)
+				{
+					accepted_reply.reply_data_union du = replyBody.areply.reply_data;
+					switch (du.stat)
+					{
+						case accept_stat.GARBAGE_ARGS:
+							throw Exceptions.GarbageArgs();
+						case accept_stat.PROC_UNAVAIL:
+							throw Exceptions.ProcedureUnavalible(replyBody);
+						case accept_stat.PROG_MISMATCH:
+							throw Exceptions.ProgramMismatch(replyBody, du.mismatch_info);
+						case accept_stat.PROG_UNAVAIL:
+							throw Exceptions.ProgramUnavalible(replyBody);
+						case accept_stat.SUCCESS:
+							return;
+						case accept_stat.SYSTEM_ERR:
+							throw Exceptions.SystemError(replyBody);
+						default:
+							throw Exceptions.NoRFC5531("msg");
+					}
+				}
+
+				if (replyBody.stat == reply_stat.MSG_DENIED)
+				{
+					if (replyBody.rreply.rstat == reject_stat.AUTH_ERROR)
+						throw Exceptions.AuthError(replyBody, replyBody.rreply.astat);
+					else if (replyBody.rreply.rstat == reject_stat.RPC_MISMATCH)
+						throw Exceptions.RpcVersionError(replyBody, replyBody.rreply.mismatch_info);
+					else
+						throw Exceptions.NoRFC5531("msg");
+				}
+				
+				throw Exceptions.NoRFC5531("msg");
+			}
+			catch (NullReferenceException)
+			{
+				throw Exceptions.NoRFC5531("msg");
+			}
+		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Rpc.MessageProtocol;
+using System.Threading.Tasks;
 
 namespace Rpc.BindingProtocols
 {
@@ -43,9 +44,23 @@ namespace Rpc.BindingProtocols
 		/// <param name="args"></param>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
+		protected Task<TResp> CreateTask<TReq, TResp>(uint proc, TReq args)
+		{
+			return _conn.Request<TReq, TResp>(CreateHeader(proc), args);
+		}
+
+		/// <summary>
+		/// generic request
+		/// </summary>
+		/// <typeparam name="TReq"></typeparam>
+		/// <typeparam name="TResp"></typeparam>
+		/// <param name="proc"></param>
+		/// <param name="args"></param>
+		/// <param name="completed"></param>
+		/// <param name="excepted"></param>
 		protected IRpcRequest<TResp> Request<TReq, TResp>(uint proc, TReq args, Action<TResp> completed, Action<Exception> excepted)
 		{
-			return _conn.Request<TReq, TResp>(CreateHeader(proc), args).Result(completed).Except(excepted);
+			throw new NotImplementedException();
 		}
 	}
 }

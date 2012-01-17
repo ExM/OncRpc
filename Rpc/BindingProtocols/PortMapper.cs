@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Rpc.MessageProtocol;
+using System.Threading.Tasks;
 
 namespace Rpc.BindingProtocols
 {
@@ -80,9 +81,9 @@ namespace Rpc.BindingProtocols
 		/// </summary>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		public IRpcRequest<List<mapping>> Dump(Action<List<mapping>> completed, Action<Exception> excepted)
+		public Task<List<mapping>> Dump()
 		{
-			return Request(4u, new Xdr.Void(), completed, excepted);
+			return CreateTask<Xdr.Void, List<mapping>>(4u, new Xdr.Void());
 		}
 
 		/// <summary>

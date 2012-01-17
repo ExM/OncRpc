@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Rpc</RootNamespace>
     <AssemblyName>Rpc</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,8 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="NLog">
       <HintPath>..\lib\NLog\NLog.dll</HintPath>
     </Reference>
   </ItemGroup>
@@ -59,7 +57,10 @@
     <Compile Include="BindingProtocols\rpcb_entry.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallres.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
-    <Compile Include="Connectors\AsyncUdpConnector.cs" />
+    <Compile Include="Connectors\IRpcRequest.cs" />
+    <Compile Include="Connectors\Ticket.cs" />
+    <Compile Include="Connectors\ITicket.cs" />
+    <Compile Include="Connectors\UdpSession.cs" />
     <Compile Include="UdpDatagram.cs" />
     <Compile Include="Exceptions\AuthenticateException.cs" />
     <Compile Include="Exceptions\ReplyException.cs" />
@@ -84,10 +85,7 @@
     <Compile Include="BindingProtocols\RpcBindV4.cs" />
     <Compile Include="IConnector.cs" />
     <Compile Include="Toolkit.cs" />
-    <Compile Include="Connectors\SyncUdpConnector.cs" />
-    <Compile Include="Connectors\RpcRequest.cs" />
-    <Compile Include="Connectors\IRpcRequest.cs" />
-    <Compile Include="Connectors\IReceivedHandler.cs" />
+    <Compile Include="Connectors\UdpConnector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -97,7 +95,5 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="MessageProtocol\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

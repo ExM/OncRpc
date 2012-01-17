@@ -29,5 +29,10 @@ namespace Rpc.BindingProtocols
 		/// </summary>
 		[Order(3)]
 		public uint port;
+
+		public override string ToString()
+		{
+			return string.Format("port:{0} prog:{1} prot:{2} vers:{3}", port, prog, prot, vers);
+		}
 	};
 }
