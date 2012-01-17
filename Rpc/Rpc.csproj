@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -60,7 +60,6 @@
     <Compile Include="Connectors\IRpcRequest.cs" />
     <Compile Include="Connectors\Ticket.cs" />
     <Compile Include="Connectors\ITicket.cs" />
-    <Compile Include="Connectors\UdpSession.cs" />
     <Compile Include="UdpDatagram.cs" />
     <Compile Include="Exceptions\AuthenticateException.cs" />
     <Compile Include="Exceptions\ReplyException.cs" />
