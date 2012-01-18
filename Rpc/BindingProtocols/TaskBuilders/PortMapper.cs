@@ -13,7 +13,7 @@ namespace Rpc.BindingProtocols.TaskBuilders
 	/// number 111 (SUNRPC) on either of these protocols.
 	/// http://tools.ietf.org/html/rfc1833#section-3.2
 	/// </summary>
-	public class PortMapper : BaseOperation
+	public class PortMapper : BaseTaskBuilder
 	{
 		/// <summary>
 		/// The portmapper program currently supports two protocols (UDP and TCP).  The portmapper is contacted by talking to it on assigned port
@@ -21,8 +21,8 @@ namespace Rpc.BindingProtocols.TaskBuilders
 		/// http://tools.ietf.org/html/rfc1833#section-3.2
 		/// </summary>
 		/// <param name="conn"></param>
-		public PortMapper(IConnector conn)
-			:base(conn)
+		public PortMapper(IConnector conn, CancellationToken token, bool attachedToParent)
+			: base(conn, token, attachedToParent)
 		{
 		}
 
@@ -32,18 +32,6 @@ namespace Rpc.BindingProtocols.TaskBuilders
 			{
 				return 2u;
 			}
-		}
-
-		public PortMapper AttachedToParent(bool attached = true)
-		{
-			TaskCreationOptions = attached ? TaskCreationOptions.AttachedToParent : TaskCreationOptions.None;
-			return this;
-		}
-
-		public PortMapper UseToken(CancellationToken token)
-		{
-			CancellationToken = token;
-			return this;
 		}
 
 		/// <summary>

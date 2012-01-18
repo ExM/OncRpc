@@ -39,7 +39,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BindingProtocols\TaskBuilders\BaseRpcBind.cs" />
-    <Compile Include="BindingProtocols\TaskBuilders\BaseOperation.cs" />
+    <Compile Include="BindingProtocols\TaskBuilders\BaseTaskBuilder.cs" />
     <Compile Include="BindingProtocols\call_args.cs" />
     <Compile Include="BindingProtocols\call_result.cs" />
     <Compile Include="BindingProtocols\ConnectorExtensions.cs" />

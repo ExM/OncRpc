@@ -25,8 +25,8 @@ namespace Rpc.BindingProtocols.TaskBuilders
 		/// http://tools.ietf.org/html/rfc1833#section-2.2.1
 		/// </summary>
 		/// <param name="conn"></param>
-		public RpcBindV3(IConnector conn)
-			:base(conn)
+		public RpcBindV3(IConnector conn, CancellationToken token, bool attachedToParent)
+			: base(conn, token, attachedToParent)
 		{
 		}
 
@@ -36,18 +36,6 @@ namespace Rpc.BindingProtocols.TaskBuilders
 			{
 				return 3u;
 			}
-		}
-
-		public RpcBindV3 AttachedToParent(bool attached = true)
-		{
-			TaskCreationOptions = attached ? TaskCreationOptions.AttachedToParent : TaskCreationOptions.None;
-			return this;
-		}
-
-		public RpcBindV3 UseToken(CancellationToken token)
-		{
-			CancellationToken = token;
-			return this;
 		}
 
 		/// <summary>

@@ -24,9 +24,9 @@ namespace EmitTest
 			Stopwatch swReq = new Stopwatch();
 			swReq.Start();
 
-			var t = conn.PortMapper().UseToken(cts.Token).AttachedToParent().Dump();
-			var tn = conn.RpcBindV4().UseToken(cts.Token).GetTime();
-
+			var t = conn.PortMapper(cts.Token, true).Dump();
+			var tn = conn.PortMapper(cts.Token).Null();
+			//var tn = conn.RpcBindV4(cts.Token).GetTime();
 
 			if (!Task.WaitAll(new Task[] { t, tn }, 2000))
 				cts.Cancel(false);

@@ -13,10 +13,10 @@ namespace Rpc.BindingProtocols.TaskBuilders
 	/// For TCP/IP and UDP/IP, for example, it is port number 111. Each transport has such an assigned, well-known address.
 	/// http://tools.ietf.org/html/rfc1833#section-2.2.1
 	/// </summary>
-	public abstract class BaseRpcBind : BaseOperation
+	public abstract class BaseRpcBind : BaseTaskBuilder
 	{
-		internal BaseRpcBind(IConnector conn)
-			:base(conn)
+		internal BaseRpcBind(IConnector conn, CancellationToken token, bool attachedToParent)
+			: base(conn, token, attachedToParent)
 		{
 		}
 

@@ -11,19 +11,19 @@ namespace Rpc.BindingProtocols.TaskBuilders
 	/// <summary>
 	/// operations of binding protocols
 	/// </summary>
-	public abstract class BaseOperation
+	public abstract class BaseTaskBuilder
 	{
 		private const uint Program = 100000u;
 
 		protected IConnector _conn;
-		public TaskCreationOptions TaskCreationOptions { get; set; }
-		public CancellationToken CancellationToken { get; set; }
+		protected bool _attachedToParent;
+		protected CancellationToken _token;
 
-		internal BaseOperation(IConnector conn)
+		internal BaseTaskBuilder(IConnector conn, CancellationToken token, bool attachedToParent)
 		{
 			_conn = conn;
-			TaskCreationOptions = TaskCreationOptions.None;
-			CancellationToken = CancellationToken.None;
+			_attachedToParent = attachedToParent;
+			_token = token;
 		}
 
 		protected abstract uint Version { get; }
@@ -43,7 +43,8 @@ namespace Rpc.BindingProtocols.TaskBuilders
 
 		protected Task<TResp> CreateTask<TReq, TResp>(uint proc, TReq args)
 		{
-			return _conn.CreateTask<TReq, TResp>(CreateHeader(proc), args, TaskCreationOptions, CancellationToken);
+			return _conn.CreateTask<TReq, TResp>(CreateHeader(proc), args,
+				_attachedToParent ? TaskCreationOptions.AttachedToParent : TaskCreationOptions.None, _token);
 		}
 	}
 }
