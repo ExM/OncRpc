@@ -14,33 +14,36 @@ namespace EmitTest
 		{
 
 			IPEndPoint ep;
-			//ep = new IPEndPoint(IPAddress.Loopback, 111);
-			ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
+			ep = new IPEndPoint(IPAddress.Loopback, 111);
+			//ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
 
 			var conn = new UdpConnector(ep);
 
 			CancellationTokenSource cts = new CancellationTokenSource();
+			CancellationToken token = cts.Token;
 			
 			Stopwatch swReq = new Stopwatch();
 			swReq.Start();
 
-			var t = conn.PortMapper(cts.Token, true).Dump();
-			var tn = conn.PortMapper(cts.Token).Null();
-			//var tn = conn.RpcBindV4(cts.Token).GetTime();
+			var t = conn.PortMapper(token, true).Dump();
+			//var tn = conn.PortMapper(cts.Token).Null();
+			var tn = conn.RpcBindV4(token).GetTime();
 
-			if (!Task.WaitAll(new Task[] { t, tn }, 2000))
+			if(!Task.WaitAll(new Task[] { t, tn }, 2000))
 				cts.Cancel(false);
 
 			Console.WriteLine("All req elapsed {0}", swReq.Elapsed);
 
 			Console.WriteLine("t.Status {0}", t.Status);
 			Console.WriteLine("tn.Status {0}", tn.Status);
-
-			foreach (var item in t.Result)
-				Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}",
+			
+			if(t.Status == TaskStatus.RanToCompletion)
+				foreach(var item in t.Result)
+					Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}",
 					item.port, item.prog, item.prot, item.vers);
-
-			Console.WriteLine(tn.Result);
+			
+			if(tn.Status == TaskStatus.RanToCompletion)
+				Console.WriteLine(tn.Result);
 
 			/*
 			List<IRpcRequest<List<mapping>>> tickets = new List<IRpcRequest<List<mapping>>>();

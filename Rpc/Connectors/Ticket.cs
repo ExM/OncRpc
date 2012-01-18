@@ -96,8 +96,7 @@ namespace Rpc.Connectors
 
 		private void Cancel()
 		{
-			_ctr.Dispose();
-			if (_taskSrc.TrySetCanceled())
+			if(_taskSrc.TrySetCanceled())
 				_connector.RemoveTicket(this);
 		}
 	}
