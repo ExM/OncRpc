@@ -19,14 +19,16 @@ namespace Rpc.Connectors
 
 		public uint Xid { get; set; }
 
-		public Ticket(UdpConnector connector, call_body callBody, TReq reqArgs, CancellationToken token)
+		public Ticket(UdpConnector connector, call_body callBody, TReq reqArgs, TaskCreationOptions options, CancellationToken token)
 		{
 			_connector = connector;
 			_callBody = callBody;
 			_reqArgs = reqArgs;
-
-			_taskSrc = new TaskCompletionSource<TResp>();
-			_ctr = token.Register(Cancel);
+			_taskSrc = new TaskCompletionSource<TResp>(options);
+			if(token.CanBeCanceled)
+				_ctr = token.Register(Cancel);
+			else
+				_ctr = new CancellationTokenRegistration();
 		}
 
 		public Task<TResp> Task

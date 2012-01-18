@@ -71,14 +71,9 @@ namespace Rpc
 				t.Except(ex);
 		}
 
-		public Task<TResp> Request<TReq, TResp>(call_body callBody, TReq reqArgs)
+		public Task<TResp> CreateTask<TReq, TResp>(call_body callBody, TReq reqArgs, TaskCreationOptions options, CancellationToken token)
 		{
-			return Request<TReq, TResp>(callBody, reqArgs, CancellationToken.None);
-		}
-
-		public Task<TResp> Request<TReq, TResp>(call_body callBody, TReq reqArgs, CancellationToken token)
-		{
-			Ticket<TReq, TResp> ticket = new Ticket<TReq, TResp>(this, callBody, reqArgs, token);
+			Ticket<TReq, TResp> ticket = new Ticket<TReq, TResp>(this, callBody, reqArgs, options, token);
 
 			lock (_sync)
 			{
@@ -112,43 +107,48 @@ namespace Rpc
 		
 		private void SendNextQueuedItem()
 		{
-			ITicket ticket;
-			UdpClient clientCopy;
-			
-			lock(_sync)
+			while (true)
 			{
-				if(_sendingInProgress)
-					return;
+				ITicket ticket;
+				UdpClient clientCopy;
 
-				if(_pendingRequests.Count == 0)
-					return;
+				lock (_sync)
+				{
+					if (_sendingInProgress)
+						return;
 
-				ticket = _pendingRequests.First.Value;
-				_pendingRequests.RemoveFirst();
-				ticket.Xid = _nextXid++;
-				_sendingInProgress = true;
-				
-				_handlers.Add(ticket.Xid, ticket);
-				clientCopy = _client;
-			}
-			
-			try
-			{
-				byte[] datagram = ticket.BuildDatagram();
-				//Log.Trace(() => "sending byte dump: " + datagram.ToDisplay());
-				clientCopy.BeginSend(datagram, datagram.Length, DatagramSended, clientCopy);
-			}
-			catch(Exception ex)
-			{
-				ThreadPool.QueueUserWorkItem(o => OnSendException(ex));
+					if (_pendingRequests.Count == 0)
+						return;
+
+					ticket = _pendingRequests.First.Value;
+					_pendingRequests.RemoveFirst();
+					ticket.Xid = _nextXid++;
+					_sendingInProgress = true;
+
+					_handlers.Add(ticket.Xid, ticket);
+					clientCopy = _client;
+				}
+
+				try
+				{
+					byte[] datagram = ticket.BuildDatagram();
+					if (datagram == null)
+						continue;
+					Log.Trace(() => "sending byte dump: " + datagram.ToDisplay());
+					clientCopy.BeginSend(datagram, datagram.Length, DatagramSended, clientCopy);
+				}
+				catch (Exception ex)
+				{
+					ThreadPool.QueueUserWorkItem(o => OnSendException(ex));
+				}
+
+				break;
 			}
 		}
 		
 		private void DatagramSended(IAsyncResult ar)
 		{
 			UdpClient clientCopy = ar.AsyncState as UdpClient;
-
-			Log.Debug("DatagramSended");
 			
 			bool isOldClient = true;
 			
@@ -163,6 +163,7 @@ namespace Rpc
 			
 			if(isOldClient)
 			{
+				Log.Debug("close old sender");
 				try
 				{
 					clientCopy.EndSend(ar);
@@ -173,7 +174,9 @@ namespace Rpc
 				clientCopy.Close();
 				return;
 			}
-			
+
+			Log.Debug("datagram sended");
+
 			try
 			{
 				clientCopy.EndSend(ar);
@@ -216,8 +219,11 @@ namespace Rpc
 				if(_receivingInProgress)
 					return true;
 
-				if(_handlers.Count == 0)
+				if (_handlers.Count == 0)
+				{
+					Log.Debug("receive stop. no handlers");
 					return true;
+				}
 				
 				_receivingInProgress = true;
 				clientCopy = _client;
@@ -259,9 +265,6 @@ namespace Rpc
 		private void DatagramReceived(IAsyncResult ar)
 		{
 			UdpClient clientCopy = ar.AsyncState as UdpClient;
-			
-			Log.Debug("DatagramReceived");
-			
 			bool isOldClient = true;
 			
 			lock(_sync)
@@ -277,6 +280,7 @@ namespace Rpc
 			
 			if(isOldClient)
 			{
+				Log.Debug("close old receiver");
 				try
 				{
 					clientCopy.EndReceive(ar, ref ep);
@@ -293,7 +297,7 @@ namespace Rpc
 			try
 			{
 				received = clientCopy.EndReceive(ar, ref ep);
-				Log.Trace("received {0} bytes from {1}", received.Length, ep);
+				Log.Debug("received {0} bytes", received.Length);
 			}
 			catch(Exception ex)
 			{
@@ -301,16 +305,10 @@ namespace Rpc
 				return;
 			}
 
-			BeginReceive();
-			ParseMessage(received);
-		}
-		
-		private void ParseMessage(byte[] received)
-		{
-			ITicket ticket;
-			rpc_msg respMsg;
-			MessageReader mr;
-			Reader r;
+			rpc_msg respMsg = null;
+			MessageReader mr = null;
+			Reader r = null;
+			bool unexpectedMessage = false;
 
 			try
 			{
@@ -318,22 +316,30 @@ namespace Rpc
 				mr = new MessageReader(received);
 				r = Toolkit.CreateReader(mr);
 				respMsg = r.Read<rpc_msg>();
-
-				ticket = EnqueueTicket(respMsg.xid);
-
-				if(ticket == null)
-				{
-					Log.Debug("no handler for xid:{0}", respMsg.xid);
-					return;
-				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.Info("parse exception: {0}", ex);
+				unexpectedMessage = true;
+			}
+
+			if (unexpectedMessage)
+			{
+				BeginReceive();
 				return;
 			}
 
-			ticket.ReadResult(mr, r, respMsg);
+			ITicket ticket = EnqueueTicket(respMsg.xid);
+			BeginReceive();
+			if (ticket == null)
+				Log.Debug("no handler for xid:{0}", respMsg.xid);
+			else
+				ticket.ReadResult(mr, r, respMsg);
+		}
+		
+		private void ParseMessage(byte[] received)
+		{
+			
 		}
 
 		private ITicket EnqueueTicket(uint xid)

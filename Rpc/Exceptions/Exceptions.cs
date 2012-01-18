@@ -71,7 +71,7 @@ namespace Rpc
 		internal static ReplyException ProgramMismatch(reply_body replyBody, mismatch_info info)
 		{
 			return new ReplyException(replyBody,
-				string.Format("remote can't support version (supported versions of between {0} and {1})", info.low, info.high));
+				string.Format("remote can't support program version (supported versions of between {0} and {1})", info.low, info.high));
 		}
 
 		internal static ReplyException ProgramUnavalible(reply_body replyBody)

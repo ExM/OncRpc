@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Rpc.MessageProtocol;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Rpc.BindingProtocols.TaskBuilders
 {
@@ -33,11 +34,21 @@ namespace Rpc.BindingProtocols.TaskBuilders
 			}
 		}
 
+		public PortMapper AttachedToParent(bool attached = true)
+		{
+			TaskCreationOptions = attached ? TaskCreationOptions.AttachedToParent : TaskCreationOptions.None;
+			return this;
+		}
+
+		public PortMapper UseToken(CancellationToken token)
+		{
+			CancellationToken = token;
+			return this;
+		}
+
 		/// <summary>
 		/// This procedure does no work.  By convention, procedure zero of any protocol takes no parameters and returns no results.
 		/// </summary>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
 		public Task<Xdr.Void> Null()
 		{
 			return CreateTask<Xdr.Void, Xdr.Void>(0u, new Xdr.Void());

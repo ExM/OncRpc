@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Net;
 using Rpc;
 using Rpc.BindingProtocols;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EmitTest
 {
@@ -16,22 +18,30 @@ namespace EmitTest
 			ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
 
 			var conn = new UdpConnector(ep);
+
+			CancellationTokenSource cts = new CancellationTokenSource();
 			
 			Stopwatch swReq = new Stopwatch();
 			swReq.Start();
 
-			var t = conn.PortMapper().Dump();
-			var tn = conn.PortMapper().Null();
+			var t = conn.PortMapper().UseToken(cts.Token).AttachedToParent().Dump();
+			var tn = conn.RpcBindV4().UseToken(cts.Token).GetTime();
 
-			t.Wait();
+
+			if (!Task.WaitAll(new Task[] { t, tn }, 2000))
+				cts.Cancel(false);
 
 			Console.WriteLine("All req elapsed {0}", swReq.Elapsed);
+
+			Console.WriteLine("t.Status {0}", t.Status);
+			Console.WriteLine("tn.Status {0}", tn.Status);
 
 			foreach (var item in t.Result)
 				Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}",
 					item.port, item.prog, item.prot, item.vers);
 
-			
+			Console.WriteLine(tn.Result);
+
 			/*
 			List<IRpcRequest<List<mapping>>> tickets = new List<IRpcRequest<List<mapping>>>();
 			
@@ -54,10 +64,6 @@ namespace EmitTest
 			}
 			*/
 			
-			tn.Wait();
-
-			Console.WriteLine(tn.Result);
-
 			Console.ReadLine();
 			conn.Dispose();
 		}

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Rpc.MessageProtocol;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Rpc.BindingProtocols.TaskBuilders
 {
@@ -14,11 +15,15 @@ namespace Rpc.BindingProtocols.TaskBuilders
 	{
 		private const uint Program = 100000u;
 
-		private IConnector _conn;
+		protected IConnector _conn;
+		public TaskCreationOptions TaskCreationOptions { get; set; }
+		public CancellationToken CancellationToken { get; set; }
 
 		internal BaseOperation(IConnector conn)
 		{
 			_conn = conn;
+			TaskCreationOptions = TaskCreationOptions.None;
+			CancellationToken = CancellationToken.None;
 		}
 
 		protected abstract uint Version { get; }
@@ -38,7 +43,7 @@ namespace Rpc.BindingProtocols.TaskBuilders
 
 		protected Task<TResp> CreateTask<TReq, TResp>(uint proc, TReq args)
 		{
-			return _conn.Request<TReq, TResp>(CreateHeader(proc), args);
+			return _conn.CreateTask<TReq, TResp>(CreateHeader(proc), args, TaskCreationOptions, CancellationToken);
 		}
 	}
 }

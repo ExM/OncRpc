@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Rpc.MessageProtocol;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Rpc.BindingProtocols.TaskBuilders
 {
@@ -35,6 +36,18 @@ namespace Rpc.BindingProtocols.TaskBuilders
 			{
 				return 4u;
 			}
+		}
+
+		public RpcBindV4 AttachedToParent(bool attached = true)
+		{
+			TaskCreationOptions = attached ? TaskCreationOptions.AttachedToParent : TaskCreationOptions.None;
+			return this;
+		}
+
+		public RpcBindV4 UseToken(CancellationToken token)
+		{
+			CancellationToken = token;
+			return this;
 		}
 		
 		/// <summary>

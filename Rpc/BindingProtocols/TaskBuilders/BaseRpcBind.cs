@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Rpc.MessageProtocol;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Rpc.BindingProtocols.TaskBuilders
 {

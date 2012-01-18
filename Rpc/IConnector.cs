@@ -1,6 +1,7 @@
 using System;
 using Rpc.MessageProtocol;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Rpc
 {
@@ -9,7 +10,7 @@ namespace Rpc
 	/// </summary>
 	public interface IConnector
 	{
-		Task<TResp> Request<TReq, TResp>(call_body callBody, TReq reqArgs);
+		Task<TResp> CreateTask<TReq, TResp>(call_body callBody, TReq reqArgs, TaskCreationOptions options, CancellationToken token);
 	}
 }
 
