@@ -78,26 +78,21 @@ namespace Rpc
 
 		public Task<TResp> Request<TReq, TResp>(call_body callBody, TReq reqArgs, CancellationToken token)
 		{
-			Ticket<TReq, TResp> ticket = new Ticket<TReq, TResp>()
-			{
-				CallBody = callBody,
-				Request = reqArgs,
-				TaskSrc = new TaskCompletionSource<TResp>()
-			};
+			Ticket<TReq, TResp> ticket = new Ticket<TReq, TResp>(this, callBody, reqArgs, token);
 
 			lock (_sync)
-				_pendingRequests.AddLast(ticket);
+			{
+				if(token.IsCancellationRequested)
+					return ticket.Task;
 
-			//if(token.CanBeCanceled)
-			//var ctr = token.Register(() => { });
-			//ctr.Dispose();
+				_pendingRequests.AddLast(ticket);
+			}
 
 			SendNextQueuedItem();
-
-			return ticket.TaskSrc.Task;
+			return ticket.Task;
 		}
 
-		private void RemoveTicket(ITicket ticket)
+		internal void RemoveTicket(ITicket ticket)
 		{
 			lock(_sync)
 			{
@@ -149,7 +144,7 @@ namespace Rpc
 			}
 		}
 		
-		internal void DatagramSended(IAsyncResult ar)
+		private void DatagramSended(IAsyncResult ar)
 		{
 			UdpClient clientCopy = ar.AsyncState as UdpClient;
 

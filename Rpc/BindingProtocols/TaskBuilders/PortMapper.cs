@@ -5,7 +5,7 @@ using System.Text;
 using Rpc.MessageProtocol;
 using System.Threading.Tasks;
 
-namespace Rpc.BindingProtocols
+namespace Rpc.BindingProtocols.TaskBuilders
 {
 	/// <summary>
 	/// The portmapper program currently supports two protocols (UDP and TCP).  The portmapper is contacted by talking to it on assigned port
@@ -21,8 +21,16 @@ namespace Rpc.BindingProtocols
 		/// </summary>
 		/// <param name="conn"></param>
 		public PortMapper(IConnector conn)
-			:base(2u, conn)
+			:base(conn)
 		{
+		}
+
+		protected override uint Version
+		{
+			get
+			{
+				return 2u;
+			}
 		}
 
 		/// <summary>
@@ -30,9 +38,9 @@ namespace Rpc.BindingProtocols
 		/// </summary>
 		/// <param name="completed"></param>
 		/// <param name="excepted"></param>
-		public void Null(Action completed, Action<Exception> excepted)
+		public Task<Xdr.Void> Null()
 		{
-			Request<Xdr.Void, Xdr.Void>(0u, new Xdr.Void(), (res) => completed(), excepted);
+			return CreateTask<Xdr.Void, Xdr.Void>(0u, new Xdr.Void());
 		}
 
 		/// <summary>
@@ -42,24 +50,18 @@ namespace Rpc.BindingProtocols
 		/// The procedure returns a boolean reply whose value is "TRUE" if the procedure successfully established the mapping and
 		/// "FALSE" otherwise.  The procedure refuses to establish a mapping if one already exists for the tuple "(prog, vers, prot)".
 		/// </summary>
-		/// <param name="args"></param>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public void Set(mapping args, Action<bool> completed, Action<Exception> excepted)
+		public Task<bool> Set(mapping args)
 		{
-			Request(1u, args, completed, excepted);
+			return CreateTask<mapping, bool>(1u, args);
 		}
 
 		/// <summary>
 		/// When a program becomes unavailable, it should unregister itself with the port mapper program on the same machine.  The parameters and
 		/// results have meanings identical to those of "PMAPPROC_SET".  The protocol and port number fields of the argument are ignored.
 		/// </summary>
-		/// <param name="args"></param>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public void UnSet(mapping args, Action<bool> completed, Action<Exception> excepted)
+		public Task<bool> UnSet(mapping args)
 		{
-			Request(2u, args, completed, excepted);
+			return CreateTask<mapping, bool>(2u, args);
 		}
 
 		/// <summary>
@@ -67,20 +69,15 @@ namespace Rpc.BindingProtocols
 		/// which the program is awaiting call requests.  A port value of zeros means the program has not been registered.  The "port" field of the
 		/// argument is ignored.
 		/// </summary>
-		/// <param name="args"></param>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public void GetPort(mapping args, Action<uint> completed, Action<Exception> excepted)
+		public Task<uint> GetPort(mapping args)
 		{
-			Request(3u, args, completed, excepted);
+			return CreateTask<mapping, uint>(3u, args);
 		}
 
 		/// <summary>
 		/// This procedure enumerates all entries in the port mapper's database.
 		/// The procedure takes no parameters and returns a list of program, version, protocol, and port values.
 		/// </summary>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
 		public Task<List<mapping>> Dump()
 		{
 			return CreateTask<Xdr.Void, List<mapping>>(4u, new Xdr.Void());
@@ -97,12 +94,9 @@ namespace Rpc.BindingProtocols
 		/// 
 		/// The procedure returns the remote program's port number, and the reply is the reply of the remote procedure.
 		/// </summary>
-		/// <param name="args"></param>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public void CallIt(call_args args, Action<call_result> completed, Action<Exception> excepted)
+		public Task<call_result> CallIt(call_args args)
 		{
-			Request(5u, args, completed, excepted);
+			return CreateTask<call_args, call_result>(5u, args);
 		}
 	}
 }

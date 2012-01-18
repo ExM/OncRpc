@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Rpc.MessageProtocol;
+using System.Threading.Tasks;
 
-namespace Rpc.BindingProtocols
+namespace Rpc.BindingProtocols.TaskBuilders
 {
 	/// <summary>
 	/// RPCBIND Version 3
@@ -24,8 +25,16 @@ namespace Rpc.BindingProtocols
 		/// </summary>
 		/// <param name="conn"></param>
 		public RpcBindV3(IConnector conn)
-			:base(3u, conn)
+			:base(conn)
 		{
+		}
+
+		protected override uint Version
+		{
+			get
+			{
+				return 3u;
+			}
 		}
 
 		/// <summary>
@@ -35,12 +44,9 @@ namespace Rpc.BindingProtocols
 		/// Note - This procedure only sends a response if the procedure was successfully executed and is silent (no response) otherwise.
 		/// The procedure returns the remote program's universal address, and the results of the remote procedure.
 		/// </summary>
-		/// <param name="arg"></param>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public void CallIt(rpcb_rmtcallargs arg, Action<rpcb_rmtcallres> completed, Action<Exception> excepted)
+		public Task<rpcb_rmtcallres> CallIt(rpcb_rmtcallargs arg)
 		{
-			Request(5u, arg, completed, excepted);
+			return CreateTask<rpcb_rmtcallargs, rpcb_rmtcallres>(5u, arg);
 		}
 	}
 }

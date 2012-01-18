@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection.Emit;
-using System.Reflection;
-using Xdr;
-using Rpc.BindingProtocols;
-using System.Net.Sockets;
+using System.Diagnostics;
 using System.Net;
 using Rpc;
-using Rpc.MessageProtocol;
-using System.Diagnostics;
-using System.Threading;
+using Rpc.BindingProtocols;
 
 namespace EmitTest
 {
@@ -25,13 +16,12 @@ namespace EmitTest
 			ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
 
 			var conn = new UdpConnector(ep);
-				
-			var client = new PortMapper(conn);
 			
 			Stopwatch swReq = new Stopwatch();
 			swReq.Start();
 
-			var t = client.Dump();
+			var t = conn.PortMapper().Dump();
+			var tn = conn.PortMapper().Null();
 
 			t.Wait();
 
@@ -64,9 +54,10 @@ namespace EmitTest
 			}
 			*/
 			
-			
-			
-			
+			tn.Wait();
+
+			Console.WriteLine(tn.Result);
+
 			Console.ReadLine();
 			conn.Dispose();
 		}

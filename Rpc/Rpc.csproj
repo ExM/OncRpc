@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -38,14 +38,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="BindingProtocols\BaseRpcBind.cs" />
-    <Compile Include="BindingProtocols\BaseOperation.cs" />
+    <Compile Include="BindingProtocols\TaskBuilders\BaseRpcBind.cs" />
+    <Compile Include="BindingProtocols\TaskBuilders\BaseOperation.cs" />
     <Compile Include="BindingProtocols\call_args.cs" />
     <Compile Include="BindingProtocols\call_result.cs" />
+    <Compile Include="BindingProtocols\ConnectorExtensions.cs" />
+    <Compile Include="BindingProtocols\TaskBuilders\PortMapper.cs" />
     <Compile Include="BindingProtocols\PortMapperProtocol.cs" />
     <Compile Include="BindingProtocols\mapping.cs" />
-    <Compile Include="BindingProtocols\PortMapper.cs" />
-    <Compile Include="BindingProtocols\RpcBindV3.cs" />
+    <Compile Include="BindingProtocols\TaskBuilders\RpcBindV3.cs" />
     <Compile Include="BindingProtocols\TransportSemantics.cs" />
     <Compile Include="BindingProtocols\ProtocolName.cs" />
     <Compile Include="BindingProtocols\ProtocolFamily.cs" />
@@ -81,7 +82,7 @@
     <Compile Include="MessageProtocol\opaque_auth.cs" />
     <Compile Include="BindingProtocols\rpcb.cs" />
     <Compile Include="MessageReader.cs" />
-    <Compile Include="BindingProtocols\RpcBindV4.cs" />
+    <Compile Include="BindingProtocols\TaskBuilders\RpcBindV4.cs" />
     <Compile Include="IConnector.cs" />
     <Compile Include="Toolkit.cs" />
     <Compile Include="Connectors\UdpConnector.cs" />

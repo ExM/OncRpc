@@ -4,42 +4,73 @@ using System.Linq;
 using System.Text;
 using Xdr;
 using Rpc.MessageProtocol;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rpc.Connectors
 {
 	internal class Ticket<TReq, TResp> : ITicket
 	{
-		public TaskCompletionSource<TResp> TaskSrc { get; set; }
-		public call_body CallBody { get; set; }
-		public TReq Request { get; set; }
+		private UdpConnector _connector;
+		private call_body _callBody;
+		private TReq _reqArgs;
+		private TaskCompletionSource<TResp> _taskSrc;
+		private CancellationTokenRegistration _ctr;
+
 		public uint Xid { get; set; }
+
+		public Ticket(UdpConnector connector, call_body callBody, TReq reqArgs, CancellationToken token)
+		{
+			_connector = connector;
+			_callBody = callBody;
+			_reqArgs = reqArgs;
+
+			_taskSrc = new TaskCompletionSource<TResp>();
+			_ctr = token.Register(Cancel);
+		}
+
+		public Task<TResp> Task
+		{
+			get
+			{
+				return _taskSrc.Task;
+			}
+		}
 
 		public byte[] BuildDatagram()
 		{
-			rpc_msg reqHeader = new rpc_msg()
+			try
 			{
-				xid = Xid,
-				body = new body()
+				rpc_msg reqHeader = new rpc_msg()
 				{
-					mtype = msg_type.CALL,
-					cbody = CallBody
-				}
-			};
+					xid = Xid,
+					body = new body()
+					{
+						mtype = msg_type.CALL,
+						cbody = _callBody
+					}
+				};
 
-			UdpDatagram dtg = new UdpDatagram();
-			Writer w = Toolkit.CreateWriter(dtg);
-			w.Write(reqHeader);
-			w.Write(Request);
+				UdpDatagram dtg = new UdpDatagram();
+				Writer w = Toolkit.CreateWriter(dtg);
+				w.Write(reqHeader);
+				w.Write(_reqArgs);
 
-			CallBody = null; 
-			Request = default(TReq);
+				_callBody = null;
+				_reqArgs = default(TReq);
 
-			return dtg.ToArray();
+				return dtg.ToArray();
+			}
+			catch (Exception ex)
+			{
+				Except(ex);
+				return null;
+			}
 		}
 		
 		public void ReadResult(MessageReader mr, Reader r, rpc_msg respMsg)
 		{
+			_ctr.Dispose();
 			try
 			{
 				Toolkit.ReplyMessageValidate2(respMsg);
@@ -47,17 +78,25 @@ namespace Rpc.Connectors
 				TResp respArgs = r.Read<TResp>();
 				mr.CheckEmpty();
 
-				TaskSrc.TrySetResult(respArgs);
+				_taskSrc.TrySetResult(respArgs);
 			}
 			catch (Exception ex)
 			{
-				TaskSrc.TrySetException(ex);
+				_taskSrc.TrySetException(ex);
 			}
 		}
 
 		public void Except(Exception ex)
 		{
-			TaskSrc.TrySetException(ex);
+			_ctr.Dispose();
+			_taskSrc.TrySetException(ex);
+		}
+
+		private void Cancel()
+		{
+			_ctr.Dispose();
+			if (_taskSrc.TrySetCanceled())
+				_connector.RemoveTicket(this);
 		}
 	}
 }

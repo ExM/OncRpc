@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Rpc.MessageProtocol;
+using System.Threading.Tasks;
 
-namespace Rpc.BindingProtocols
+namespace Rpc.BindingProtocols.TaskBuilders
 {
 	/// <summary>
 	/// RPCBIND Version 4
@@ -24,32 +25,34 @@ namespace Rpc.BindingProtocols
 		/// </summary>
 		/// <param name="conn"></param>
 		public RpcBindV4(IConnector conn)
-			:base(4u, conn)
+			:base(conn)
 		{
+		}
+
+		protected override uint Version
+		{
+			get
+			{
+				return 4u;
+			}
 		}
 		
 		/// <summary>
 		/// This procedure is identical to the version 3 RPCBPROC_CALLIT procedure.  The new name indicates that the procedure should be used
 		/// for broadcast RPCs only.  RPCBPROC_INDIRECT, defined below, should be used for indirect RPC calls.
 		/// </summary>
-		/// <param name="arg"></param>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public void BCast(rpcb_rmtcallargs arg, Action<rpcb_rmtcallres> completed, Action<Exception> excepted)
+		public Task<rpcb_rmtcallres> BCast(rpcb_rmtcallargs arg)
 		{
-			Request(5u, arg, completed, excepted);
+			return CreateTask<rpcb_rmtcallargs, rpcb_rmtcallres>(5u, arg);
 		}
 
 		/// <summary>
 		/// This procedure is similar to RPCBPROC_GETADDR. The difference is the "r_vers" field of the rpcb structure can be used to specify the
 		/// version of interest.  If that version is not registered, no address is returned.
 		/// </summary>
-		/// <param name="arg"></param>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public void GetVersAddr(rpcb arg, Action<string> completed, Action<Exception> excepted)
+		public Task<string> GetVersAddr(rpcb arg)
 		{
-			Request(9u, arg, completed, excepted);
+			return CreateTask<rpcb, string>(9u, arg);
 		}
 		
 		/// <summary>
@@ -57,24 +60,18 @@ namespace Rpc.BindingProtocols
 		/// procedure returns an indication of the error.  This procedure should not be used for broadcast RPC. It is intended to be used with
 		/// indirect RPC calls only.
 		/// </summary>
-		/// <param name="arg"></param>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public void Indirect(rpcb_rmtcallargs arg, Action<rpcb_rmtcallres> completed, Action<Exception> excepted)
+		public Task<rpcb_rmtcallres> Indirect(rpcb_rmtcallargs arg)
 		{
-			Request(10u, arg, completed, excepted);
+			return CreateTask<rpcb_rmtcallargs, rpcb_rmtcallres>(10u, arg);
 		}
 		
 		/// <summary>
 		/// This procedure returns a list of addresses for the given rpcb entry.
 		/// The client may be able use the results to determine alternate transports that it can use to communicate with the server.
 		/// </summary>
-		/// <param name="arg"></param>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public void GetAddrList(rpcb arg, Action<List<rpcb_entry>> completed, Action<Exception> excepted)
+		public Task<List<rpcb_entry>> GetAddrList(rpcb arg)
 		{
-			Request(11u, arg, completed, excepted);
+			return CreateTask<rpcb, List<rpcb_entry>>(11u, arg);
 		}
 
 		/// <summary>
@@ -85,11 +82,9 @@ namespace Rpc.BindingProtocols
 		/// RPCBIND is running.  RPCBIND only accepts RPCBPROC_SET and RPCBPROC_UNSET requests by clients running on the same machine as the
 		/// RPCBIND program.
 		/// </summary>
-		/// <param name="completed"></param>
-		/// <param name="excepted"></param>
-		public void GetStat(Action<rpcb_stat_byvers> completed, Action<Exception> excepted)
+		public Task<rpcb_stat_byvers> GetStat()
 		{
-			Request(12u, new Xdr.Void(), completed, excepted);
+			return CreateTask<Xdr.Void, rpcb_stat_byvers>(12u, new Xdr.Void());
 		}
 	}
 }
