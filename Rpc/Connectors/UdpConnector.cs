@@ -134,7 +134,7 @@ namespace Rpc
 					byte[] datagram = ticket.BuildDatagram();
 					if (datagram == null)
 						continue;
-					Log.Trace(() => "sending byte dump: " + datagram.ToDisplay());
+					Log.Trace(DumpToLog, "sending byte dump: {0}", datagram);
 					clientCopy.BeginSend(datagram, datagram.Length, DatagramSended, clientCopy);
 				}
 				catch (Exception ex)
@@ -312,7 +312,7 @@ namespace Rpc
 
 			try
 			{
-				Log.Trace(() => "received byte dump: " + received.ToDisplay());
+				Log.Trace(DumpToLog, "received byte dump: {0}", received);
 				mr = new MessageReader(received);
 				r = Toolkit.CreateReader(mr);
 				respMsg = r.Read<rpc_msg>();
@@ -336,10 +336,10 @@ namespace Rpc
 			else
 				ticket.ReadResult(mr, r, respMsg);
 		}
-		
-		private void ParseMessage(byte[] received)
+
+		private static string DumpToLog(string frm, byte[] buffer)
 		{
-			
+			return string.Format(frm, buffer.ToDisplay());
 		}
 
 		private ITicket EnqueueTicket(uint xid)
