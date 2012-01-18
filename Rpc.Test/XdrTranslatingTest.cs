@@ -21,31 +21,30 @@ F1E2D3C4 00000001 00000000 00000000 00000000 00000000 00000001 000186A0
 00000002 00000006 0000006F 00000001 000186A0 00000002 00000011 0000006F
 00000001 000186B8 00000001 00000011 0000BFA1 00000001 000186B8 00000001
 00000006 0000E10D 00000000");
-			var client = new PortMapper(conn);
-			client.Dump((list) =>
-			{
-				Assert.AreEqual(111, list[0].port);
-				Assert.AreEqual(100000, list[0].prog);
-				Assert.AreEqual(6, list[0].prot);
-				Assert.AreEqual(2, list[0].vers);
 
-				Assert.AreEqual(111, list[1].port);
-				Assert.AreEqual(100000, list[1].prog);
-				Assert.AreEqual(17, list[1].prot);
-				Assert.AreEqual(2, list[1].vers);
+			var list = Env.WaitResult(conn.PortMapper().Dump());
 
-				Assert.AreEqual(49057, list[2].port);
-				Assert.AreEqual(100024, list[2].prog);
-				Assert.AreEqual(17, list[2].prot);
-				Assert.AreEqual(1, list[2].vers);
+			Assert.AreEqual(111, list[0].port);
+			Assert.AreEqual(100000, list[0].prog);
+			Assert.AreEqual(6, list[0].prot);
+			Assert.AreEqual(2, list[0].vers);
 
-				Assert.AreEqual(57613, list[3].port);
-				Assert.AreEqual(100024, list[3].prog);
-				Assert.AreEqual(6, list[3].prot);
-				Assert.AreEqual(1, list[3].vers);
-			}, (e) => Assert.Fail("unexpected exception: {0}", e));
+			Assert.AreEqual(111, list[1].port);
+			Assert.AreEqual(100000, list[1].prog);
+			Assert.AreEqual(17, list[1].prot);
+			Assert.AreEqual(2, list[1].vers);
+
+			Assert.AreEqual(49057, list[2].port);
+			Assert.AreEqual(100024, list[2].prog);
+			Assert.AreEqual(17, list[2].prot);
+			Assert.AreEqual(1, list[2].vers);
+
+			Assert.AreEqual(57613, list[3].port);
+			Assert.AreEqual(100024, list[3].prog);
+			Assert.AreEqual(6, list[3].prot);
+			Assert.AreEqual(1, list[3].vers);
 		}
-
+		
 		[Test]
 		public void PortMapperNull()
 		{
@@ -53,11 +52,11 @@ F1E2D3C4 00000001 00000000 00000000 00000000 00000000 00000001 000186A0
 F1E2D3C4 00000000 00000002 000186A0 00000002 00000000 00000000 00000000
 00000000 00000000", @"
 F1E2D3C4 00000001 00000000 00000000 00000000 00000000");
-			var client = new PortMapper(conn);
 
-			client.Null(() => {}, (e) => Assert.Fail("unexpected exception: {0}", e));
+			var r = Env.WaitResult(conn.PortMapper().Null());
+			Assert.IsNotNull(r);
 		}
-		
+
 		[Test]
 		public void RpcBinder_GetStat()
 		{
@@ -73,19 +72,14 @@ F1E2D3C4 00000001 00000000 00000000 00000000 00000000 00000000 00000000
 00000000 00000000 00000000 00000000 00000003 00000020 00000009 00000000
 00000000");
 
-			var client = new RpcBindV4(conn);
+			var stats = Env.WaitResult(conn.RpcBindV4().GetStat());
+			Assert.IsNotNull(stats);
 
-			client.GetStat((stats) =>
-			{
-				Assert.IsNotNull(stats);
-
-				Assert.IsEmpty(stats.V2.addrinfo);
-				Assert.IsEmpty(stats.V2.rmtinfo);
-				Assert.AreEqual(0, stats.V2.setinfo);
-				Assert.AreEqual(0, stats.V2.unsetinfo);
-				Assert.AreEqual(rpcb_stat.RPCBSTAT_HIGHPROC, stats.V2.info.Length);
-
-			}, (e) => Assert.Fail("unexpected exception: {0}", e));
+			Assert.IsEmpty(stats.V2.addrinfo);
+			Assert.IsEmpty(stats.V2.rmtinfo);
+			Assert.AreEqual(0, stats.V2.setinfo);
+			Assert.AreEqual(0, stats.V2.unsetinfo);
+			Assert.AreEqual(rpcb_stat.RPCBSTAT_HIGHPROC, stats.V2.info.Length);
 		}
 
 		[Test]
@@ -143,12 +137,9 @@ F1E2D3C4000000010000000000000000 000000000000000000000001000186A0 00000004000000
 00000001000186B50000000300000004 746370360000000A3A3A2E3139312E31 3134000000000007756E6B6E6F776E00 00000001000186B50000000400000004
 746370360000000A3A3A2E3139312E31 3134000000000007756E6B6E6F776E00 00000000");
 
-			var client = new RpcBindV4(conn);
+			var list = Env.WaitResult(conn.RpcBindV4().Dump());
 
-			client.Dump((list) =>
-			{
-				Assert.AreEqual(60, list.Count);
-			}, (e) => Assert.Fail("unexpected exception: {0}", e));
+			Assert.AreEqual(60, list.Count);
 		}
 	}
 }

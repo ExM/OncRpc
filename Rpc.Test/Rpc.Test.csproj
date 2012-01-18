@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Config.cs" />
+    <Compile Include="Env.cs" />
     <Compile Include="TestStubConnector.cs" />
     <Compile Include="XdrTranslatingTest.cs" />
     <Compile Include="PortMapperBehaviorTest.cs" />

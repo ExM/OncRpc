@@ -75,7 +75,7 @@ namespace Rpc.Connectors
 			_ctr.Dispose();
 			try
 			{
-				Toolkit.ReplyMessageValidate2(respMsg);
+				Toolkit.ReplyMessageValidate(respMsg);
 
 				TResp respArgs = r.Read<TResp>();
 				mr.CheckEmpty();

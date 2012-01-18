@@ -73,60 +73,7 @@ namespace Rpc
 		/// </summary>
 		/// <param name="msg"></param>
 		/// <returns></returns>
-		public static Exception ReplyMessageValidate(rpc_msg msg)
-		{
-			try
-			{
-				if (msg.body.mtype != msg_type.REPLY)
-					return Exceptions.UnexpectedMessageType(msg.body.mtype);
-
-				reply_body replyBody = msg.body.rbody;
-
-				if (replyBody.stat == reply_stat.MSG_ACCEPTED)
-				{
-					accepted_reply.reply_data_union du = replyBody.areply.reply_data;
-					switch(du.stat)
-					{
-						case accept_stat.GARBAGE_ARGS:
-							return Exceptions.GarbageArgs();
-						case accept_stat.PROC_UNAVAIL:
-							return Exceptions.ProcedureUnavalible(replyBody);
-						case accept_stat.PROG_MISMATCH:
-							return Exceptions.ProgramMismatch(replyBody, du.mismatch_info);
-						case accept_stat.PROG_UNAVAIL:
-							return Exceptions.ProgramUnavalible(replyBody);
-						case accept_stat.SUCCESS:
-							return null;
-						case accept_stat.SYSTEM_ERR:
-							return Exceptions.SystemError(replyBody);
-						default:
-							throw null;
-					}
-				}
-				else if(replyBody.stat == reply_stat.MSG_DENIED)
-				{
-					if (replyBody.rreply.rstat == reject_stat.AUTH_ERROR)
-						return Exceptions.AuthError(replyBody, replyBody.rreply.astat);
-					else if (replyBody.rreply.rstat == reject_stat.RPC_MISMATCH)
-						return Exceptions.RpcVersionError(replyBody, replyBody.rreply.mismatch_info);
-					else
-						throw null;
-				}
-				else
-					throw null;
-			}
-			catch(NullReferenceException)
-			{
-				throw Exceptions.NoRFC5531("msg");
-			}
-		}
-
-		/// <summary>
-		/// returns the description of the RPC message
-		/// </summary>
-		/// <param name="msg"></param>
-		/// <returns></returns>
-		public static void ReplyMessageValidate2(rpc_msg msg)
+		public static void ReplyMessageValidate(rpc_msg msg)
 		{
 			try
 			{

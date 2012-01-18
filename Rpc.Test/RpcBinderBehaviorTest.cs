@@ -12,32 +12,24 @@ namespace Rpc
 	[TestFixture]
 	public class RpcBinderBehaviorTest
 	{
+		
 		[Test]
 		public void Dump()
 		{
-			var conn = new SyncUdpConnector(Config.PortMapperAddr, 2000);
-			var client = new RpcBindV4(conn);
+			var list = Env.CallForUdp((conn, t) => conn.RpcBindV4(t).Dump());
 
-			client.Dump((list) =>
-			{
-				Assert.GreaterOrEqual(list.Count, 2);
-				foreach(var item in list)
-					Console.WriteLine("addr:{0} netid:{1} owner:{2} prog:{3} vers:{4}",
-						item.r_addr, item.r_netid, item.r_owner, item.r_prog, item.r_vers);
-			}, (e) => Assert.Fail("unexpected exception: {0}", e));
+			Assert.GreaterOrEqual(list.Count, 2);
+			foreach(var item in list)
+				Console.WriteLine("addr:{0} netid:{1} owner:{2} prog:{3} vers:{4}",
+					item.r_addr, item.r_netid, item.r_owner, item.r_prog, item.r_vers);
 		}
 		
 		[Test]
 		public void GetStat()
 		{
-			var conn = new SyncUdpConnector(Config.PortMapperAddr, 2000);
-			var client = new RpcBindV4(conn);
-			
-			client.GetStat((stats) =>
-			{
-				Assert.IsNotNull(stats);
+			var stats = Env.CallForUdp((conn, t) => conn.RpcBindV4(t).GetStat());
 
-			}, (e) => Assert.Fail("unexpected exception: {0}", e));
+			Assert.IsNotNull(stats);
 		}
 	}
 }

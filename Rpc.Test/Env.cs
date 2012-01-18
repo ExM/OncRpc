@@ -6,12 +6,15 @@ using NLog;
 using NLog.Config;
 using NLog.Targets;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace Rpc
 {
-	public static class Config
+	public class Env
 	{
-		static Config()
+		static Env()
 		{
 			LoggingConfiguration config = new LoggingConfiguration();
 			ConsoleTarget consoleTarget = new ConsoleTarget();
@@ -25,6 +28,26 @@ namespace Rpc
 		}
 
 		public readonly static IPEndPoint PortMapperAddr;
+
+		public static TResp CallForUdp<TResp>(Func<IConnector, CancellationToken, Task<TResp>> taskCreater)
+		{
+			var conn = new UdpConnector(PortMapperAddr);
+
+			CancellationTokenSource cts = new CancellationTokenSource();
+
+			var t = taskCreater(conn, cts.Token);
+
+			if (!t.Wait(2000))
+				cts.Cancel(false);
+
+			return t.Result;
+		}
+
+		public static TResp WaitResult<TResp>(Task<TResp> task)
+		{
+			Assert.IsTrue(task.Wait(2000), "task is hung");
+			return task.Result;
+		}
 	}
 
 }

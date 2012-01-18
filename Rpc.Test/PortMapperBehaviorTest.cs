@@ -6,6 +6,7 @@ using Rpc.MessageProtocol;
 using Xdr;
 using Rpc.BindingProtocols;
 using System.Linq;
+using System.Threading;
 
 namespace Rpc
 {
@@ -15,32 +16,20 @@ namespace Rpc
 		[Test]
 		public void Dump()
 		{
-			var conn = new SyncUdpConnector(Config.PortMapperAddr, 2000);
-			var client = new PortMapper(conn);
+			var r = Env.CallForUdp((conn, t) => conn.PortMapper(t).Dump());
 
-			client.Dump((t) =>
-			{
-				Assert.GreaterOrEqual(t.Count, 2);
-				Assert.IsFalse(t.Any((m) => m.prot != 6 && m.prot != 17));
-				Assert.IsTrue(t.Any((m) => m.port == Config.PortMapperAddr.Port && m.prog == 100000 && m.vers == 2 && m.prot == 6));
-				Assert.IsTrue(t.Any((m) => m.port == Config.PortMapperAddr.Port && m.prog == 100000 && m.vers == 2 && m.prot == 17));
-			}, (e) => Assert.Fail("unexpected exception: {0}", e));
+			Assert.GreaterOrEqual(r.Count, 2);
+			Assert.IsFalse(r.Any((m) => m.prot != 6 && m.prot != 17));
+			Assert.IsTrue(r.Any((m) => m.port == Env.PortMapperAddr.Port && m.prog == 100000 && m.vers == 2 && m.prot == 6));
+			Assert.IsTrue(r.Any((m) => m.port == Env.PortMapperAddr.Port && m.prog == 100000 && m.vers == 2 && m.prot == 17));
 		}
 
 		[Test]
 		public void Null()
 		{
-			var conn = new SyncUdpConnector(Config.PortMapperAddr, 2000);
-			var client = new PortMapper(conn);
+			var r = Env.CallForUdp((conn, t) => conn.PortMapper(t).Null());
 
-			bool completed = false;
-
-			client.Null(() =>
-			{
-				completed = true;
-			}, (e) => Assert.Fail("unexpected exception: {0}", e));
-
-			Assert.IsTrue(completed);
+			Assert.IsNotNull(r);
 		}
 	}
 }

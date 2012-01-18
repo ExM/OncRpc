@@ -8,6 +8,8 @@ using System.Diagnostics;
 using NLog;
 using NUnit.Framework;
 using System.IO;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Rpc
 {
@@ -76,14 +78,21 @@ namespace Rpc
 			}
 		}
 
-		public IDisposable Request<TReq, TResp>(call_body callBody, TReq reqArgs, Action<TResp> completed, Action<Exception> excepted)
+		public Task<TResp> CreateTask<TReq, TResp>(call_body callBody, TReq reqArgs, TaskCreationOptions options, CancellationToken token)
 		{
-			Exception resEx = null;
-			TResp respArgs = default(TResp);
+			return Task.Factory.StartNew<TResp>(() => Request<TReq, TResp>(callBody, reqArgs), token, options, TaskScheduler.Current);
+		}
 
+		public TResp Request<TReq, TResp>(call_body callBody, TReq reqArgs)
+		{
+			MessageReader mr = new MessageReader(_receivedArray);
+			Reader r = Toolkit.CreateReader(mr);
+			rpc_msg respMsg = r.Read<rpc_msg>();
+
+			
 			rpc_msg reqHeader = new rpc_msg()
 			{
-				xid = 0xF1E2D3C4,
+				xid = respMsg.xid, // use xid in _receivedArray
 				body = new body()
 				{
 					mtype = msg_type.CALL,
@@ -91,48 +100,19 @@ namespace Rpc
 				}
 			};
 
-			try
-			{
-				UdpDatagram dtg = new UdpDatagram();
-				Writer w = Toolkit.CreateWriter(dtg);
-				w.Write(reqHeader);
-				w.Write(reqArgs);
+			UdpDatagram dtg = new UdpDatagram();
+			Writer w = Toolkit.CreateWriter(dtg);
+			w.Write(reqHeader);
+			w.Write(reqArgs);
 
-				byte[] outBuff = dtg.ToArray();
+			byte[] outBuff = dtg.ToArray();
+			Assert.AreEqual(_expectedSendArray, outBuff, "send dump is difference");
 
-				Assert.AreEqual(_expectedSendArray, outBuff, "send dump is difference");
+			Toolkit.ReplyMessageValidate(respMsg);
+			TResp respArgs = r.Read<TResp>();
+			mr.CheckEmpty();
 
-
-				MessageReader mr = new MessageReader(_receivedArray);
-				Reader r = Toolkit.CreateReader(mr);
-				rpc_msg respMsg = r.Read<rpc_msg>();
-
-
-				Assert.AreEqual(reqHeader.xid, respMsg.xid, "xid not equal");
-
-
-				resEx = Toolkit.ReplyMessageValidate(respMsg);
-				if (resEx == null)
-				{
-					respArgs = r.Read<TResp>();
-					mr.CheckEmpty();
-				}
-			}
-			catch (AssertionException)
-			{
-				throw;
-			}
-			catch (Exception ex)
-			{
-				resEx = new RpcException("request error", ex);
-			}
-
-			if (resEx == null)
-				completed(respArgs);
-			else
-				excepted(resEx);
-			
-			return null;
+			return respArgs;
 		}
 	}
 }
