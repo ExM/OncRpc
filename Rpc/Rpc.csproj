@@ -58,8 +58,11 @@
     <Compile Include="BindingProtocols\rpcb_entry.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallres.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
+    <Compile Include="Connectors\TcpConnector.cs" />
+    <Compile Include="Connectors\ITicketOwner.cs" />
     <Compile Include="Connectors\Ticket.cs" />
     <Compile Include="Connectors\ITicket.cs" />
+    <Compile Include="TcpMessage.cs" />
     <Compile Include="UdpDatagram.cs" />
     <Compile Include="Exceptions\AuthenticateException.cs" />
     <Compile Include="Exceptions\ReplyException.cs" />

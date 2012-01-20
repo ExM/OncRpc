@@ -11,7 +11,7 @@ namespace Rpc.Connectors
 {
 	internal class Ticket<TReq, TResp> : ITicket
 	{
-		private UdpConnector _connector;
+		private ITicketOwner _owner;
 		private call_body _callBody;
 		private TReq _reqArgs;
 		private TaskCompletionSource<TResp> _taskSrc;
@@ -19,9 +19,9 @@ namespace Rpc.Connectors
 
 		public uint Xid { get; set; }
 
-		public Ticket(UdpConnector connector, call_body callBody, TReq reqArgs, TaskCreationOptions options, CancellationToken token)
+		public Ticket(ITicketOwner owner, call_body callBody, TReq reqArgs, TaskCreationOptions options, CancellationToken token)
 		{
-			_connector = connector;
+			_owner = owner;
 			_callBody = callBody;
 			_reqArgs = reqArgs;
 			_taskSrc = new TaskCompletionSource<TResp>(options);
@@ -39,7 +39,19 @@ namespace Rpc.Connectors
 			}
 		}
 
-		public byte[] BuildDatagram()
+		public Queue<byte[]> BuildTcpMessage(int maxBlock)
+		{
+			//_tcpMessage = new Queue<byte[]>();
+
+			_callBody = null;
+			_reqArgs = default(TReq);
+
+			
+			//TODO: 
+			throw new NotImplementedException();
+		}
+
+		public byte[] BuildUdpDatagram()
 		{
 			rpc_msg reqHeader = new rpc_msg()
 			{
@@ -89,7 +101,7 @@ namespace Rpc.Connectors
 		private void Cancel()
 		{
 			if(_taskSrc.TrySetCanceled())
-				_connector.RemoveTicket(this);
+				_owner.RemoveTicket(this);
 		}
 	}
 }

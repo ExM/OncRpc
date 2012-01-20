@@ -12,6 +12,7 @@ namespace Rpc.Connectors
 		uint Xid { get; set; }
 		void ReadResult(MessageReader mr, Reader r, rpc_msg respMsg);
 		void Except(Exception ex);
-		byte[] BuildDatagram();
+		byte[] BuildUdpDatagram();
+		Queue<byte[]> BuildTcpMessage(int maxBlock);
 	}
 }

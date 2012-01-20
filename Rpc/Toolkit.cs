@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Rpc.MessageProtocol;
 using Xdr;
+using System.IO;
+using System.Threading;
 
 namespace Rpc
 {
@@ -119,6 +121,71 @@ namespace Rpc
 			catch (NullReferenceException)
 			{
 				throw Exceptions.NoRFC5531("msg");
+			}
+		}
+		
+		public static void AsyncWrite(this Stream stream, Queue<byte[]> blocks, Action<Exception> completed)
+		{
+			var context = new AsyncWriteContext()
+			{
+				Stream = stream, Blocks = blocks, Completed = completed
+			};
+			context.BeginWrite();
+		}
+		
+		private class AsyncWriteContext
+		{
+			public Stream Stream;
+			public Queue<byte[]> Blocks;
+			public Action<Exception> Completed;
+			public Exception Error = null;
+			
+			private void WrapCompleted(object arg)
+			{
+				Completed(Error);
+			}
+			
+			public void BeginWrite()
+			{
+				if(Blocks.Count == 0)
+				{
+					ThreadPool.QueueUserWorkItem(WrapCompleted);
+					return;
+				}
+			
+				byte[] block = blocks.Dequeue();
+				
+				try
+				{
+					Stream.BeginWrite(block, 0, block.Length, EndWrite, null);
+				}
+				catch(Exception ex)
+				{
+					Error = ex;
+					ThreadPool.QueueUserWorkItem(WrapCompleted);
+				}
+			}
+		
+			private void EndWrite(IAsyncResult ar)
+			{
+				try
+				{
+					stream.EndWrite(ar);
+					
+					if(Blocks.Count != 0)
+					{
+						byte[] block = Blocks.Dequeue();
+						Stream.BeginWrite(block, 0, block.Length, EndWrite, null);
+						return;
+					}
+				}
+				catch(Exception ex)
+				{
+					Completed(ex);
+					return;
+				}
+				
+				Completed(null);
 			}
 		}
 	}

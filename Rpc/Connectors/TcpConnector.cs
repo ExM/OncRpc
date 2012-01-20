@@ -14,17 +14,16 @@ using System.Threading.Tasks;
 
 namespace Rpc.Connectors
 {
-	/// <summary>
-	/// connector on the UDP with a asynchronous query execution
-	/// </summary>
-	public class UdpConnector : IDisposable, IConnector, ITicketOwner
+	public class TcpConnector : IDisposable, IConnector, ITicketOwner
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 
 		private readonly IPEndPoint _ep;
+		private readonly int _maxBlock = 1024 * 4; //4kb
 		private readonly object _sync = new object();
 
-		private UdpClient _client = null;
+		private TcpClient _client = null;
+		private NetworkStream _stream = null;
 		private uint _nextXid = 0;
 
 		private bool _sendingInProgress = false;
@@ -32,12 +31,13 @@ namespace Rpc.Connectors
 
 		private Dictionary<uint, ITicket> _handlers = new Dictionary<uint, ITicket>();
 		private LinkedList<ITicket> _pendingRequests = new LinkedList<ITicket>();
+		private Queue<byte[]> _sendingTcpMessage = null;
 		
 		/// <summary>
 		/// connector on the UDP with a asynchronous query execution
 		/// </summary>
 		/// <param name="ep"></param>
-		public UdpConnector(IPEndPoint ep)
+		public TcpConnector(IPEndPoint ep)
 		{
 			Log.Info("create connector from {0}", ep);
 			_ep = ep;
@@ -45,18 +45,17 @@ namespace Rpc.Connectors
 			NewSession();
 		}
 
-		private UdpClient NewSession()
+		private TcpClient NewSession()
 		{
-			UdpClient prevClient = _client;
-			_client = new UdpClient();
-			_client.Connect(_ep);
+			TcpClient prevClient = _client;
+			_client = new TcpClient(_ep.AddressFamily);
 			return prevClient;
 		}
 
 		public void Close()
 		{
 			List<ITicket> tickets = new List<ITicket>();
-			UdpClient prevClient;
+			TcpClient prevClient;
 
 			lock(_sync)
 			{
@@ -113,81 +112,100 @@ namespace Rpc.Connectors
 		{
 			Log.Trace("send next queued item");
 			ITicket ticket = null;
-			UdpClient clientCopy = null;
+			TcpClient clientCopy = null;
 
-			lock (_sync)
+			lock(_sync)
 			{
-				if (_sendingInProgress)
+				if(_sendingInProgress)
 				{
 					Log.Debug("already sending");
 					return;
 				}
 
-				if (_pendingRequests.Count == 0)
+				if(_pendingRequests.Count == 0)
 				{
 					Log.Debug("not pending requests to send");
 					return;
 				}
 
-				ticket = _pendingRequests.First.Value;
-				_pendingRequests.RemoveFirst();
-				ticket.Xid = _nextXid++;
+				clientCopy = _client;
 				_sendingInProgress = true;
 
-				_handlers.Add(ticket.Xid, ticket);
-				clientCopy = _client;
+				if(_client.Connected)
+				{
+					ticket = _pendingRequests.First.Value;
+					_pendingRequests.RemoveFirst();
+					ticket.Xid = _nextXid++;
+					_handlers.Add(ticket.Xid, ticket);
+				}
+				
 			}
 
-			var t1 = Task.Factory.StartNew<byte[]>(ticket.BuildUdpDatagram);
+			if(ticket == null)
+			{
+				Task.Factory
+					.FromAsync<IPAddress, int>(clientCopy.BeginConnect, clientCopy.EndConnect, _ep.Address, _ep.Port, null)
+					.ContinueWith(tL =>
+				{
+					var ex = tL.Exception;
+					if(ex != null)
+					{
+						Log.Debug("unable to connected to {0}. Reason: {1}", _ep, ex);
+						Restart(clientCopy, ex);
+					}
+					else
+					{
+						Log.Debug("sucess connect to {0}", _ep);
+						clientCopy.GetStream(); // warming up
+						SendNextQueuedItem();
+					}
+				});
+				return;
+			}
+
+			var t1 = Task.Factory.StartNew<Queue<byte[]>>(() => ticket.BuildTcpMessage(_maxBlock));
 
 			t1.ContinueWith(t1L =>
 			{ // exist Exception
-				lock (_sync)
+				var ex = t1L.Exception;
+				lock(_sync)
 				{
 					_sendingInProgress = false;
 					_handlers.Remove(ticket.Xid);
 				}
-				var ex = t1L.Exception;
-				Log.Debug("datagram not builded (xid:{0}) reason: {1}", ticket.Xid, ex);
+				Log.Debug("TCP message not builded (xid:{0}) reason: {1}", ticket.Xid, ex);
 				ticket.Except(ex);
 				SendNextQueuedItem();
 			}, TaskContinuationOptions.NotOnRanToCompletion);
 			
 			t1.ContinueWith(t1L =>
 			{ // exist Result
-				byte[] datagram = t1L.Result;
-				Log.Trace(DumpToLog, "sending byte dump: {0}", datagram);
-				var t2 = Task.Factory.FromAsync<byte[], int, int>(clientCopy.BeginSend,
-					(ar) => clientCopy.EndSend(ar), datagram, datagram.Length, null);
-
-				t2.ContinueWith(t2L =>
-				{ // exist Exception
-					Exception ex = t2L.Exception;
-					Log.Debug("datagram not sended (xid:{0}) reason: {1}", ticket.Xid, ex);
-					Restart(clientCopy, ex);
-				}, TaskContinuationOptions.NotOnRanToCompletion);
-
-				t2.ContinueWith(t2L =>
-				{ // exist Result
-					Log.Debug("datagram sended (xid:{0})", ticket.Xid);
-					lock (_sync)
+				Log.Debug("Begin sending TCP message (xid:{0})", ticket.Xid);
+				clientCopy.GetStream().AsyncWrite(t1L.Result, (ex) =>
+				{
+					if(ex != null)
 					{
-						if (clientCopy != _client)
+						Log.Debug("tcp message not sended (xid:{0}) reason: {1}", ticket.Xid, ex);
+						Restart(clientCopy, ex);
+						return;
+					}
+					
+					lock(_sync)
+					{
+						if(clientCopy != _client)
 							return;
 						_sendingInProgress = false;
 					}
 
 					SendNextQueuedItem();
-					BeginReceive();
-				}, TaskContinuationOptions.OnlyOnRanToCompletion);
-
+				});
 			}, TaskContinuationOptions.OnlyOnRanToCompletion);
 		}
 		
 		private void BeginReceive()
 		{
 			Log.Trace("begin receive");
-			UdpClient clientCopy;
+			TcpClient clientCopy;
 			lock(_sync)
 			{
 				if (_receivingInProgress)
@@ -260,10 +278,10 @@ namespace Rpc.Connectors
 			}, TaskContinuationOptions.OnlyOnRanToCompletion);
 		}
 
-		private void Restart(UdpClient clientCopy, Exception ex)
+		private void Restart(TcpClient clientCopy, Exception ex)
 		{
 			List<ITicket> tickets;
-			UdpClient prevClient;
+			TcpClient prevClient;
 
 			lock (_sync)
 			{
