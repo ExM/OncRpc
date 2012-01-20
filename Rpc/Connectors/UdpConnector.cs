@@ -45,30 +45,34 @@ namespace Rpc.Connectors
 			NewSession();
 		}
 
-		private void NewSession()
+		private UdpClient NewSession()
 		{
-			if (_client != null)
-				_client.Close();
+			UdpClient prevClient = _client;
 			_client = new UdpClient();
 			_client.Connect(_ep);
+			return prevClient;
 		}
 
 		public void Close()
 		{
 			List<ITicket> tickets = new List<ITicket>();
+			UdpClient prevClient;
+
 			lock(_sync)
 			{
 				tickets.AddRange(_pendingRequests);
 				_pendingRequests.Clear();
 				tickets.AddRange(_handlers.Values);
 				_handlers.Clear();
-				
-				NewSession();
+
+				prevClient = NewSession();
 			}
 			
 			Exception ex = new TaskCanceledException("close connector");
 			foreach(var t in tickets)
 				t.Except(ex);
+
+			prevClient.Close();
 		}
 
 		public Task<TResp> CreateTask<TReq, TResp>(call_body callBody, TReq reqArgs, TaskCreationOptions options, CancellationToken token)
@@ -259,6 +263,7 @@ namespace Rpc.Connectors
 		private void Restart(UdpClient clientCopy, Exception ex)
 		{
 			List<ITicket> tickets;
+			UdpClient prevClient;
 
 			lock (_sync)
 			{
@@ -273,13 +278,14 @@ namespace Rpc.Connectors
 				tickets.AddRange(_handlers.Values);
 				_handlers.Clear();
 
-				NewSession();
+				prevClient = NewSession();
 			}
 
+			SendNextQueuedItem();
+
+			prevClient.Close();
 			foreach (var t in tickets)
 				t.Except(ex);
-
-			SendNextQueuedItem();
 		}
 
 		private static string DumpToLog(string frm, byte[] buffer)
