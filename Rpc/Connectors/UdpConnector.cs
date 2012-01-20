@@ -12,7 +12,7 @@ using Rpc.Connectors;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Rpc
+namespace Rpc.Connectors
 {
 	/// <summary>
 	/// connector on the UDP with a asynchronous query execution
@@ -104,16 +104,117 @@ namespace Rpc
 				_handlers.Remove(ticket.Xid);
 			}
 		}
-		
+
+		private void SendNextQueuedItem()
+		{
+			Log.Trace("send next queued item");
+			ITicket ticket = null;
+			UdpClient clientCopy = null;
+
+			lock (_sync)
+			{
+				if (_sendingInProgress)
+				{
+					Log.Debug("already sending");
+					return;
+				}
+
+				if (_pendingRequests.Count == 0)
+				{
+					Log.Debug("not pending requests to send");
+					return;
+				}
+
+				ticket = _pendingRequests.First.Value;
+				_pendingRequests.RemoveFirst();
+				ticket.Xid = _nextXid++;
+				_sendingInProgress = true;
+
+				_handlers.Add(ticket.Xid, ticket);
+				clientCopy = _client;
+			}
+
+			var t1 = Task.Factory.StartNew<byte[]>(ticket.BuildDatagram);
+
+			t1.ContinueWith(t1L =>
+			{ // exist Exception
+				lock (_sync)
+				{
+					_sendingInProgress = false;
+					_handlers.Remove(ticket.Xid);
+				}
+				var ex = t1L.Exception;
+				Log.Debug("datagram not builded (xid:{0}) reason: {1}", ticket.Xid, ex);
+				ticket.Except(ex);
+				SendNextQueuedItem();
+			}, TaskContinuationOptions.NotOnRanToCompletion);
+			
+			t1.ContinueWith(t1L =>
+			{ // exist Result
+				byte[] datagram = t1L.Result;
+				Log.Trace(DumpToLog, "sending byte dump: {0}", datagram);
+				var t2 = Task.Factory.FromAsync<byte[], int, int>(clientCopy.BeginSend,
+					(ar) => clientCopy.EndSend(ar), datagram, datagram.Length, null);
+
+				t2.ContinueWith(t2L =>
+				{ // exist Exception
+					Exception ex = t2L.Exception;
+					Log.Debug("datagram not sended (xid:{0}) reason: {1}", ticket.Xid, ex);
+					List<ITicket> tickets;
+
+					lock (_sync)
+					{
+						if (clientCopy != _client)
+							return;
+
+						tickets = new List<ITicket>();
+
+						_sendingInProgress = false;
+						_receivingInProgress = false;
+
+						tickets.AddRange(_handlers.Values);
+						_handlers.Clear();
+
+						NewSession();
+					}
+
+					foreach (var t in tickets)
+						t.Except(ex);
+
+					SendNextQueuedItem();
+
+				}, TaskContinuationOptions.NotOnRanToCompletion);
+
+				t2.ContinueWith(t2L =>
+				{ // exist Result
+					Log.Debug("datagram sended (xid:{0})", ticket.Xid);
+					lock (_sync)
+					{
+						if (clientCopy != _client)
+							return;
+						_sendingInProgress = false;
+					}
+
+					SendNextQueuedItem();
+					BeginReceive();
+				}, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+			}, TaskContinuationOptions.OnlyOnRanToCompletion);
+		}
+
+		/*
 		private void SendNextQueuedItem()
 		{
 			while (true)
 			{
-				ITicket ticket;
+				ITicket ticket = null;
 				UdpClient clientCopy;
 
 				lock (_sync)
 				{
+					if(ticket != null)
+						_handlers.Remove(ticket.Xid);
+
 					if (_sendingInProgress)
 						return;
 
@@ -129,11 +230,13 @@ namespace Rpc
 					clientCopy = _client;
 				}
 
+				byte[] datagram = ticket.BuildDatagram();
+				if (datagram == null)
+					continue;
+
 				try
 				{
-					byte[] datagram = ticket.BuildDatagram();
-					if (datagram == null)
-						continue;
+					
 					Log.Trace(DumpToLog, "sending byte dump: {0}", datagram);
 					clientCopy.BeginSend(datagram, datagram.Length, DatagramSended, clientCopy);
 				}
@@ -210,6 +313,7 @@ namespace Rpc
 			
 			SendNextQueuedItem();
 		}
+		*/
 
 		private bool BeginReceive()
 		{

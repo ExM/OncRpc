@@ -41,33 +41,25 @@ namespace Rpc.Connectors
 
 		public byte[] BuildDatagram()
 		{
-			try
+			rpc_msg reqHeader = new rpc_msg()
 			{
-				rpc_msg reqHeader = new rpc_msg()
+				xid = Xid,
+				body = new body()
 				{
-					xid = Xid,
-					body = new body()
-					{
-						mtype = msg_type.CALL,
-						cbody = _callBody
-					}
-				};
+					mtype = msg_type.CALL,
+					cbody = _callBody
+				}
+			};
 
-				UdpDatagram dtg = new UdpDatagram();
-				Writer w = Toolkit.CreateWriter(dtg);
-				w.Write(reqHeader);
-				w.Write(_reqArgs);
+			UdpDatagram dtg = new UdpDatagram();
+			Writer w = Toolkit.CreateWriter(dtg);
+			w.Write(reqHeader);
+			w.Write(_reqArgs);
 
-				_callBody = null;
-				_reqArgs = default(TReq);
+			_callBody = null;
+			_reqArgs = default(TReq);
 
-				return dtg.ToArray();
-			}
-			catch (Exception ex)
-			{
-				Except(ex);
-				return null;
-			}
+			return dtg.ToArray();
 		}
 		
 		public void ReadResult(MessageReader mr, Reader r, rpc_msg respMsg)

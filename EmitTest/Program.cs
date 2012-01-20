@@ -5,6 +5,7 @@ using Rpc;
 using Rpc.BindingProtocols;
 using System.Threading;
 using System.Threading.Tasks;
+using Rpc.Connectors;
 
 namespace EmitTest
 {
@@ -14,8 +15,8 @@ namespace EmitTest
 		{
 
 			IPEndPoint ep;
-			ep = new IPEndPoint(IPAddress.Loopback, 111);
-			//ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
+			//ep = new IPEndPoint(IPAddress.Loopback, 111);
+			ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
 
 			var conn = new UdpConnector(ep);
 
@@ -26,8 +27,8 @@ namespace EmitTest
 			swReq.Start();
 
 			var t = conn.PortMapper(token, true).Dump();
-			//var tn = conn.PortMapper(cts.Token).Null();
-			var tn = conn.RpcBindV4(token).GetTime();
+			var tn = conn.PortMapper(cts.Token).Null();
+			//var tn = conn.RpcBindV4(token).GetTime();
 
 			if(!Task.WaitAll(new Task[] { t, tn }, 2000))
 				cts.Cancel(false);
