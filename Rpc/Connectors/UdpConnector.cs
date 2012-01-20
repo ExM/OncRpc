@@ -160,29 +160,7 @@ namespace Rpc.Connectors
 				{ // exist Exception
 					Exception ex = t2L.Exception;
 					Log.Debug("datagram not sended (xid:{0}) reason: {1}", ticket.Xid, ex);
-					List<ITicket> tickets;
-
-					lock (_sync)
-					{
-						if (clientCopy != _client)
-							return;
-
-						tickets = new List<ITicket>();
-
-						_sendingInProgress = false;
-						_receivingInProgress = false;
-
-						tickets.AddRange(_handlers.Values);
-						_handlers.Clear();
-
-						NewSession();
-					}
-
-					foreach (var t in tickets)
-						t.Except(ex);
-
-					SendNextQueuedItem();
-
+					Restart(clientCopy, ex);
 				}, TaskContinuationOptions.NotOnRanToCompletion);
 
 				t2.ContinueWith(t2L =>
@@ -201,244 +179,107 @@ namespace Rpc.Connectors
 
 			}, TaskContinuationOptions.OnlyOnRanToCompletion);
 		}
-
-		/*
-		private void SendNextQueuedItem()
-		{
-			while (true)
-			{
-				ITicket ticket = null;
-				UdpClient clientCopy;
-
-				lock (_sync)
-				{
-					if(ticket != null)
-						_handlers.Remove(ticket.Xid);
-
-					if (_sendingInProgress)
-						return;
-
-					if (_pendingRequests.Count == 0)
-						return;
-
-					ticket = _pendingRequests.First.Value;
-					_pendingRequests.RemoveFirst();
-					ticket.Xid = _nextXid++;
-					_sendingInProgress = true;
-
-					_handlers.Add(ticket.Xid, ticket);
-					clientCopy = _client;
-				}
-
-				byte[] datagram = ticket.BuildDatagram();
-				if (datagram == null)
-					continue;
-
-				try
-				{
-					
-					Log.Trace(DumpToLog, "sending byte dump: {0}", datagram);
-					clientCopy.BeginSend(datagram, datagram.Length, DatagramSended, clientCopy);
-				}
-				catch (Exception ex)
-				{
-					ThreadPool.QueueUserWorkItem(o => OnSendException(ex));
-				}
-
-				break;
-			}
-		}
 		
-		private void DatagramSended(IAsyncResult ar)
+		private void BeginReceive()
 		{
-			UdpClient clientCopy = ar.AsyncState as UdpClient;
-			
-			bool isOldClient = true;
-			
-			lock(_sync)
-			{
-				if(clientCopy == _client)
-				{
-					isOldClient = false;
-					_sendingInProgress = false;
-				}
-			}
-			
-			if(isOldClient)
-			{
-				Log.Debug("close old sender");
-				try
-				{
-					clientCopy.EndSend(ar);
-				}
-				catch(Exception)
-				{
-				}
-				clientCopy.Close();
-				return;
-			}
-
-			Log.Debug("datagram sended");
-
-			try
-			{
-				clientCopy.EndSend(ar);
-			}
-			catch(Exception ex)
-			{
-				OnSendException(ex);
-				return;
-			}
-			
-			if(BeginReceive())
-				SendNextQueuedItem();
-		}
-		
-		private void OnSendException(Exception ex)
-		{
-			List<ITicket> tickets = new List<ITicket>();
-			lock(_sync)
-			{
-				_sendingInProgress = false;
-				_receivingInProgress = false;
-				
-				tickets.AddRange(_handlers.Values);
-				_handlers.Clear();
-				
-				NewSession();
-			}
-			
-			foreach(var t in tickets)
-				t.Except(ex);
-			
-			SendNextQueuedItem();
-		}
-		*/
-
-		private bool BeginReceive()
-		{
+			Log.Trace("begin receive");
 			UdpClient clientCopy;
 			lock(_sync)
 			{
-				if(_receivingInProgress)
-					return true;
+				if (_receivingInProgress)
+				{
+					Log.Debug("already receiving");
+					return;
+				}
 
 				if (_handlers.Count == 0)
 				{
 					Log.Debug("receive stop. no handlers");
-					return true;
+					return;
 				}
 				
 				_receivingInProgress = true;
 				clientCopy = _client;
 			}
-			
-			try
-			{
-				Log.Trace("begin receive");
-				clientCopy.BeginReceive(DatagramReceived, clientCopy);
-				return true;
-			}
-			catch(Exception ex)
-			{
-				ThreadPool.QueueUserWorkItem(o => OnReceiveException(ex));
-				return false;
-			}
-		}
-		
-		private void OnReceiveException(Exception ex)
-		{
-			List<ITicket> tickets = new List<ITicket>();
-			lock(_sync)
-			{
-				_sendingInProgress = false;
-				_receivingInProgress = false;
-				
-				tickets.AddRange(_handlers.Values);
-				_handlers.Clear();
-				
-				NewSession();
-			}
-			
-			foreach(var t in tickets)
-				t.Except(ex);
-			
-			SendNextQueuedItem();
-		}
-		
-		private void DatagramReceived(IAsyncResult ar)
-		{
-			UdpClient clientCopy = ar.AsyncState as UdpClient;
-			bool isOldClient = true;
-			
-			lock(_sync)
-			{
-				if(clientCopy == _client)
+
+			var t1 = Task.Factory.FromAsync<byte[]>(clientCopy.BeginReceive, (ar) =>
 				{
-					isOldClient = false;
+					IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
+					return clientCopy.EndReceive(ar, ref ep);
+				}, null);
+
+			t1.ContinueWith(t1L =>
+			{ // exist Exception
+				Exception ex = t1L.Exception;
+				Log.Debug("no receiving datagrams. Reason: {0}", ex);
+				Restart(clientCopy, ex);
+			}, TaskContinuationOptions.NotOnRanToCompletion);
+
+			t1.ContinueWith(t1L =>
+			{ // exist Result
+				byte[] datagram = t1L.Result;
+				Log.Trace(DumpToLog, "received byte dump: {0}", datagram);
+				Log.Debug("received {0} bytes", datagram.Length);
+				lock (_sync)
+				{
+					if (clientCopy != _client)
+						return;
+
 					_receivingInProgress = false;
 				}
-			}
-			
-			IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
-			
-			if(isOldClient)
-			{
-				Log.Debug("close old receiver");
+
+				rpc_msg respMsg = null;
+				MessageReader mr = null;
+				Reader r = null;
+
 				try
 				{
-					clientCopy.EndReceive(ar, ref ep);
+					mr = new MessageReader(datagram);
+					r = Toolkit.CreateReader(mr);
+					respMsg = r.Read<rpc_msg>();
 				}
-				catch(Exception)
+				catch (Exception ex)
 				{
+					Log.Info("parse exception: {0}", ex);
+					BeginReceive();
+					return;
 				}
-				clientCopy.Close();
-				return;
-			}
-			
-			byte[] received;
-			
-			try
-			{
-				received = clientCopy.EndReceive(ar, ref ep);
-				Log.Debug("received {0} bytes", received.Length);
-			}
-			catch(Exception ex)
-			{
-				OnReceiveException(ex);
-				return;
-			}
-
-			rpc_msg respMsg = null;
-			MessageReader mr = null;
-			Reader r = null;
-			bool unexpectedMessage = false;
-
-			try
-			{
-				Log.Trace(DumpToLog, "received byte dump: {0}", received);
-				mr = new MessageReader(received);
-				r = Toolkit.CreateReader(mr);
-				respMsg = r.Read<rpc_msg>();
-			}
-			catch (Exception ex)
-			{
-				Log.Info("parse exception: {0}", ex);
-				unexpectedMessage = true;
-			}
-
-			if (unexpectedMessage)
-			{
+				
+				Log.Trace("received response xid:{0}", respMsg.xid);
+				ITicket ticket = EnqueueTicket(respMsg.xid);
 				BeginReceive();
-				return;
+				if (ticket == null)
+					Log.Debug("no handler for xid:{0}", respMsg.xid);
+				else
+					ticket.ReadResult(mr, r, respMsg);
+
+			}, TaskContinuationOptions.OnlyOnRanToCompletion);
+		}
+
+		private void Restart(UdpClient clientCopy, Exception ex)
+		{
+			List<ITicket> tickets;
+
+			lock (_sync)
+			{
+				if (clientCopy != _client)
+					return;
+
+				tickets = new List<ITicket>();
+
+				_sendingInProgress = false;
+				_receivingInProgress = false;
+
+				tickets.AddRange(_handlers.Values);
+				_handlers.Clear();
+
+				NewSession();
 			}
 
-			ITicket ticket = EnqueueTicket(respMsg.xid);
-			BeginReceive();
-			if (ticket == null)
-				Log.Debug("no handler for xid:{0}", respMsg.xid);
-			else
-				ticket.ReadResult(mr, r, respMsg);
+			foreach (var t in tickets)
+				t.Except(ex);
+
+			SendNextQueuedItem();
 		}
 
 		private static string DumpToLog(string frm, byte[] buffer)
@@ -465,4 +306,3 @@ namespace Rpc.Connectors
 		}
 	}
 }
-
