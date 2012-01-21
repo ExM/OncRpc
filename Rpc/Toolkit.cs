@@ -153,7 +153,7 @@ namespace Rpc
 					return;
 				}
 			
-				byte[] block = blocks.Dequeue();
+				byte[] block = Blocks.Dequeue();
 				
 				try
 				{
@@ -170,7 +170,7 @@ namespace Rpc
 			{
 				try
 				{
-					stream.EndWrite(ar);
+					Stream.EndWrite(ar);
 					
 					if(Blocks.Count != 0)
 					{

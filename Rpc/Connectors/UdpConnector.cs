@@ -91,7 +91,7 @@ namespace Rpc.Connectors
 			return ticket.Task;
 		}
 
-		internal void RemoveTicket(ITicket ticket)
+		void ITicketOwner.RemoveTicket(ITicket ticket)
 		{
 			lock(_sync)
 			{

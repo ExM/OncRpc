@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace Rpc.Connectors
 {
+	/*
 	public class TcpConnector : IDisposable, IConnector, ITicketOwner
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
@@ -329,4 +330,5 @@ namespace Rpc.Connectors
 			Close();
 		}
 	}
+	*/
 }
