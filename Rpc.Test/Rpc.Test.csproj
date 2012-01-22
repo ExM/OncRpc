@@ -44,8 +44,8 @@
     <Compile Include="XdrTranslatingTest.cs" />
     <Compile Include="PortMapperBehaviorTest.cs" />
     <Compile Include="RpcBinderBehaviorTest.cs" />
-    <Compile Include="TcpMessageTest.cs" />
     <Compile Include="TestToolkit.cs" />
+    <Compile Include="TcpWriterTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
