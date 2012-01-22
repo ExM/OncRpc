@@ -88,6 +88,8 @@
     <Compile Include="Toolkit.cs" />
     <Compile Include="Connectors\UdpConnector.cs" />
     <Compile Include="TcpStreaming\TcpWriter.cs" />
+    <Compile Include="TcpStreaming\Extension.cs" />
+    <Compile Include="TcpStreaming\TcpReader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
