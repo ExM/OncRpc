@@ -114,6 +114,7 @@ namespace Rpc.TcpStreaming
 					Completed(ex, null);
 				}
 				
+				TcpReader.PrepareRead();
 				Completed(null, TcpReader);
 			}
 			
@@ -121,7 +122,7 @@ namespace Rpc.TcpStreaming
 			{
 				_leftToRead =
 					((_buf[0] & 0x7F) << 0x18) |
-					(_buf[1] << 0x10) | 
+					(_buf[1] << 0x10) |
 					(_buf[2] << 0x08) |
 					(_buf[3]);
 				

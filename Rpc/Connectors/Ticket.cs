@@ -6,6 +6,7 @@ using Xdr;
 using Rpc.MessageProtocol;
 using System.Threading;
 using System.Threading.Tasks;
+using Rpc.TcpStreaming;
 
 namespace Rpc.Connectors
 {
@@ -39,16 +40,27 @@ namespace Rpc.Connectors
 			}
 		}
 
-		public Queue<byte[]> BuildTcpMessage(int maxBlock)
+		public LinkedList<byte[]> BuildTcpMessage(int maxBlock)
 		{
-			//_tcpMessage = new Queue<byte[]>();
+			rpc_msg reqHeader = new rpc_msg()
+			{
+				xid = Xid,
+				body = new body()
+				{
+					mtype = msg_type.CALL,
+					cbody = _callBody
+				}
+			};
 
+			TcpWriter tw = new TcpWriter(maxBlock);
+			Writer xw = Toolkit.CreateWriter(tw);
+			xw.Write(reqHeader);
+			xw.Write(_reqArgs);
+			
 			_callBody = null;
 			_reqArgs = default(TReq);
 
-			
-			//TODO: 
-			throw new NotImplementedException();
+			return tw.Build();
 		}
 
 		public byte[] BuildUdpDatagram()
@@ -72,6 +84,24 @@ namespace Rpc.Connectors
 			_reqArgs = default(TReq);
 
 			return dtg.ToArray();
+		}
+		
+		public void ReadResult(TcpReader mr, Reader r, rpc_msg respMsg)
+		{
+			_ctr.Dispose();
+			try
+			{
+				Toolkit.ReplyMessageValidate(respMsg);
+
+				TResp respArgs = r.Read<TResp>();
+				mr.CheckEmpty();
+
+				_taskSrc.TrySetResult(respArgs);
+			}
+			catch(Exception ex)
+			{
+				_taskSrc.TrySetException(ex);
+			}
 		}
 		
 		public void ReadResult(MessageReader mr, Reader r, rpc_msg respMsg)

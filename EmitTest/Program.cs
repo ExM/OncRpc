@@ -16,10 +16,10 @@ namespace EmitTest
 			ThreadPool.SetMinThreads(2, 2);
 
 			IPEndPoint ep;
-			//ep = new IPEndPoint(IPAddress.Loopback, 111);
-			ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
+			ep = new IPEndPoint(IPAddress.Loopback, 111);
+			//ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
 
-			var conn = new UdpConnector(ep);
+			var conn = new TcpConnector(ep);
 
 			CancellationTokenSource cts = new CancellationTokenSource();
 			CancellationToken token = cts.Token;
@@ -33,7 +33,7 @@ namespace EmitTest
 
 			try
 			{
-				if (!Task.WaitAll(new Task[] { t, tn }, 2000))
+				if(!Task.WaitAll(new Task[] { t, tn }, 2000))
 					cts.Cancel(false);
 			}
 			catch
@@ -56,7 +56,7 @@ namespace EmitTest
 					item.port, item.prog, item.prot, item.vers);
 			}
 
-			if (tn.Exception != null)
+			if(tn.Exception != null)
 			{
 				Console.WriteLine("tn.Exception: {0}", tn.Exception);
 			}

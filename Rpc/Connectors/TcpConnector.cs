@@ -11,10 +11,11 @@ using System.Threading;
 using Rpc.Connectors;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Rpc.TcpStreaming;
 
 namespace Rpc.Connectors
 {
-	/*
+
 	public class TcpConnector : IDisposable, IConnector, ITicketOwner
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
@@ -91,7 +92,7 @@ namespace Rpc.Connectors
 			return ticket.Task;
 		}
 
-		internal void RemoveTicket(ITicket ticket)
+		void ITicketOwner.RemoveTicket(ITicket ticket)
 		{
 			lock(_sync)
 			{
@@ -108,12 +109,13 @@ namespace Rpc.Connectors
 				_handlers.Remove(ticket.Xid);
 			}
 		}
-
+		
 		private void SendNextQueuedItem()
 		{
 			Log.Trace("send next queued item");
 			ITicket ticket = null;
 			TcpClient clientCopy = null;
+			NetworkStream streamCopy = null;
 
 			lock(_sync)
 			{
@@ -133,42 +135,42 @@ namespace Rpc.Connectors
 				_sendingInProgress = true;
 
 				if(_client.Connected)
-				{
-					ticket = _pendingRequests.First.Value;
-					_pendingRequests.RemoveFirst();
-					ticket.Xid = _nextXid++;
-					_handlers.Add(ticket.Xid, ticket);
-				}
+					streamCopy = clientCopy.GetStream();
 				
+				ticket = _pendingRequests.First.Value;
+				_pendingRequests.RemoveFirst();
+				ticket.Xid = _nextXid++;
+				_handlers.Add(ticket.Xid, ticket);
 			}
-
-			if(ticket == null)
-			{
-				Task.Factory
-					.FromAsync<IPAddress, int>(clientCopy.BeginConnect, clientCopy.EndConnect, _ep.Address, _ep.Port, null)
-					.ContinueWith(tL =>
-				{
-					var ex = tL.Exception;
-					if(ex != null)
-					{
-						Log.Debug("unable to connected to {0}. Reason: {1}", _ep, ex);
-						Restart(clientCopy, ex);
-					}
-					else
-					{
-						Log.Debug("sucess connect to {0}", _ep);
-						clientCopy.GetStream(); // warming up
-						SendNextQueuedItem();
-					}
-				});
-				return;
+			
+			Task<LinkedList<byte[]>> buildTask;
+			
+			if(streamCopy == null)
+			{//no connection
+				var connTask = Task.Factory
+					.FromAsync<IPAddress, int>(clientCopy.BeginConnect, clientCopy.EndConnect, _ep.Address, _ep.Port, null);
+				
+				connTask.ContinueWith(connTaskL =>
+				{ // exist Exception
+					var ex = connTaskL.Exception;
+					Log.Debug("unable to connected to {0}. Reason: {1}", _ep, ex);
+					Restart(clientCopy, ex);
+				}, TaskContinuationOptions.NotOnRanToCompletion);
+				
+				buildTask = connTask.ContinueWith(connTaskL =>
+				{ // exist Result
+					Log.Debug("sucess connect to {0}", _ep);
+					streamCopy = clientCopy.GetStream();
+					BeginReceive();
+					return ticket.BuildTcpMessage(_maxBlock);
+				}, TaskContinuationOptions.OnlyOnRanToCompletion);
 			}
+			else
+				buildTask = Task.Factory.StartNew<LinkedList<byte[]>>(() => ticket.BuildTcpMessage(_maxBlock));
 
-			var t1 = Task.Factory.StartNew<Queue<byte[]>>(() => ticket.BuildTcpMessage(_maxBlock));
-
-			t1.ContinueWith(t1L =>
+			buildTask.ContinueWith(btL =>
 			{ // exist Exception
-				var ex = t1L.Exception;
+				var ex = btL.Exception;
 				lock(_sync)
 				{
 					_sendingInProgress = false;
@@ -179,14 +181,14 @@ namespace Rpc.Connectors
 				SendNextQueuedItem();
 			}, TaskContinuationOptions.NotOnRanToCompletion);
 			
-			t1.ContinueWith(t1L =>
+			buildTask.ContinueWith(btL =>
 			{ // exist Result
 				Log.Debug("Begin sending TCP message (xid:{0})", ticket.Xid);
-				clientCopy.GetStream().AsyncWrite(t1L.Result, (ex) =>
+				streamCopy.AsyncWrite(btL.Result, (ex) =>
 				{
 					if(ex != null)
 					{
-						Log.Debug("tcp message not sended (xid:{0}) reason: {1}", ticket.Xid, ex);
+						Log.Debug("TCP message not sended (xid:{0}) reason: {1}", ticket.Xid, ex);
 						Restart(clientCopy, ex);
 						return;
 					}
@@ -205,63 +207,58 @@ namespace Rpc.Connectors
 		
 		private void BeginReceive()
 		{
-			Log.Trace("begin receive");
+			Log.Trace("Begin receive.");
 			TcpClient clientCopy;
+			NetworkStream streamCopy = null;
 			lock(_sync)
 			{
-				if (_receivingInProgress)
+				if(_receivingInProgress)
 				{
-					Log.Debug("already receiving");
+					Log.Debug("Already receiving.");
 					return;
 				}
 
-				if (_handlers.Count == 0)
+				if(_handlers.Count == 0)
 				{
-					Log.Debug("receive stop. no handlers");
+					Log.Debug("Receive stop. no handlers.");
 					return;
 				}
 				
 				_receivingInProgress = true;
 				clientCopy = _client;
+				if(_client.Connected)
+					streamCopy = clientCopy.GetStream();
 			}
-
-			var t1 = Task.Factory.FromAsync<byte[]>(clientCopy.BeginReceive, (ar) =>
+			
+			if(streamCopy == null)
+				return;
+			
+			streamCopy.AsyncRead((err, tcpReader) =>
+			{
+				if(err != null)
 				{
-					IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
-					return clientCopy.EndReceive(ar, ref ep);
-				}, null);
+					Log.Debug("no receiving TCP messages. Reason: {0}", err);
+					Restart(clientCopy, err);
+					return;
+				}
 
-			t1.ContinueWith(t1L =>
-			{ // exist Exception
-				Exception ex = t1L.Exception;
-				Log.Debug("no receiving datagrams. Reason: {0}", ex);
-				Restart(clientCopy, ex);
-			}, TaskContinuationOptions.NotOnRanToCompletion);
-
-			t1.ContinueWith(t1L =>
-			{ // exist Result
-				byte[] datagram = t1L.Result;
-				Log.Trace(DumpToLog, "received byte dump: {0}", datagram);
-				Log.Debug("received {0} bytes", datagram.Length);
-				lock (_sync)
+				lock(_sync)
 				{
-					if (clientCopy != _client)
+					if(clientCopy != _client)
 						return;
 
 					_receivingInProgress = false;
 				}
 
 				rpc_msg respMsg = null;
-				MessageReader mr = null;
 				Reader r = null;
 
 				try
 				{
-					mr = new MessageReader(datagram);
-					r = Toolkit.CreateReader(mr);
+					r = Toolkit.CreateReader(tcpReader);
 					respMsg = r.Read<rpc_msg>();
 				}
-				catch (Exception ex)
+				catch(Exception ex)
 				{
 					Log.Info("parse exception: {0}", ex);
 					BeginReceive();
@@ -271,12 +268,11 @@ namespace Rpc.Connectors
 				Log.Trace("received response xid:{0}", respMsg.xid);
 				ITicket ticket = EnqueueTicket(respMsg.xid);
 				BeginReceive();
-				if (ticket == null)
+				if(ticket == null)
 					Log.Debug("no handler for xid:{0}", respMsg.xid);
 				else
-					ticket.ReadResult(mr, r, respMsg);
-
-			}, TaskContinuationOptions.OnlyOnRanToCompletion);
+					ticket.ReadResult(tcpReader, r, respMsg);
+			});
 		}
 
 		private void Restart(TcpClient clientCopy, Exception ex)
@@ -330,5 +326,4 @@ namespace Rpc.Connectors
 			Close();
 		}
 	}
-	*/
 }

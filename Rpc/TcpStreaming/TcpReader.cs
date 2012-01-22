@@ -72,6 +72,12 @@ namespace Rpc.TcpStreaming
 				NextBlock();
 			return result;
 		}
+		
+		public void CheckEmpty()
+		{
+			if(_currentBlock != null)
+				throw new RpcException("RPC message parsed not completely");
+		}
 	}
 }
 
