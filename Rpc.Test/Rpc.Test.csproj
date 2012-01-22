@@ -45,7 +45,8 @@
     <Compile Include="PortMapperBehaviorTest.cs" />
     <Compile Include="RpcBinderBehaviorTest.cs" />
     <Compile Include="TestToolkit.cs" />
-    <Compile Include="TcpWriterTest.cs" />
+    <Compile Include="TcpStreaming\TcpWriterTest.cs" />
+    <Compile Include="TcpStreaming\TcpReaderTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -58,5 +59,8 @@
       <Project>{3D05D93B-A861-4CE0-810A-7A0C6BC5D46E}</Project>
       <Name>Rpc</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TcpStreaming\" />
   </ItemGroup>
 </Project>

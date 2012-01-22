@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using Rpc.TcpStreaming;
 
-namespace Rpc
+namespace Rpc.TcpStreaming
 {
 	[TestFixture]
 	public class TcpWriterTest
