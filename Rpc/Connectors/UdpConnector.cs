@@ -52,7 +52,10 @@ namespace Rpc.Connectors
 			_client.Connect(_ep);
 			return prevClient;
 		}
-
+		
+		/// <summary>
+		/// Close this connection and cancel all queued tasks
+		/// </summary>
 		public void Close()
 		{
 			List<ITicket> tickets = new List<ITicket>();
@@ -74,7 +77,10 @@ namespace Rpc.Connectors
 
 			prevClient.Close();
 		}
-
+		
+		/// <summary>
+		/// creates the task for the control request to the RPC server
+		/// </summary>
 		public Task<TResp> CreateTask<TReq, TResp>(call_body callBody, TReq reqArgs, TaskCreationOptions options, CancellationToken token)
 		{
 			Ticket<TReq, TResp> ticket = new Ticket<TReq, TResp>(this, callBody, reqArgs, options, token);
@@ -306,6 +312,9 @@ namespace Rpc.Connectors
 			}
 		}
 		
+		/// <summary>
+		/// creates the task for the control request to the RPC server
+		/// </summary>
 		public void Dispose()
 		{
 			Close();

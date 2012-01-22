@@ -15,7 +15,7 @@ namespace Rpc.BindingProtocols.TaskBuilders
 	/// For TCP/IP and UDP/IP, for example, it is port number 111. Each transport has such an assigned, well-known address.
 	/// http://tools.ietf.org/html/rfc1833#section-2.2.1
 	/// </summary>
-	public class RpcBindV3 : BaseRpcBind
+	public sealed class RpcBindV3 : BaseRpcBind
 	{
 		/// <summary>
 		/// RPCBIND Version 3
@@ -24,12 +24,17 @@ namespace Rpc.BindingProtocols.TaskBuilders
 		/// For TCP/IP and UDP/IP, for example, it is port number 111. Each transport has such an assigned, well-known address.
 		/// http://tools.ietf.org/html/rfc1833#section-2.2.1
 		/// </summary>
-		/// <param name="conn"></param>
+		/// <param name="conn">instance of connector</param>
+		/// <param name="token">cancellation token</param>
+		/// <param name="attachedToParent">attache created task to parent task</param>
 		public RpcBindV3(IConnector conn, CancellationToken token, bool attachedToParent)
 			: base(conn, token, attachedToParent)
 		{
 		}
-
+		
+		/// <summary>
+		/// Gets the version of protocol
+		/// </summary>
 		protected override uint Version
 		{
 			get

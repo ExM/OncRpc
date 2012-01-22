@@ -15,9 +15,9 @@ namespace Rpc.BindingProtocols.TaskBuilders
 	{
 		private const uint Program = 100000u;
 
-		protected IConnector _conn;
-		protected bool _attachedToParent;
-		protected CancellationToken _token;
+		private IConnector _conn;
+		private bool _attachedToParent;
+		private CancellationToken _token;
 
 		internal BaseTaskBuilder(IConnector conn, CancellationToken token, bool attachedToParent)
 		{
@@ -25,7 +25,10 @@ namespace Rpc.BindingProtocols.TaskBuilders
 			_attachedToParent = attachedToParent;
 			_token = token;
 		}
-
+		
+		/// <summary>
+		/// Gets the version of protocol
+		/// </summary>
 		protected abstract uint Version { get; }
 
 		private call_body CreateHeader(uint procNum)
@@ -40,7 +43,25 @@ namespace Rpc.BindingProtocols.TaskBuilders
 				verf = opaque_auth.None
 			};
 		}
-
+		
+		/// <summary>
+		/// Creates the task of request.
+		/// </summary>
+		/// <returns>
+		/// The queued task.
+		/// </returns>
+		/// <param name='proc'>
+		/// procedure number
+		/// </param>
+		/// <param name='args'>
+		/// instance of arguments of request
+		/// </param>
+		/// <typeparam name='TReq'>
+		/// type of request
+		/// </typeparam>
+		/// <typeparam name='TResp'>
+		/// type of response
+		/// </typeparam>
 		protected Task<TResp> CreateTask<TReq, TResp>(uint proc, TReq args)
 		{
 			return _conn.CreateTask<TReq, TResp>(CreateHeader(proc), args,

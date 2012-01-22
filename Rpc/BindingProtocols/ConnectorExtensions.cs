@@ -7,6 +7,9 @@ using System.Threading;
 
 namespace Rpc.BindingProtocols
 {
+	/// <summary>
+	/// Connector extensions.
+	/// </summary>
 	public static class ConnectorExtensions
 	{
 		/// <summary>

@@ -29,7 +29,13 @@ namespace Rpc.BindingProtocols
 		/// </summary>
 		[Order(3)]
 		public uint port;
-
+		
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents the current <see cref="Rpc.BindingProtocols.mapping"/>.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents the current <see cref="Rpc.BindingProtocols.mapping"/>.
+		/// </returns>
 		public override string ToString()
 		{
 			return string.Format("port:{0} prog:{1} prot:{2} vers:{3}", port, prog, prot, vers);
