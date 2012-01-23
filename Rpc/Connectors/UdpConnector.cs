@@ -11,6 +11,7 @@ using System.Threading;
 using Rpc.Connectors;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Rpc.UdpDatagrams;
 
 namespace Rpc.Connectors
 {
@@ -239,12 +240,12 @@ namespace Rpc.Connectors
 				}
 
 				rpc_msg respMsg = null;
-				MessageReader mr = null;
+				UdpReader mr = null;
 				Reader r = null;
 
 				try
 				{
-					mr = new MessageReader(datagram);
+					mr = new UdpReader(datagram);
 					r = Toolkit.CreateReader(mr);
 					respMsg = r.Read<rpc_msg>();
 				}

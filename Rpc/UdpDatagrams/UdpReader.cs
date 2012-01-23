@@ -2,57 +2,26 @@ using System;
 using System.IO;
 using Xdr;
 
-namespace Rpc
+namespace Rpc.UdpDatagrams
 {
 	/// <summary>
 	/// parser of RPC message
 	/// </summary>
-	public class MessageReader: IByteReader
+	public class UdpReader: IByteReader
 	{
-		private uint _pos = 0;
+		private int _pos = 0;
+		private int _leftToRead;
 		private byte[] _bytes = null;
 
 		/// <summary>
 		/// parser of RPC message
 		/// </summary>
-		public MessageReader()
-		{
-		}
-
-		/// <summary>
-		/// parser of RPC message
-		/// </summary>
 		/// <param name="bytes">raw</param>
-		public MessageReader(params byte[] bytes)
+		public UdpReader(byte[] bytes)
 		{
+			_pos = 0;
+			_leftToRead = bytes.Length;
 			_bytes = bytes;
-		}
-
-		/// <summary>
-		/// Inner byte array
-		/// </summary>
-		public byte[] Bytes
-		{
-			get
-			{
-				return _bytes;
-			}
-			set
-			{
-				_bytes = value;
-				_pos = 0;
-			}
-		}
-
-		/// <summary>
-		/// current position in byte array
-		/// </summary>
-		public uint Position
-		{
-			get
-			{
-				return _pos;
-			}
 		}
 
 		/// <summary>
@@ -62,10 +31,15 @@ namespace Rpc
 		/// <returns></returns>
 		public byte[] Read(uint count)
 		{
-			CheckExist(count);
+			if(_leftToRead < count)
+				throw UnexpectedEnd();
+			
+			int icount = (int)count;
+			
 			byte[] result = new byte[count];
 			Array.Copy(_bytes, _pos, result, 0, count);
-			_pos += count;
+			_pos += icount;
+			_leftToRead -= icount;
 			return result;
 		}
 
@@ -75,16 +49,18 @@ namespace Rpc
 		/// <returns></returns>
 		public byte Read()
 		{
-			CheckExist(1);
+			if(_leftToRead < 1)
+				throw UnexpectedEnd();
+
 			byte result = _bytes[_pos];
 			_pos++;
+			_leftToRead--;
 			return result;
 		}
-
-		private void CheckExist(uint p)
+		
+		private static Exception UnexpectedEnd()
 		{
-			if (_pos + p > _bytes.LongLength)
-				throw new RpcException("unexpected end of RPC message");
+			return new RpcException("unexpected end of RPC message");
 		}
 
 		/// <summary>
@@ -92,7 +68,7 @@ namespace Rpc
 		/// </summary>
 		public void CheckEmpty()
 		{
-			if (_pos < _bytes.LongLength)
+			if(_leftToRead > 0)
 				throw new RpcException("RPC message parsed not completely");
 		}
 	}

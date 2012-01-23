@@ -3,23 +3,28 @@ using System.IO;
 using Xdr;
 using System.Collections.Generic;
 
-namespace Rpc.TcpStreaming
+namespace Rpc.UdpDatagrams
 {
 	/// <summary>
-	/// 
-	/// http://tools.ietf.org/html/rfc5531#section-11
+	/// generator of UDP datagram
 	/// </summary>
-	public class TcpWriter : IByteWriter
+	public class UdpWriter : IByteWriter
 	{
-		private readonly int _maxBlock;
+		private const int _max = 65535;
+		private const int _maxBlock = 1024 * 4; // 4k
+
 		private int _pos;
+		private int _totalSize;
 		private byte[] _currentBlock;
 		private LinkedList<byte[]> _blocks;
 
-		public TcpWriter(int maxBlock)
+		/// <summary>
+		/// generator of UDP datagram
+		/// </summary>
+		public UdpWriter()
 		{
-			_maxBlock = maxBlock;
-			_pos = 4;
+			_pos = 0;
+			_totalSize = 0;
 			_currentBlock = new byte[_maxBlock];
 			_blocks = new LinkedList<byte[]>();
 		}
@@ -30,7 +35,11 @@ namespace Rpc.TcpStreaming
 		/// <param name="buffer"></param>
 		public void Write(byte[] buffer)
 		{
-			int offset = 0; // FIXME: check using uint size
+			_totalSize += buffer.Length;
+			if(_totalSize > _max)
+				throw SizeIsExceeded();
+			
+			int offset = 0;
 			while(true)
 			{
 				int len = buffer.Length - offset;
@@ -58,6 +67,10 @@ namespace Rpc.TcpStreaming
 		/// <param name="b"></param>
 		public void Write(byte b)
 		{
+			_totalSize++;
+			if(_totalSize > _max)
+				throw SizeIsExceeded();
+			
 			_currentBlock[_pos] = b;
 			_pos++;
 			
@@ -67,46 +80,29 @@ namespace Rpc.TcpStreaming
 		
 		private void CreateNextBlock()
 		{
-			SetLenth(_currentBlock);
 			_blocks.AddLast(_currentBlock);
 			_currentBlock = new byte[_maxBlock];
-			_pos = 4;
+			_pos = 0;
 		}
 		
-		private void SetLastBlock()
+		private static Exception SizeIsExceeded()
 		{
-			var last = _blocks.Last;
-			if(last == null)
-				return;
-
-			byte[] block = last.Value;
-			block[0] = (byte)(block[0] | 0x80);
-		}
-		
-		private void SetLenth(byte[] block)
-		{
-			int len = block.Length - 4;
-			block[0] = (byte)((len >> 0x18) & 0xff);
-			block[1] = (byte)((len >> 0x10) & 0xff);
-			block[2] = (byte)((len >> 8) & 0xff);
-			block[3] = (byte)(len & 0xff);
+			return new RpcException("UDP datagram size is exceeded");
 		}
 
-		public LinkedList<byte[]> Build()
+		public byte[] Build()
 		{
-			if(_pos != 4) // _currentBlock is not empty
+			byte[] result = new byte[_totalSize];
+			int offset = 0;
+			foreach(var block in _blocks)
 			{
-				byte[] shortBlock = new byte[_pos];
-				Array.Copy(_currentBlock, shortBlock, _pos);
-				SetLenth(shortBlock);
-				_blocks.AddLast(shortBlock);
-				_pos = 4;
+				Array.Copy(block, 0, result, offset, _maxBlock);
+				offset += _maxBlock;
 			}
 			
-			SetLastBlock();
+			if(_pos != 0) // _currentBlock is not empty
+				Array.Copy(_currentBlock, 0, result, offset, _pos);
 
-			LinkedList<byte[]> result = _blocks;
-			_blocks = new LinkedList<byte[]>();
 			return result;
 		}
 	}

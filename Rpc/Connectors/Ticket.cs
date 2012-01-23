@@ -7,6 +7,7 @@ using Rpc.MessageProtocol;
 using System.Threading;
 using System.Threading.Tasks;
 using Rpc.TcpStreaming;
+using Rpc.UdpDatagrams;
 
 namespace Rpc.Connectors
 {
@@ -75,7 +76,7 @@ namespace Rpc.Connectors
 				}
 			};
 
-			UdpDatagram dtg = new UdpDatagram();
+			UdpWriter dtg = new UdpWriter();
 			Writer w = Toolkit.CreateWriter(dtg);
 			w.Write(reqHeader);
 			w.Write(_reqArgs);
@@ -83,7 +84,7 @@ namespace Rpc.Connectors
 			_callBody = null;
 			_reqArgs = default(TReq);
 
-			return dtg.ToArray();
+			return dtg.Build();
 		}
 		
 		public void ReadResult(TcpReader mr, Reader r, rpc_msg respMsg)
@@ -104,7 +105,7 @@ namespace Rpc.Connectors
 			}
 		}
 		
-		public void ReadResult(MessageReader mr, Reader r, rpc_msg respMsg)
+		public void ReadResult(UdpReader mr, Reader r, rpc_msg respMsg)
 		{
 			_ctr.Dispose();
 			try

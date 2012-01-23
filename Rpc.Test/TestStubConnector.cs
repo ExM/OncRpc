@@ -10,6 +10,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
+using Rpc.UdpDatagrams;
 
 namespace Rpc
 {
@@ -36,7 +37,7 @@ namespace Rpc
 
 		public TResp Request<TReq, TResp>(call_body callBody, TReq reqArgs)
 		{
-			MessageReader mr = new MessageReader(_receivedArray);
+			UdpReader mr = new UdpReader(_receivedArray);
 			Reader r = Toolkit.CreateReader(mr);
 			rpc_msg respMsg = r.Read<rpc_msg>();
 
@@ -51,12 +52,12 @@ namespace Rpc
 				}
 			};
 
-			UdpDatagram dtg = new UdpDatagram();
+			UdpWriter dtg = new UdpWriter();
 			Writer w = Toolkit.CreateWriter(dtg);
 			w.Write(reqHeader);
 			w.Write(reqArgs);
 
-			byte[] outBuff = dtg.ToArray();
+			byte[] outBuff = dtg.Build();
 			Assert.AreEqual(_expectedSendArray, outBuff, "send dump is difference");
 
 			Toolkit.ReplyMessageValidate(respMsg);

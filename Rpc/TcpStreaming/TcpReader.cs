@@ -39,7 +39,7 @@ namespace Rpc.TcpStreaming
 		
 		public byte[] Read(uint count)
 		{
-			byte[] buffer = new byte[count];
+			byte[] buffer = new byte[count]; // FIXME: check using uint size
 			int offset = 0;
 			
 			while(true)

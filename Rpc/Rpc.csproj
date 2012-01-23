@@ -62,7 +62,6 @@
     <Compile Include="Connectors\ITicketOwner.cs" />
     <Compile Include="Connectors\Ticket.cs" />
     <Compile Include="Connectors\ITicket.cs" />
-    <Compile Include="UdpDatagram.cs" />
     <Compile Include="Exceptions\AuthenticateException.cs" />
     <Compile Include="Exceptions\ReplyException.cs" />
     <Compile Include="Exceptions\RpcException.cs" />
@@ -82,7 +81,6 @@
     <Compile Include="MessageProtocol\auth_flavor.cs" />
     <Compile Include="MessageProtocol\opaque_auth.cs" />
     <Compile Include="BindingProtocols\rpcb.cs" />
-    <Compile Include="MessageReader.cs" />
     <Compile Include="BindingProtocols\TaskBuilders\RpcBindV4.cs" />
     <Compile Include="IConnector.cs" />
     <Compile Include="Toolkit.cs" />
@@ -90,6 +88,8 @@
     <Compile Include="TcpStreaming\TcpWriter.cs" />
     <Compile Include="TcpStreaming\Extension.cs" />
     <Compile Include="TcpStreaming\TcpReader.cs" />
+    <Compile Include="UdpDatagrams\UdpReader.cs" />
+    <Compile Include="UdpDatagrams\UdpWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -102,5 +102,6 @@
   <ItemGroup />
   <ItemGroup>
     <Folder Include="TcpStreaming\" />
+    <Folder Include="UdpDatagrams\" />
   </ItemGroup>
 </Project>
