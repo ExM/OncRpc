@@ -9,9 +9,9 @@ using System.Threading;
 
 namespace Rpc.TcpStreaming
 {
-	public static class Extension
+	internal static class Extension
 	{
-		public static void AsyncRead(this Stream stream, Action<Exception, TcpReader> completed)
+		internal static void AsyncRead(this Stream stream, Action<Exception, TcpReader> completed)
 		{
 			//HACK: here you need to implement a timeout interrupt
 			var context = new ReadContext()
@@ -114,7 +114,6 @@ namespace Rpc.TcpStreaming
 					Completed(ex, null);
 				}
 				
-				TcpReader.PrepareRead();
 				Completed(null, TcpReader);
 			}
 			
@@ -131,8 +130,8 @@ namespace Rpc.TcpStreaming
 				_lastBlock = (_buf[0] & 0x80) == 0;
 			}
 		}
-		
-		public static void AsyncWrite(this Stream stream, LinkedList<byte[]> blocks, Action<Exception> completed)
+
+		internal static void AsyncWrite(this Stream stream, LinkedList<byte[]> blocks, Action<Exception> completed)
 		{
 			//HACK: here you need to implement a timeout interrupt
 			var context = new WriteContext()

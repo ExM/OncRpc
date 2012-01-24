@@ -37,7 +37,7 @@ namespace Rpc.Connectors
 		/// <summary>
 		/// connector on the UDP with a asynchronous query execution
 		/// </summary>
-		/// <param name="ep"></param>
+		/// <param name="ep">end point of the RPC-server</param>
 		public UdpConnector(IPEndPoint ep)
 		{
 			Log.Info("create connector from {0}", ep);
@@ -314,7 +314,7 @@ namespace Rpc.Connectors
 		}
 		
 		/// <summary>
-		/// creates the task for the control request to the RPC server
+		/// dispose this connection
 		/// </summary>
 		public void Dispose()
 		{

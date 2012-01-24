@@ -15,17 +15,18 @@ using Rpc.TcpStreaming;
 
 namespace Rpc.Connectors
 {
-
+	/// <summary>
+	/// connector on the TCP with a asynchronous query execution
+	/// </summary>
 	public class TcpConnector : IDisposable, IConnector, ITicketOwner
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 
 		private readonly IPEndPoint _ep;
-		private readonly int _maxBlock = 1024 * 4; //4kb
+		private readonly int _maxBlock;
 		private readonly object _sync = new object();
 
 		private TcpClient _client = null;
-		private NetworkStream _stream = null;
 		private uint _nextXid = 0;
 
 		private bool _sendingInProgress = false;
@@ -33,16 +34,17 @@ namespace Rpc.Connectors
 
 		private Dictionary<uint, ITicket> _handlers = new Dictionary<uint, ITicket>();
 		private LinkedList<ITicket> _pendingRequests = new LinkedList<ITicket>();
-		private Queue<byte[]> _sendingTcpMessage = null;
 		
 		/// <summary>
-		/// connector on the UDP with a asynchronous query execution
+		/// connector on the TCP with a asynchronous query execution
 		/// </summary>
-		/// <param name="ep"></param>
-		public TcpConnector(IPEndPoint ep)
+		/// <param name="ep">end point of the RPC-server</param>
+		/// <param name="blockSize">maximum size of the message block (default: 4kb)</param>
+		public TcpConnector(IPEndPoint ep, int blockSize = 1024 * 4)
 		{
 			Log.Info("create connector from {0}", ep);
 			_ep = ep;
+			_maxBlock = blockSize;
 
 			NewSession();
 		}
@@ -54,6 +56,9 @@ namespace Rpc.Connectors
 			return prevClient;
 		}
 
+		/// <summary>
+		/// Close this connection and cancel all queued tasks
+		/// </summary>
 		public void Close()
 		{
 			List<ITicket> tickets = new List<ITicket>();
@@ -76,6 +81,9 @@ namespace Rpc.Connectors
 			prevClient.Close();
 		}
 
+		/// <summary>
+		/// creates the task for the control request to the RPC server
+		/// </summary>
 		public Task<TResp> CreateTask<TReq, TResp>(call_body callBody, TReq reqArgs, TaskCreationOptions options, CancellationToken token)
 		{
 			Ticket<TReq, TResp> ticket = new Ticket<TReq, TResp>(this, callBody, reqArgs, options, token);
@@ -224,10 +232,12 @@ namespace Rpc.Connectors
 					return;
 				}
 				
-				_receivingInProgress = true;
 				clientCopy = _client;
-				if(_client.Connected)
+				if (_client.Connected)
+				{
+					_receivingInProgress = true;
 					streamCopy = clientCopy.GetStream();
+				}
 			}
 			
 			if(streamCopy == null)
@@ -320,7 +330,10 @@ namespace Rpc.Connectors
 				return result;
 			}
 		}
-		
+
+		/// <summary>
+		/// dispose this connection
+		/// </summary>
 		public void Dispose()
 		{
 			Close();

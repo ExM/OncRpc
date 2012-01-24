@@ -11,7 +11,7 @@ namespace Rpc.UdpDatagrams
 	public class UdpWriter : IByteWriter
 	{
 		private const int _max = 65535;
-		private const int _maxBlock = 1024 * 4; // 4k
+		private const int _blockSize = 1024 * 4; // 4k
 
 		private int _pos;
 		private int _totalSize;
@@ -25,7 +25,7 @@ namespace Rpc.UdpDatagrams
 		{
 			_pos = 0;
 			_totalSize = 0;
-			_currentBlock = new byte[_maxBlock];
+			_currentBlock = new byte[_blockSize];
 			_blocks = new LinkedList<byte[]>();
 		}
 
@@ -44,18 +44,18 @@ namespace Rpc.UdpDatagrams
 			{
 				int len = buffer.Length - offset;
 			
-				if(len <= _maxBlock - _pos)
+				if(len <= _blockSize - _pos)
 				{
 					Array.Copy(buffer, offset, _currentBlock, _pos, len);
 					_pos += len;
-					if(_pos >= _maxBlock)
+					if(_pos >= _blockSize)
 						CreateNextBlock();
 				
 					return;
 				}
 			
-				Array.Copy(buffer, offset, _currentBlock, _pos, _maxBlock - _pos);
-				offset += _maxBlock - _pos;
+				Array.Copy(buffer, offset, _currentBlock, _pos, _blockSize - _pos);
+				offset += _blockSize - _pos;
 			
 				CreateNextBlock();
 			}
@@ -74,14 +74,14 @@ namespace Rpc.UdpDatagrams
 			_currentBlock[_pos] = b;
 			_pos++;
 			
-			if(_pos >= _maxBlock)
+			if(_pos >= _blockSize)
 				CreateNextBlock();
 		}
 		
 		private void CreateNextBlock()
 		{
 			_blocks.AddLast(_currentBlock);
-			_currentBlock = new byte[_maxBlock];
+			_currentBlock = new byte[_blockSize];
 			_pos = 0;
 		}
 		
@@ -90,19 +90,24 @@ namespace Rpc.UdpDatagrams
 			return new RpcException("UDP datagram size is exceeded");
 		}
 
+		/// <summary>
+		/// create the UDP datagram (the original object is destroyed)
+		/// </summary>
+		/// <returns>UDP datagram</returns>
 		public byte[] Build()
 		{
 			byte[] result = new byte[_totalSize];
 			int offset = 0;
 			foreach(var block in _blocks)
 			{
-				Array.Copy(block, 0, result, offset, _maxBlock);
-				offset += _maxBlock;
+				Array.Copy(block, 0, result, offset, _blockSize);
+				offset += _blockSize;
 			}
 			
 			if(_pos != 0) // _currentBlock is not empty
 				Array.Copy(_currentBlock, 0, result, offset, _pos);
-
+			_currentBlock = null;
+			_blocks = null;
 			return result;
 		}
 	}

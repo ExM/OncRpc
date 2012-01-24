@@ -6,16 +6,20 @@ using System.Collections.Generic;
 namespace Rpc.TcpStreaming
 {
 	/// <summary>
-	/// 
+	/// generator TCP messages with record mark
 	/// http://tools.ietf.org/html/rfc5531#section-11
 	/// </summary>
 	public class TcpWriter : IByteWriter
 	{
 		private readonly int _maxBlock;
-		private int _pos;
+		private long _pos;
 		private byte[] _currentBlock;
 		private LinkedList<byte[]> _blocks;
 
+		/// <summary>
+		/// generator TCP messages with record mark
+		/// </summary>
+		/// <param name="maxBlock">maximum block size in the TCP message</param>
 		public TcpWriter(int maxBlock)
 		{
 			_maxBlock = maxBlock;
@@ -30,10 +34,10 @@ namespace Rpc.TcpStreaming
 		/// <param name="buffer"></param>
 		public void Write(byte[] buffer)
 		{
-			int offset = 0; // FIXME: check using uint size
+			long offset = 0;
 			while(true)
 			{
-				int len = buffer.Length - offset;
+				long len = buffer.LongLength - offset;
 			
 				if(len <= _maxBlock - _pos)
 				{
@@ -92,6 +96,10 @@ namespace Rpc.TcpStreaming
 			block[3] = (byte)(len & 0xff);
 		}
 
+		/// <summary>
+		/// create the TCP message (the original object is destroyed)
+		/// </summary>
+		/// <returns>blocks of TCP message</returns>
 		public LinkedList<byte[]> Build()
 		{
 			if(_pos != 4) // _currentBlock is not empty
@@ -106,7 +114,8 @@ namespace Rpc.TcpStreaming
 			SetLastBlock();
 
 			LinkedList<byte[]> result = _blocks;
-			_blocks = new LinkedList<byte[]>();
+			_currentBlock = null;
+			_blocks = null;
 			return result;
 		}
 	}

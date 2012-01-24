@@ -22,7 +22,6 @@ namespace Rpc.TcpStreaming
 			r.AppendBlock("F1E2D3C4 00000000 00".LogToArray());
 			r.AppendBlock("000002 000186A0 0000".LogToArray());
 			r.AppendBlock("0002 00000004".LogToArray());
-			r.PrepareRead();
 			
 			Assert.AreEqual("F1E2D3C4 00000000 00".LogToArray(), r.Read(9));
 			Assert.AreEqual("000002 000186A0 0000".LogToArray(), r.Read(9));
@@ -37,7 +36,6 @@ namespace Rpc.TcpStreaming
 			r.AppendBlock("01020304".LogToArray());
 			r.AppendBlock("05".LogToArray());
 			r.AppendBlock("0607".LogToArray());
-			r.PrepareRead();
 			
 			Assert.AreEqual(1, r.Read());
 			Assert.AreEqual(2, r.Read());
@@ -56,7 +54,6 @@ namespace Rpc.TcpStreaming
 			r.AppendBlock("F1E2D3C4 00000000 00".LogToArray());
 			r.AppendBlock("000002 000186A0 0000".LogToArray());
 			r.AppendBlock("0002 00000004".LogToArray());
-			r.PrepareRead();
 			
 			Assert.AreEqual("F1E2D3C4".LogToArray(), r.Read(4));
 			Assert.AreEqual("00000000 00000002 000186A0 00000002 0000".LogToArray(), r.Read(18));

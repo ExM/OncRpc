@@ -5,7 +5,7 @@ using Xdr;
 namespace Rpc.UdpDatagrams
 {
 	/// <summary>
-	/// parser of RPC message
+	/// parser of RPC message received from UDP protocol
 	/// </summary>
 	public class UdpReader: IByteReader
 	{
@@ -14,9 +14,9 @@ namespace Rpc.UdpDatagrams
 		private byte[] _bytes = null;
 
 		/// <summary>
-		/// parser of RPC message
+		/// parser of RPC message received from UDP protocol
 		/// </summary>
-		/// <param name="bytes">raw</param>
+		/// <param name="bytes">UDP datagram</param>
 		public UdpReader(byte[] bytes)
 		{
 			_pos = 0;
