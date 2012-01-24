@@ -6,6 +6,7 @@ using Rpc.MessageProtocol;
 using Xdr;
 using System.IO;
 using System.Threading;
+using NLog;
 
 namespace Rpc.TcpStreaming
 {
@@ -14,15 +15,17 @@ namespace Rpc.TcpStreaming
 		internal static void AsyncRead(this Stream stream, Action<Exception, TcpReader> completed)
 		{
 			//HACK: here you need to implement a timeout interrupt
-			var context = new ReadContext()
+			var context = new TcpReadContext()
 			{
 				Stream = stream, Completed = completed
 			};
 			context.BeginRead();
 		}
 		
-		private class ReadContext
+		private class TcpReadContext
 		{
+			private static Logger Log = LogManager.GetCurrentClassLogger();
+
 			public Stream Stream;
 			public TcpReader TcpReader = new TcpReader();
 			public Action<Exception, TcpReader> Completed;
@@ -59,7 +62,8 @@ namespace Rpc.TcpStreaming
 				try
 				{
 					int read = Stream.EndRead(ar);
-					
+					Log.Debug("read {0} bytes of Record Mark", read);
+
 					if(read <= 0)
 						throw new EndOfStreamException();
 					
@@ -87,7 +91,8 @@ namespace Rpc.TcpStreaming
 				try
 				{
 					int read = Stream.EndRead(ar);
-					
+					Log.Debug("read {0} bytes of body", read);
+
 					if(read <= 0)
 						throw new EndOfStreamException();
 					
@@ -96,9 +101,11 @@ namespace Rpc.TcpStreaming
 					
 					if(_leftToRead <= 0)
 					{
+						Log.Trace(DumpToLog, "received byte dump: {0}", _buf);
 						TcpReader.AppendBlock(_buf);
 						if(!_lastBlock)
 						{
+							Log.Debug("body readed", read);
 							BeginReadRecordMark();
 							return;
 						}
@@ -128,25 +135,30 @@ namespace Rpc.TcpStreaming
 				_buf = new byte[_leftToRead];
 				_pos = 0;
 				_lastBlock = (_buf[0] & 0x80) == 0;
+
+				Log.Debug("read Record Mark lenght: {0} is last: {1}", _leftToRead, _lastBlock);
 			}
 		}
 
 		internal static void AsyncWrite(this Stream stream, LinkedList<byte[]> blocks, Action<Exception> completed)
 		{
 			//HACK: here you need to implement a timeout interrupt
-			var context = new WriteContext()
+			var context = new TcpWriteContext()
 			{
 				Stream = stream, Blocks = blocks, Completed = completed
 			};
 			context.BeginWrite();
 		}
 		
-		private class WriteContext
+		private class TcpWriteContext
 		{
+			private static Logger Log = LogManager.GetCurrentClassLogger();
+
 			public Stream Stream;
 			public LinkedList<byte[]> Blocks;
 			public Action<Exception> Completed;
 			public Exception Error = null;
+			private int _byteSending = 0;
 			
 			private void WrapCompleted(object arg)
 			{
@@ -166,7 +178,9 @@ namespace Rpc.TcpStreaming
 				
 				try
 				{
-					Stream.BeginWrite(block, 0, block.Length, EndWrite, null);
+					_byteSending = block.Length;
+					Log.Trace(DumpToLog, "sending byte dump: {0}", block);
+					Stream.BeginWrite(block, 0, _byteSending, EndWrite, null);
 				}
 				catch(Exception ex)
 				{
@@ -180,7 +194,8 @@ namespace Rpc.TcpStreaming
 				try
 				{
 					Stream.EndWrite(ar);
-					
+					Log.Debug("sended {0} bytes", _byteSending);
+
 					if(Blocks.First != null)
 					{
 						byte[] block = Blocks.First.Value;
@@ -197,6 +212,11 @@ namespace Rpc.TcpStreaming
 				
 				Completed(null);
 			}
+		}
+
+		private static string DumpToLog(string frm, byte[] buffer)
+		{
+			return string.Format(frm, buffer.ToDisplay());
 		}
 	}
 }

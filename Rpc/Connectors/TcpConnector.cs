@@ -160,7 +160,7 @@ namespace Rpc.Connectors
 				
 				connTask.ContinueWith(connTaskL =>
 				{ // exist Exception
-					var ex = connTaskL.Exception;
+					var ex = connTaskL.Exception; // TODO: may be NRE (must by DisposedException)
 					Log.Debug("unable to connected to {0}. Reason: {1}", _ep, ex);
 					Restart(clientCopy, ex);
 				}, TaskContinuationOptions.NotOnRanToCompletion);
@@ -187,7 +187,7 @@ namespace Rpc.Connectors
 				Log.Debug("TCP message not builded (xid:{0}) reason: {1}", ticket.Xid, ex);
 				ticket.Except(ex);
 				SendNextQueuedItem();
-			}, TaskContinuationOptions.NotOnRanToCompletion);
+			}, TaskContinuationOptions.OnlyOnFaulted);
 			
 			buildTask.ContinueWith(btL =>
 			{ // exist Result
@@ -207,6 +207,8 @@ namespace Rpc.Connectors
 							return;
 						_sendingInProgress = false;
 					}
+
+					Log.Trace("TCP message sended (xid:{0})", ticket.Xid);
 
 					SendNextQueuedItem();
 				});

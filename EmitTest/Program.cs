@@ -16,8 +16,8 @@ namespace EmitTest
 			ThreadPool.SetMinThreads(2, 2);
 
 			IPEndPoint ep;
-			ep = new IPEndPoint(IPAddress.Loopback, 111);
-			//ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
+			//ep = new IPEndPoint(IPAddress.Loopback, 111);
+			ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
 
 			var conn = new TcpConnector(ep);
 
@@ -33,7 +33,7 @@ namespace EmitTest
 
 			try
 			{
-				if(!Task.WaitAll(new Task[] { t, tn }, 2000))
+				if(!Task.WaitAll(new Task[] { t, tn }, 3000))
 					cts.Cancel(false);
 			}
 			catch
@@ -46,26 +46,18 @@ namespace EmitTest
 			Console.WriteLine("tn.Status {0}", tn.Status);
 			
 			if(t.Exception != null)
-			{
 				Console.WriteLine("t.Exception: {0}", t.Exception);
-			}
-			else
-			{
+			if (t.Status == TaskStatus.RanToCompletion)
 				foreach(var item in t.Result)
 					Console.WriteLine("port:{0} prog:{1} prot:{2} vers:{3}",
 					item.port, item.prog, item.prot, item.vers);
-			}
 
 			if(tn.Exception != null)
-			{
 				Console.WriteLine("tn.Exception: {0}", tn.Exception);
-			}
-			else
-			{
+			if(tn.Status == TaskStatus.RanToCompletion)
 				Console.WriteLine("tn.Result: {0}", tn.Result);
-			}
 
-			
+			Console.ReadLine();
 			conn.Dispose();
 
 			Console.ReadLine();

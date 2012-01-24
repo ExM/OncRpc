@@ -131,7 +131,9 @@ namespace Rpc.Connectors
 
 		private void Cancel()
 		{
-			if(_taskSrc.TrySetCanceled())
+			//Exception ex = new TaskCanceledException("request canceled");
+			//if (_taskSrc.TrySetException(ex))
+			if (_taskSrc.TrySetCanceled())
 				_owner.RemoveTicket(this);
 		}
 	}
