@@ -16,8 +16,8 @@ namespace EmitTest
 			ThreadPool.SetMinThreads(2, 2);
 
 			IPEndPoint ep;
-			//ep = new IPEndPoint(IPAddress.Loopback, 111);
-			ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
+			ep = new IPEndPoint(IPAddress.Loopback, 111);
+			//ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
 
 			var conn = new TcpConnector(ep);
 

@@ -90,6 +90,8 @@
     <Compile Include="TcpStreaming\TcpReader.cs" />
     <Compile Include="UdpDatagrams\UdpReader.cs" />
     <Compile Include="UdpDatagrams\UdpWriter.cs" />
+    <Compile Include="Connectors\TcpClientWrapper.cs" />
+    <Compile Include="Connectors\UdpClientWrapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
