@@ -4,11 +4,14 @@ using System.Net;
 using System.Threading;
 using Rpc.TcpStreaming;
 using System.Collections.Generic;
+using NLog;
 
 namespace Rpc
 {
 	public class TcpClientWrapper
 	{
+		private static Logger Log = LogManager.GetCurrentClassLogger();
+		
 		private readonly IPEndPoint _ep;
 		
 		private object _sync = new object();
@@ -42,7 +45,7 @@ namespace Rpc
 					if(_disposed)
 						throw new ObjectDisposedException(typeof(TcpClient).FullName);
 
-					if(_connectCompleted != null)
+					if(_connected || _connectCompleted != null)
 						throw new InvalidOperationException("already connecting");
 				}
 				
@@ -51,6 +54,7 @@ namespace Rpc
 			}
 			catch(Exception ex)
 			{
+				Log.Debug("Unable to connected to {0}. Reason: {1}", _ep, ex);
 				_connectCompleted = null;
 				ThreadPool.QueueUserWorkItem(_ => completed(ex));
 			}
@@ -63,9 +67,9 @@ namespace Rpc
 
 			try
 			{
-				lock (_sync)
+				lock(_sync)
 				{
-					if (_disposed)
+					if(_disposed)
 						throw new ObjectDisposedException(typeof(TcpClient).FullName);
 
 					_client.EndConnect(ar);
@@ -73,36 +77,14 @@ namespace Rpc
 					_stream = _client.GetStream();
 				}
 			}
-			catch (Exception ex)
+			catch(Exception ex)
 			{
+				Log.Debug("Unable to connected to {0}. Reason: {1}", _ep, ex);
 				copy(ex);
 			}
-
+			
+			Log.Debug("Sucess connect to {0}", _ep);
 			copy(null);
-		}
-		
-		public IAsyncResult BeginConnect(AsyncCallback callback, object state)
-		{
-			lock(_sync)
-			{
-				if(_disposed)
-					throw new ObjectDisposedException(typeof(TcpClient).FullName);
-				
-				return _client.BeginConnect(_ep.Address, _ep.Port, callback, null);
-			}
-		}
-		
-		public void EndConnect(IAsyncResult asyncResult)
-		{
-			lock(_sync)
-			{
-				if(_disposed)
-					throw new ObjectDisposedException(typeof(TcpClient).FullName);
-				
-				_client.EndConnect(asyncResult);
-				_connected = true;
-				_stream = _client.GetStream();
-			}
 		}
 		
 		public void AsyncRead(Action<Exception, TcpReader> completed)

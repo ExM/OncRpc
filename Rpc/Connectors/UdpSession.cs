@@ -15,7 +15,6 @@ namespace Rpc.Connectors
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 
-		private readonly IPEndPoint _ep;
 		private readonly UdpClientWrapper _client;
 
 		private ITicket _sendingTicket = null;
@@ -26,7 +25,6 @@ namespace Rpc.Connectors
 
 		public UdpSession(IPEndPoint ep)
 		{
-			_ep = ep;
 			_client = new UdpClientWrapper(ep);
 		}
 
@@ -47,12 +45,14 @@ namespace Rpc.Connectors
 			byte[] datagram;
 			try
 			{
-				datagram = _sendingTicket.BuildUdpDatagram();
+				UdpWriter uw = new UdpWriter();
+				_sendingTicket.BuildRpcMessage(uw);
+				datagram = uw.Build();
 			}
-			catch (Exception ex)
+			catch(Exception ex)
 			{
 				Log.Debug("UDP datagram not builded (xid:{0}) reason: {1}", _sendingTicket.Xid, ex);
-				lock (_sync)
+				lock(_sync)
 					_handlers.Remove(_sendingTicket.Xid);
 				_sendingTicket.Except(ex);
 				OnSend();

@@ -61,7 +61,6 @@
     <Compile Include="Connectors\UdpSession.cs" />
     <Compile Include="Connectors\IRpcSession.cs" />
     <Compile Include="Connectors\RpcClient.cs" />
-    <Compile Include="Connectors\TcpConnector.cs" />
     <Compile Include="Connectors\ITicketOwner.cs" />
     <Compile Include="Connectors\TcpSession.cs" />
     <Compile Include="Connectors\Ticket.cs" />
@@ -88,7 +87,6 @@
     <Compile Include="BindingProtocols\TaskBuilders\RpcBindV4.cs" />
     <Compile Include="IConnector.cs" />
     <Compile Include="Toolkit.cs" />
-    <Compile Include="Connectors\UdpConnector.cs" />
     <Compile Include="TcpStreaming\TcpWriter.cs" />
     <Compile Include="TcpStreaming\Extension.cs" />
     <Compile Include="TcpStreaming\TcpReader.cs" />
@@ -96,6 +94,7 @@
     <Compile Include="UdpDatagrams\UdpWriter.cs" />
     <Compile Include="Connectors\TcpClientWrapper.cs" />
     <Compile Include="Connectors\UdpClientWrapper.cs" />
+    <Compile Include="IMsgReader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

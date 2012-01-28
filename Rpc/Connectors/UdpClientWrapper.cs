@@ -5,11 +5,14 @@ using System.Threading;
 using Rpc.TcpStreaming;
 using System.Collections.Generic;
 using Rpc.UdpDatagrams;
+using NLog;
 
 namespace Rpc
 {
 	public class UdpClientWrapper
 	{
+		private static Logger Log = LogManager.GetCurrentClassLogger();
+		
 		private readonly IPEndPoint _ep;
 		
 		private object _sync = new object();
@@ -28,21 +31,16 @@ namespace Rpc
 		public void AsyncRead(Action<Exception, UdpReader> completed)
 		{
 			_readCompleted = completed;
-			lock (_sync)
+			lock(_sync)
 			{
-				if (_disposed)
-				{
-					ThreadPool.QueueUserWorkItem((state) =>
-						completed(new ObjectDisposedException(typeof(UdpClient).FullName), null));
-					return;
-				}
-
-
 				try
 				{
+					if(_disposed)
+						throw new ObjectDisposedException(typeof(UdpClient).FullName);
+					
 					_client.BeginReceive(EndRead, null);
 				}
-				catch (Exception ex)
+				catch(Exception ex)
 				{
 					_readCompleted = null;
 					ThreadPool.QueueUserWorkItem((state) => completed(ex, null));
@@ -54,47 +52,42 @@ namespace Rpc
 		{
 			UdpReader reader = null;
 			Exception err = null;
-			Action<Exception, UdpReader> completedCopy = _readCompleted;
+			Action<Exception, UdpReader> copy = _readCompleted;
 			_readCompleted = null;
 
-			lock (_sync)
+			lock(_sync)
 			{
-				if (_disposed)
-					err = new ObjectDisposedException(typeof(UdpClient).FullName);
-				else
+				try
 				{
-					try
-					{
-						IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
-						byte[] datagram = _client.EndReceive(ar, ref ep);
-						reader = new UdpReader(datagram);
-					}
-					catch (Exception ex)
-					{
-						err = ex;
-					}
+					if(_disposed)
+						throw new ObjectDisposedException(typeof(UdpClient).FullName);
+					
+					IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
+					byte[] datagram = _client.EndReceive(ar, ref ep);
+					Log.Trace(Toolkit.DumpToLog, "received datagram: {0}", datagram);
+					reader = new UdpReader(datagram);
+				}
+				catch(Exception ex)
+				{
+					err = ex;
 				}
 			}
 
-			completedCopy(err, reader);
+			copy(err, reader);
 		}
 		
 		private Action<Exception> _writeCompleted = null;
 		
 		public void AsyncWrite(byte[] datagram, Action<Exception> completed)
 		{
+			Log.Trace(Toolkit.DumpToLog, "sending datagram: {0}", datagram);
 			_writeCompleted = completed;
 			lock(_sync)
 			{
-				if(_disposed)
-				{
-					ThreadPool.QueueUserWorkItem((state) =>
-						completed(new ObjectDisposedException(typeof(TcpClient).FullName)));
-					return;
-				}
-				
 				try
 				{
+					if(_disposed)
+						throw new ObjectDisposedException(typeof(UdpClient).FullName);
 					_client.BeginSend(datagram, datagram.Length, EndWrite, null);
 				}
 				catch(Exception ex)
@@ -108,26 +101,23 @@ namespace Rpc
 		private void EndWrite(IAsyncResult ar)
 		{
 			Exception err = null;
-			Action<Exception> completedCopy = _writeCompleted;
+			Action<Exception> copy = _writeCompleted;
 			_writeCompleted = null;
 			lock(_sync)
 			{
-				if (_disposed)
-					err = new ObjectDisposedException(typeof(TcpClient).FullName);
-				else
+				try
 				{
-					try
-					{
-						_client.EndSend(ar);
-					}
-					catch (Exception ex)
-					{
-						err = ex;
-					}
+					if(_disposed)
+						throw new ObjectDisposedException(typeof(UdpClient).FullName);
+					_client.EndSend(ar);
+				}
+				catch(Exception ex)
+				{
+					err = ex;
 				}
 			}
 			
-			completedCopy(err);
+			copy(err);
 		}
 		
 		public void Close()

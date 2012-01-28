@@ -19,8 +19,7 @@ namespace EmitTest
 			ep = new IPEndPoint(IPAddress.Loopback, 111);
 			//ep = new IPEndPoint(new IPAddress(new byte[] { 192, 168, 62, 122 }), 111);
 
-			//var conn = new TcpConnector(ep);
-			var conn = new RpcClient(() => new TcpSession(ep));
+			var conn = RpcClient.FromTcp(ep);
 
 
 			CancellationTokenSource cts = new CancellationTokenSource();

@@ -32,7 +32,7 @@ namespace Rpc
 
 		public static TResp CallForUdp<TResp>(Func<IConnector, CancellationToken, Task<TResp>> taskCreater)
 		{
-			var conn = new UdpConnector(PortMapperAddr);
+			var conn = RpcClient.FromUdp(PortMapperAddr);
 
 			CancellationTokenSource cts = new CancellationTokenSource();
 

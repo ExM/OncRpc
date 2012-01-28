@@ -101,7 +101,7 @@ namespace Rpc.TcpStreaming
 					
 					if(_leftToRead <= 0)
 					{
-						Log.Trace(DumpToLog, "received byte dump: {0}", _buf);
+						Log.Trace(Toolkit.DumpToLog, "received byte dump: {0}", _buf);
 						TcpReader.AppendBlock(_buf);
 						if(!_lastBlock)
 						{
@@ -179,7 +179,7 @@ namespace Rpc.TcpStreaming
 				try
 				{
 					_byteSending = block.Length;
-					Log.Trace(DumpToLog, "sending byte dump: {0}", block);
+					Log.Trace(Toolkit.DumpToLog, "sending byte dump: {0}", block);
 					Stream.BeginWrite(block, 0, _byteSending, EndWrite, null);
 				}
 				catch(Exception ex)
@@ -212,11 +212,6 @@ namespace Rpc.TcpStreaming
 				
 				Completed(null);
 			}
-		}
-
-		private static string DumpToLog(string frm, byte[] buffer)
-		{
-			return string.Format(frm, buffer.ToDisplay());
 		}
 	}
 }

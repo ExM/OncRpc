@@ -40,8 +40,8 @@ namespace Rpc.Connectors
 				return _taskSrc.Task;
 			}
 		}
-
-		public LinkedList<byte[]> BuildTcpMessage(int maxBlock)
+		
+		public void BuildRpcMessage(IByteWriter bw)
 		{
 			rpc_msg reqHeader = new rpc_msg()
 			{
@@ -53,41 +53,15 @@ namespace Rpc.Connectors
 				}
 			};
 
-			TcpWriter tw = new TcpWriter(maxBlock);
-			Writer xw = Toolkit.CreateWriter(tw);
+			Writer xw = Toolkit.CreateWriter(bw);
 			xw.Write(reqHeader);
 			xw.Write(_reqArgs);
 			
 			_callBody = null;
 			_reqArgs = default(TReq);
-
-			return tw.Build();
-		}
-
-		public byte[] BuildUdpDatagram()
-		{
-			rpc_msg reqHeader = new rpc_msg()
-			{
-				xid = Xid,
-				body = new body()
-				{
-					mtype = msg_type.CALL,
-					cbody = _callBody
-				}
-			};
-
-			UdpWriter dtg = new UdpWriter();
-			Writer w = Toolkit.CreateWriter(dtg);
-			w.Write(reqHeader);
-			w.Write(_reqArgs);
-
-			_callBody = null;
-			_reqArgs = default(TReq);
-
-			return dtg.Build();
 		}
 		
-		public void ReadResult(TcpReader mr, Reader r, rpc_msg respMsg)
+		public void ReadResult(IMsgReader mr, Reader r, rpc_msg respMsg)
 		{
 			_ctr.Dispose();
 			try
@@ -100,24 +74,6 @@ namespace Rpc.Connectors
 				_taskSrc.TrySetResult(respArgs);
 			}
 			catch(Exception ex)
-			{
-				_taskSrc.TrySetException(ex);
-			}
-		}
-		
-		public void ReadResult(UdpReader mr, Reader r, rpc_msg respMsg)
-		{
-			_ctr.Dispose();
-			try
-			{
-				Toolkit.ReplyMessageValidate(respMsg);
-
-				TResp respArgs = r.Read<TResp>();
-				mr.CheckEmpty();
-
-				_taskSrc.TrySetResult(respArgs);
-			}
-			catch (Exception ex)
 			{
 				_taskSrc.TrySetException(ex);
 			}

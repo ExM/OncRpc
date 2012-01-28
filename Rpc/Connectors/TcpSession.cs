@@ -15,7 +15,6 @@ namespace Rpc.Connectors
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 
-		private readonly IPEndPoint _ep;
 		private readonly TcpClientWrapper _client;
 		private readonly int _maxBlock;
 
@@ -28,7 +27,6 @@ namespace Rpc.Connectors
 
 		public TcpSession(IPEndPoint ep, int blockSize = 1024 * 4)
 		{
-			_ep = ep;
 			_client = new TcpClientWrapper(ep);
 			_maxBlock = blockSize;
 		}
@@ -54,15 +52,9 @@ namespace Rpc.Connectors
 		private void OnConnected(Exception ex)
 		{
 			if (ex != null)
-			{
-				Log.Debug("Unable to connected to {0}. Reason: {1}", _ep, ex);
 				OnException(ex);
-			}
 			else
-			{
-				Log.Debug("Sucess connect to {0}", _ep);
 				BuildMessage(null);
-			}
 		}
 
 		private void BuildMessage(object state)
@@ -71,12 +63,14 @@ namespace Rpc.Connectors
 			LinkedList<byte[]> blocks;
 			try
 			{
-				blocks = _sendingTicket.BuildTcpMessage(_maxBlock);
+				TcpWriter tw = new TcpWriter(_maxBlock);
+				_sendingTicket.BuildRpcMessage(tw);
+				blocks = tw.Build();
 			}
-			catch (Exception ex)
+			catch(Exception ex)
 			{
 				Log.Debug("TCP message not builded (xid:{0}) reason: {1}", _sendingTicket.Xid, ex);
-				lock (_sync)
+				lock(_sync)
 					_handlers.Remove(_sendingTicket.Xid);
 				_sendingTicket.Except(ex);
 				OnSend();

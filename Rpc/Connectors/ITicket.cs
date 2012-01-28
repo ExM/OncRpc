@@ -12,10 +12,9 @@ namespace Rpc.Connectors
 	public interface ITicket
 	{
 		uint Xid { get; set; }
-		void ReadResult(UdpReader mr, Reader r, rpc_msg respMsg);
-		void ReadResult(TcpReader mr, Reader r, rpc_msg respMsg);
+		void ReadResult(IMsgReader mr, Reader r, rpc_msg respMsg);
 		void Except(Exception ex);
-		byte[] BuildUdpDatagram();
-		LinkedList<byte[]> BuildTcpMessage(int maxBlock);
+		
+		void BuildRpcMessage(IByteWriter bw);
 	}
 }

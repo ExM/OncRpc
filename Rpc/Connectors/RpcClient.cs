@@ -27,12 +27,23 @@ namespace Rpc.Connectors
 		private uint _nextXid = 0;
 		private bool _sendingInProgress = false;
 		private LinkedList<ITicket> _pendingRequests = new LinkedList<ITicket>();
-
-
+		
 		public RpcClient(Func<IRpcSession> sessionCreater)
 		{
 			_sessionCreater = sessionCreater;
 			NewSession();
+		}
+		
+		public static RpcClient FromTcp(IPEndPoint ep, int blockSize = 1024 * 4)
+		{
+			Log.Debug("Create RPC client for TCP server:{0}", ep);
+			return new RpcClient(() => new TcpSession(ep, blockSize));
+		}
+		
+		public static RpcClient FromUdp(IPEndPoint ep)
+		{
+			Log.Debug("Create RPC client for UDP server:{0}", ep);
+			return new RpcClient(() => new UdpSession(ep));
 		}
 
 		private IRpcSession NewSession()

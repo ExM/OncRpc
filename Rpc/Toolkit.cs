@@ -42,6 +42,14 @@ namespace Rpc
 		{
 			return _rb.Create(reader);
 		}
+		
+		/// <summary>
+		/// To create a delegate output byte array to the log
+		/// </summary>
+		internal static string DumpToLog(string frm, byte[] buffer)
+		{
+			return string.Format(frm, buffer.ToDisplay());
+		}
 
 		/// <summary>
 		/// convert byte array to text

@@ -8,7 +8,7 @@ namespace Rpc.TcpStreaming
 	/// <summary>
 	/// parser of RPC message received from TCP protocol
 	/// </summary>
-	public class TcpReader : IByteReader
+	public class TcpReader : IByteReader, IMsgReader
 	{
 		private LinkedList<byte[]> _blocks = new LinkedList<byte[]>();
 		private long _pos = 0;

@@ -7,7 +7,7 @@ namespace Rpc.UdpDatagrams
 	/// <summary>
 	/// parser of RPC message received from UDP protocol
 	/// </summary>
-	public class UdpReader: IByteReader
+	public class UdpReader: IByteReader, IMsgReader
 	{
 		private int _pos = 0;
 		private int _leftToRead;
