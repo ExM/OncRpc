@@ -19,19 +19,71 @@ namespace Rpc
 		public UdpClientWrapper(IPEndPoint ep)
 		{
 			_ep = ep;
-			_client = new UdpClient(_ep);
+			_client = new UdpClient();
 			_client.Connect(_ep);
 		}
-		
+
+		private Action<Exception, UdpReader> _readCompleted = null;
+
 		public void AsyncRead(Action<Exception, UdpReader> completed)
 		{
-			//TODO:
+			_readCompleted = completed;
+			lock (_sync)
+			{
+				if (_disposed)
+				{
+					ThreadPool.QueueUserWorkItem((state) =>
+						completed(new ObjectDisposedException(typeof(UdpClient).FullName), null));
+					return;
+				}
+
+
+				try
+				{
+					_client.BeginReceive(EndRead, null);
+				}
+				catch (Exception ex)
+				{
+					_readCompleted = null;
+					ThreadPool.QueueUserWorkItem((state) => completed(ex, null));
+				}
+			}
+		}
+
+		private void EndRead(IAsyncResult ar)
+		{
+			UdpReader reader = null;
+			Exception err = null;
+			Action<Exception, UdpReader> completedCopy = _readCompleted;
+			_readCompleted = null;
+
+			lock (_sync)
+			{
+				if (_disposed)
+					err = new ObjectDisposedException(typeof(UdpClient).FullName);
+				else
+				{
+					try
+					{
+						IPEndPoint ep = new IPEndPoint(IPAddress.Any, 0);
+						byte[] datagram = _client.EndReceive(ar, ref ep);
+						reader = new UdpReader(datagram);
+					}
+					catch (Exception ex)
+					{
+						err = ex;
+					}
+				}
+			}
+
+			completedCopy(err, reader);
 		}
 		
 		private Action<Exception> _writeCompleted = null;
 		
 		public void AsyncWrite(byte[] datagram, Action<Exception> completed)
 		{
+			_writeCompleted = completed;
 			lock(_sync)
 			{
 				if(_disposed)
@@ -41,10 +93,8 @@ namespace Rpc
 					return;
 				}
 				
-				
 				try
 				{
-					_writeCompleted = completed;
 					_client.BeginSend(datagram, datagram.Length, EndWrite, null);
 				}
 				catch(Exception ex)
@@ -58,26 +108,26 @@ namespace Rpc
 		private void EndWrite(IAsyncResult ar)
 		{
 			Exception err = null;
-			Action<Exception> completedCopy = null;
+			Action<Exception> completedCopy = _writeCompleted;
+			_writeCompleted = null;
 			lock(_sync)
 			{
-				completedCopy = _writeCompleted;
-				_writeCompleted = null;
-				if(_disposed)
+				if (_disposed)
 					err = new ObjectDisposedException(typeof(TcpClient).FullName);
-				
-				try
+				else
 				{
-					_client.EndSend(ar);
-				}
-				catch(Exception ex)
-				{
-					err = ex;
+					try
+					{
+						_client.EndSend(ar);
+					}
+					catch (Exception ex)
+					{
+						err = ex;
+					}
 				}
 			}
 			
-			if(completedCopy != null)
-				completedCopy(err);
+			completedCopy(err);
 		}
 		
 		public void Close()

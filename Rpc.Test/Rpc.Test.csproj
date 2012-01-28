@@ -47,6 +47,7 @@
     <Compile Include="TestToolkit.cs" />
     <Compile Include="TcpStreaming\TcpWriterTest.cs" />
     <Compile Include="TcpStreaming\TcpReaderTest.cs" />
+    <Compile Include="TcpConnectorTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

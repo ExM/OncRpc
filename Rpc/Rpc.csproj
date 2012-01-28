@@ -58,8 +58,12 @@
     <Compile Include="BindingProtocols\rpcb_entry.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallres.cs" />
     <Compile Include="BindingProtocols\rpcb_rmtcallargs.cs" />
+    <Compile Include="Connectors\UdpSession.cs" />
+    <Compile Include="Connectors\IRpcSession.cs" />
+    <Compile Include="Connectors\RpcClient.cs" />
     <Compile Include="Connectors\TcpConnector.cs" />
     <Compile Include="Connectors\ITicketOwner.cs" />
+    <Compile Include="Connectors\TcpSession.cs" />
     <Compile Include="Connectors\Ticket.cs" />
     <Compile Include="Connectors\ITicket.cs" />
     <Compile Include="Exceptions\AuthenticateException.cs" />
@@ -102,8 +106,5 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="TcpStreaming\" />
-    <Folder Include="UdpDatagrams\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

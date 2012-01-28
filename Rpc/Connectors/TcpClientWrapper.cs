@@ -17,7 +17,6 @@ namespace Rpc
 		private TcpClient _client;
 		private NetworkStream _stream;
 		
-		
 		public TcpClientWrapper(IPEndPoint ep)
 		{
 			_ep = ep;
@@ -30,6 +29,56 @@ namespace Rpc
 			{
 				return _connected;
 			}
+		}
+
+		private Action<Exception> _connectCompleted = null;
+
+		public void AsyncConnect(Action<Exception> completed)
+		{
+			try
+			{
+				lock(_sync)
+				{
+					if(_disposed)
+						throw new ObjectDisposedException(typeof(TcpClient).FullName);
+
+					if(_connectCompleted != null)
+						throw new InvalidOperationException("already connecting");
+				}
+				
+				_connectCompleted = completed;
+				_client.BeginConnect(_ep.Address, _ep.Port, OnConnected, null);
+			}
+			catch(Exception ex)
+			{
+				_connectCompleted = null;
+				ThreadPool.QueueUserWorkItem(_ => completed(ex));
+			}
+		}
+
+		private void OnConnected(IAsyncResult ar)
+		{
+			Action<Exception> copy = _connectCompleted;
+			_connectCompleted = null;
+
+			try
+			{
+				lock (_sync)
+				{
+					if (_disposed)
+						throw new ObjectDisposedException(typeof(TcpClient).FullName);
+
+					_client.EndConnect(ar);
+					_connected = true;
+					_stream = _client.GetStream();
+				}
+			}
+			catch (Exception ex)
+			{
+				copy(ex);
+			}
+
+			copy(null);
 		}
 		
 		public IAsyncResult BeginConnect(AsyncCallback callback, object state)

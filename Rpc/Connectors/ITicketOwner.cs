@@ -7,7 +7,7 @@ using Rpc.MessageProtocol;
 
 namespace Rpc.Connectors
 {
-	internal interface ITicketOwner
+	public interface ITicketOwner
 	{
 		void RemoveTicket(ITicket ticket);
 	}

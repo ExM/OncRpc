@@ -9,7 +9,7 @@ using Rpc.UdpDatagrams;
 
 namespace Rpc.Connectors
 {
-	internal interface ITicket
+	public interface ITicket
 	{
 		uint Xid { get; set; }
 		void ReadResult(UdpReader mr, Reader r, rpc_msg respMsg);
