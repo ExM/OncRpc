@@ -42,12 +42,11 @@
     <Compile Include="Env.cs" />
     <Compile Include="TestStubConnector.cs" />
     <Compile Include="XdrTranslatingTest.cs" />
-    <Compile Include="PortMapperBehaviorTest.cs" />
-    <Compile Include="RpcBinderBehaviorTest.cs" />
     <Compile Include="TestToolkit.cs" />
     <Compile Include="TcpStreaming\TcpWriterTest.cs" />
     <Compile Include="TcpStreaming\TcpReaderTest.cs" />
-    <Compile Include="TcpConnectorTest.cs" />
+    <Compile Include="RpcBinder_BehaviorTest.cs" />
+    <Compile Include="PortMapper_BehaviorTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

@@ -25,14 +25,26 @@ namespace Rpc
 			config.LoggingRules.Add(rule1);
 			LogManager.Configuration = config;
 
-			PortMapperAddr = new IPEndPoint(IPAddress.Loopback, 111);
+			PortMapper = new IPEndPoint(IPAddress.Loopback, 111);
 		}
 
-		public readonly static IPEndPoint PortMapperAddr;
+		public readonly static IPEndPoint PortMapper;
+		
+		
+		public static TResp WaitTask<TResp>(Func<CancellationToken, Task<TResp>> taskCreater)
+		{
+			CancellationTokenSource cts = new CancellationTokenSource();
+			var t = taskCreater(cts.Token);
 
+			if(!t.Wait(2000))
+				cts.Cancel(false);
+
+			return t.Result;
+		}
+		
 		public static TResp CallForUdp<TResp>(Func<IConnector, CancellationToken, Task<TResp>> taskCreater)
 		{
-			var conn = RpcClient.FromUdp(PortMapperAddr);
+			var conn = RpcClient.FromUdp(PortMapper);
 
 			CancellationTokenSource cts = new CancellationTokenSource();
 
