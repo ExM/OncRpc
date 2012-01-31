@@ -1,10 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Rpc.MessageProtocol;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Rpc.BindingProtocols.TaskBuilders
 {
@@ -15,7 +11,7 @@ namespace Rpc.BindingProtocols.TaskBuilders
 	/// </summary>
 	public abstract class BaseRpcBind : BaseTaskBuilder
 	{
-		internal BaseRpcBind(IConnector conn, CancellationToken token, bool attachedToParent)
+		internal BaseRpcBind(IRpcClient conn, CancellationToken token, bool attachedToParent)
 			: base(conn, token, attachedToParent)
 		{
 		}

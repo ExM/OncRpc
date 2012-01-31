@@ -1,13 +1,13 @@
 using System;
-using System.Net.Sockets;
-using System.Net;
-using System.Threading;
-using Rpc.TcpStreaming;
 using System.Collections.Generic;
-using NLog;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using NLog;
+using Rpc.TcpStreaming;
 
-namespace Rpc
+namespace Rpc.Connectors
 {
 	public class TcpClientWrapper
 	{

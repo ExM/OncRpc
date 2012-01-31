@@ -1,22 +1,18 @@
 using System;
-using System.Linq;
-using Rpc;
-using Rpc.MessageProtocol;
-using Xdr;
-using System.Net.Sockets;
-using System.Net;
-using System.Diagnostics;
-using NLog;
-using System.Threading;
-using Rpc.Connectors;
 using System.Collections.Generic;
+using System.Net;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Rpc.TcpStreaming;
+using NLog;
+using Rpc;
+using Rpc.Connectors;
+using Rpc.MessageProtocol;
 
-namespace Rpc.Connectors
+namespace Rpc
 {
 
-	public class RpcClient : IDisposable, IConnector, ITicketOwner
+	public class RpcClient : IDisposable, IRpcClient, ITicketOwner
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 

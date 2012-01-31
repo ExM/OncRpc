@@ -1,13 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Xdr;
-using Rpc.MessageProtocol;
 using System.Threading;
 using System.Threading.Tasks;
-using Rpc.TcpStreaming;
-using Rpc.UdpDatagrams;
+using Rpc.MessageProtocol;
+using Xdr;
 
 namespace Rpc.Connectors
 {

@@ -1,13 +1,11 @@
 using System;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
-using Rpc.TcpStreaming;
-using System.Collections.Generic;
-using Rpc.UdpDatagrams;
 using NLog;
+using Rpc.UdpDatagrams;
 
-namespace Rpc
+namespace Rpc.Connectors
 {
 	public class UdpClientWrapper
 	{

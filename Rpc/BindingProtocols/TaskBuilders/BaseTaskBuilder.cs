@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Rpc.MessageProtocol;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
+using Rpc.MessageProtocol;
 
 namespace Rpc.BindingProtocols.TaskBuilders
 {
@@ -15,11 +12,11 @@ namespace Rpc.BindingProtocols.TaskBuilders
 	{
 		private const uint Program = 100000u;
 
-		private IConnector _conn;
+		private IRpcClient _conn;
 		private bool _attachedToParent;
 		private CancellationToken _token;
 
-		internal BaseTaskBuilder(IConnector conn, CancellationToken token, bool attachedToParent)
+		internal BaseTaskBuilder(IRpcClient conn, CancellationToken token, bool attachedToParent)
 		{
 			_conn = conn;
 			_attachedToParent = attachedToParent;

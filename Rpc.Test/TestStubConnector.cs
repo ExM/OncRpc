@@ -14,7 +14,7 @@ using Rpc.UdpDatagrams;
 
 namespace Rpc
 {
-	public class TestStubConnector: IConnector
+	public class TestStubConnector: IRpcClient
 	{
 		private byte[] _expectedSendArray;
 		private byte[] _receivedArray;
@@ -25,7 +25,7 @@ namespace Rpc
 			_receivedArray = receivedArray;
 		}
 
-		public static IConnector FromLog(string sendDump, string receiveDump)
+		public static IRpcClient FromLog(string sendDump, string receiveDump)
 		{
 			return new TestStubConnector(sendDump.LogToArray(), receiveDump.LogToArray());
 		}
@@ -65,6 +65,11 @@ namespace Rpc
 			mr.CheckEmpty();
 
 			return respArgs;
+		}
+
+		public void Close()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

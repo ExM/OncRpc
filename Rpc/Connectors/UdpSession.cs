@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
+using System.Linq;
 using System.Threading;
 using NLog;
 using Rpc.MessageProtocol;
-using Xdr;
 using Rpc.UdpDatagrams;
+using Xdr;
 
 namespace Rpc.Connectors
 {

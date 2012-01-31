@@ -15,7 +15,7 @@ namespace Rpc
 	[TestFixture("TCP")]
 	public class RpcBindV4_BehaviorTest: Env
 	{
-		private IConnector _conn;
+		private IRpcClient _conn;
 		
 		public RpcBindV4_BehaviorTest(string protocolType)
 		{

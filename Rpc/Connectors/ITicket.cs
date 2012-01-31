@@ -1,11 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Xdr;
 using Rpc.MessageProtocol;
-using Rpc.TcpStreaming;
-using Rpc.UdpDatagrams;
+using Xdr;
 
 namespace Rpc.Connectors
 {

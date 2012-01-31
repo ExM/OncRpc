@@ -15,7 +15,7 @@ namespace Rpc
 	[TestFixture("TCP")]
 	public class PortMapper_BehaviorTest: Env
 	{
-		private IConnector _conn;
+		private IRpcClient _conn;
 		
 		public PortMapper_BehaviorTest(string protocolType)
 		{

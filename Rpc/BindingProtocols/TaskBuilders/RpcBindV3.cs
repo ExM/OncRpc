@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Rpc.MessageProtocol;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Rpc.BindingProtocols.TaskBuilders
 {
@@ -27,7 +22,7 @@ namespace Rpc.BindingProtocols.TaskBuilders
 		/// <param name="conn">instance of connector</param>
 		/// <param name="token">cancellation token</param>
 		/// <param name="attachedToParent">attache created task to parent task</param>
-		public RpcBindV3(IConnector conn, CancellationToken token, bool attachedToParent)
+		public RpcBindV3(IRpcClient conn, CancellationToken token, bool attachedToParent)
 			: base(conn, token, attachedToParent)
 		{
 		}
