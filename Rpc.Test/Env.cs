@@ -30,27 +30,12 @@ namespace Rpc
 
 		public readonly static IPEndPoint PortMapper;
 		
-		
 		public static TResp WaitTask<TResp>(Func<CancellationToken, Task<TResp>> taskCreater)
 		{
 			CancellationTokenSource cts = new CancellationTokenSource();
 			var t = taskCreater(cts.Token);
 
 			if(!t.Wait(2000))
-				cts.Cancel(false);
-
-			return t.Result;
-		}
-		
-		public static TResp CallForUdp<TResp>(Func<IConnector, CancellationToken, Task<TResp>> taskCreater)
-		{
-			var conn = RpcClient.FromUdp(PortMapper);
-
-			CancellationTokenSource cts = new CancellationTokenSource();
-
-			var t = taskCreater(conn, cts.Token);
-
-			if (!t.Wait(2000))
 				cts.Cancel(false);
 
 			return t.Result;
@@ -62,5 +47,4 @@ namespace Rpc
 			return task.Result;
 		}
 	}
-
 }

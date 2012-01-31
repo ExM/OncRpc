@@ -26,22 +26,22 @@ F1E2D3C4 00000001 00000000 00000000 00000000 00000000 00000001 000186A0
 
 			Assert.AreEqual(111, list[0].port);
 			Assert.AreEqual(100000, list[0].prog);
-			Assert.AreEqual(6, list[0].prot);
+			Assert.AreEqual(Protocol.TCP, list[0].prot);
 			Assert.AreEqual(2, list[0].vers);
 
 			Assert.AreEqual(111, list[1].port);
 			Assert.AreEqual(100000, list[1].prog);
-			Assert.AreEqual(17, list[1].prot);
+			Assert.AreEqual(Protocol.UDP, list[1].prot);
 			Assert.AreEqual(2, list[1].vers);
 
 			Assert.AreEqual(49057, list[2].port);
 			Assert.AreEqual(100024, list[2].prog);
-			Assert.AreEqual(17, list[2].prot);
+			Assert.AreEqual(Protocol.UDP, list[2].prot);
 			Assert.AreEqual(1, list[2].vers);
 
 			Assert.AreEqual(57613, list[3].port);
 			Assert.AreEqual(100024, list[3].prog);
-			Assert.AreEqual(6, list[3].prot);
+			Assert.AreEqual(Protocol.TCP, list[3].prot);
 			Assert.AreEqual(1, list[3].vers);
 		}
 		

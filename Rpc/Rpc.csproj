@@ -44,7 +44,6 @@
     <Compile Include="BindingProtocols\call_result.cs" />
     <Compile Include="BindingProtocols\ConnectorExtensions.cs" />
     <Compile Include="BindingProtocols\TaskBuilders\PortMapper.cs" />
-    <Compile Include="BindingProtocols\PortMapperProtocol.cs" />
     <Compile Include="BindingProtocols\mapping.cs" />
     <Compile Include="BindingProtocols\TaskBuilders\RpcBindV3.cs" />
     <Compile Include="BindingProtocols\TransportSemantics.cs" />
@@ -88,13 +87,13 @@
     <Compile Include="IConnector.cs" />
     <Compile Include="Toolkit.cs" />
     <Compile Include="TcpStreaming\TcpWriter.cs" />
-    <Compile Include="TcpStreaming\Extension.cs" />
     <Compile Include="TcpStreaming\TcpReader.cs" />
     <Compile Include="UdpDatagrams\UdpReader.cs" />
     <Compile Include="UdpDatagrams\UdpWriter.cs" />
     <Compile Include="Connectors\TcpClientWrapper.cs" />
     <Compile Include="Connectors\UdpClientWrapper.cs" />
     <Compile Include="IMsgReader.cs" />
+    <Compile Include="BindingProtocols\Protocol.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

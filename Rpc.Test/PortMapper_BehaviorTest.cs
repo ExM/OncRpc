@@ -32,9 +32,9 @@ namespace Rpc
 			var r = Env.WaitTask((t) => _conn.PortMapper(t).Dump());
 
 			Assert.GreaterOrEqual(r.Count, 2);
-			Assert.IsFalse(r.Any((m) => m.prot != 6 && m.prot != 17));
-			Assert.IsTrue(r.Any((m) => m.port == Env.PortMapper.Port && m.prog == 100000 && m.vers == 2 && m.prot == 6));
-			Assert.IsTrue(r.Any((m) => m.port == Env.PortMapper.Port && m.prog == 100000 && m.vers == 2 && m.prot == 17));
+			Assert.IsFalse(r.Any((m) => m.prot != Protocol.TCP && m.prot != Protocol.UDP));
+			Assert.IsTrue(r.Any((m) => m.port == Env.PortMapper.Port && m.prog == 100000 && m.vers == 2 && m.prot == Protocol.UDP));
+			Assert.IsTrue(r.Any((m) => m.port == Env.PortMapper.Port && m.prog == 100000 && m.vers == 2 && m.prot == Protocol.TCP));
 		}
 
 		[Test]
@@ -47,7 +47,7 @@ namespace Rpc
 		[Test]
 		public void GetPort()
 		{
-			mapping arg = new mapping(){ prog = 100000, port = 0, prot = 6, vers = 2};
+			mapping arg = new mapping(){ prog = 100000, port = 0, prot = Protocol.UDP, vers = 2};
 			var r = Env.WaitTask((t) => _conn.PortMapper(t).GetPort(arg));
 			
 			Assert.AreEqual(111, r);
@@ -56,7 +56,7 @@ namespace Rpc
 		[Test]
 		public void GetPort_Fail()
 		{
-			mapping arg = new mapping(){ prog = 0, port = 0, prot = 17, vers = 2};
+			mapping arg = new mapping(){ prog = 0, port = 0, prot = Protocol.TCP, vers = 2};
 			var r = Env.WaitTask((t) => _conn.PortMapper(t).GetPort(arg));
 			
 			Assert.AreEqual(0, r);
@@ -66,7 +66,7 @@ namespace Rpc
 		[ExpectedException(typeof(AggregateException))]
 		public void Set_Fail()
 		{
-			mapping arg = new mapping(){ prog = 100000, port = 111, prot = 6, vers = 2};
+			mapping arg = new mapping(){ prog = 100000, port = 111, prot = Protocol.UDP, vers = 2};
 			Env.WaitTask((t) => _conn.PortMapper(t).Set(arg));
 		}
 

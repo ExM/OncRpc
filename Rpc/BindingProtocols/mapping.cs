@@ -23,7 +23,7 @@ namespace Rpc.BindingProtocols
 		/// protocol
 		/// </summary>
 		[Order(2)]
-		public uint prot;
+		public Protocol prot;
 		/// <summary>
 		/// port
 		/// </summary>
