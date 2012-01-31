@@ -1,7 +1,7 @@
 
 namespace Rpc.Connectors
 {
-	public interface ITicketOwner
+	internal interface ITicketOwner
 	{
 		void RemoveTicket(ITicket ticket);
 	}

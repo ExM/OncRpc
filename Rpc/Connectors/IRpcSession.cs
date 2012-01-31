@@ -2,7 +2,7 @@ using System;
 
 namespace Rpc.Connectors
 {
-	public interface IRpcSession : ITicketOwner
+	internal interface IRpcSession : ITicketOwner
 	{
 		void AsyncSend(ITicket ticket);
 		void Close(Exception ex);

@@ -11,7 +11,9 @@ using Rpc.MessageProtocol;
 
 namespace Rpc
 {
-
+	/// <summary>
+	/// The RPC client.
+	/// </summary>
 	public class RpcClient : IDisposable, IRpcClient, ITicketOwner
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
@@ -24,18 +26,26 @@ namespace Rpc
 		private bool _sendingInProgress = false;
 		private LinkedList<ITicket> _pendingRequests = new LinkedList<ITicket>();
 		
-		public RpcClient(Func<IRpcSession> sessionCreater)
+		internal RpcClient(Func<IRpcSession> sessionCreater)
 		{
 			_sessionCreater = sessionCreater;
 			NewSession();
 		}
-		
+		/// <summary>
+		/// Create RPC client from TCP protocol.
+		/// </summary>
+		/// <param name='ep'>server address</param>
+		/// <param name='blockSize'>block size</param>
 		public static RpcClient FromTcp(IPEndPoint ep, int blockSize = 1024 * 4)
 		{
 			Log.Debug("Create RPC client for TCP server:{0}", ep);
 			return new RpcClient(() => new TcpSession(ep, blockSize));
 		}
 		
+		/// <summary>
+		/// Create RPC client from UDP protocol.
+		/// </summary>
+		/// <param name='ep'>server address</param>
 		public static RpcClient FromUdp(IPEndPoint ep)
 		{
 			Log.Debug("Create RPC client for UDP server:{0}", ep);
@@ -51,7 +61,7 @@ namespace Rpc
 			return prevSession;
 		}
 
-		public void RemoveTicket(ITicket ticket)
+		void ITicketOwner.RemoveTicket(ITicket ticket)
 		{
 			IRpcSession sessionCopy;
 			lock (_sync)

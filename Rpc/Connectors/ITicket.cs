@@ -4,7 +4,7 @@ using Xdr;
 
 namespace Rpc.Connectors
 {
-	public interface ITicket
+	internal interface ITicket
 	{
 		uint Xid { get; set; }
 		void ReadResult(IMsgReader mr, Reader r, rpc_msg respMsg);

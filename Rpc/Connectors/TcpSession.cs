@@ -10,7 +10,7 @@ using Xdr;
 
 namespace Rpc.Connectors
 {
-	public class TcpSession: IRpcSession
+	internal class TcpSession: IRpcSession
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 

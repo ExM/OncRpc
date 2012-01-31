@@ -9,7 +9,7 @@ using Rpc.UdpDatagrams;
 
 namespace Rpc
 {
-	public interface IMsgReader
+	internal interface IMsgReader
 	{
 		void CheckEmpty();
 	}

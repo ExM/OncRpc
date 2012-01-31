@@ -7,7 +7,7 @@ using Rpc.UdpDatagrams;
 
 namespace Rpc.Connectors
 {
-	public class UdpClientWrapper
+	internal class UdpClientWrapper
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 		

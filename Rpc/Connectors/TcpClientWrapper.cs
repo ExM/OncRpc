@@ -9,7 +9,7 @@ using Rpc.TcpStreaming;
 
 namespace Rpc.Connectors
 {
-	public class TcpClientWrapper
+	internal class TcpClientWrapper
 	{
 		private static Logger Log = LogManager.GetCurrentClassLogger();
 		
